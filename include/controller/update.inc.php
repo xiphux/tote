@@ -204,7 +204,16 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 	$gameobj = $games->findOne(array('season' => $season, 'week' => (int)$week, 'home_team' => $homeid, 'away_team' => $awayid));
 	if (!$gameobj) {
-		echo "error: Couldn't locate " . $away . " @ " . $home . " for week " . $week . "<br />";
+		// add new game
+		echo 'adding game to database<br />';
+		$data = array(
+			'season' => $season,
+			'week' => (int)$week,
+			'home_team' => $homeid,
+			'away_team' => $awayid,
+			'start' => $start
+		);
+		//$games->insert($data);
 		return;
 	}
 
