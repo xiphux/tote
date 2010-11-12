@@ -29,6 +29,25 @@ function get_team($id)
 	return $teamcache[(string)$id];
 }
 
+$gamecache = array();
+
+function get_game($season, $week, $team)
+{
+	global $gamecache, $games;
+
+	$key = $season . ':' . $week . ':' . $team;
+
+	if (empty($gamecache[$key])) {
+		$js = "function() {
+			return ((this.home_team == '" . $team . "') || (this.away_team == '" . $team . "'));
+		}";
+
+		$gamecache[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
+	}
+
+	return $gamecache[$key];
+}
+
 function sort_pool($a, $b)
 {
 	// first wins descending
@@ -103,11 +122,7 @@ if (!$poolobj) {
 		foreach ($bets as $week => $bet) {
 			// find the result of each bet
 	
-			$js = "function() {
-				return ((this.home_team == '" . $bet['team'] . "') || (this.away_team == '" . $bet['team'] . "'));
-			}";
-
-			$gameobj = $games->findOne(array('season' => $poolobj['season'], 'week' => (int)$week, '$where' => $js));
+			$gameobj = get_game($poolobj['season'], $week, $bet['team']);
 
 			if ($gameobj && isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
 				$result = 0;
