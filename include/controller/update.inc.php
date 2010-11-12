@@ -253,8 +253,6 @@ function load_page($url)
 	return $raw;
 }
 
-date_default_timezone_set('America/New_York');
-
 $url = 'http://espn.go.com/nfl/schedule';
 
 $raw = load_page($url);
