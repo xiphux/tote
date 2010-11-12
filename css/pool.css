@@ -1,0 +1,25 @@
+.scoreTable {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0px auto;
+}
+
+.scoreTable tbody {
+	text-align: center;
+	font-size: smaller;
+}
+
+.win {
+	color: blue;
+}
+
+.loss {
+	color: red;
+}
+
+tr.self {
+	background-color: #dcdbd5;
+}
+
+tr.self:hover {
+	background-color: #dcdbd5;
+}
