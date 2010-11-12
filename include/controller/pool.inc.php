@@ -23,7 +23,7 @@ function get_team($id)
 	global $teamcache, $teams;
 
 	if (empty($teamcache[(string)$id])) {
-		$teamcache[(string)$id] = $teams->findOne(array('_id' => $id));
+		$teamcache[(string)$id] = $teams->findOne(array('_id' => $id), array('team', 'home', 'abbreviation'));
 	}
 
 	return $teamcache[(string)$id];
@@ -94,13 +94,13 @@ if (!$poolobj) {
 } else {
 	$entries = array();
 
-	$lastgame = $games->find(array('season' => (int)$poolobj['season']))->sort(array('week' => -1))->getNext();
+	$lastgame = $games->find(array('season' => (int)$poolobj['season']), array('week'))->sort(array('week' => -1))->getNext();
 	$weeks = $lastgame['week'];
 
 	$openweeks = array();
 	$currentdate = new MongoDate(time());
 	for ($i = 1; $i <= $weeks; $i++) {
-		$opengame = $games->findOne(array('season' => $poolobj['season'], 'week' => $i, 'start' => array('$gt' => $currentdate)));
+		$opengame = $games->findOne(array('season' => $poolobj['season'], 'week' => $i, 'start' => array('$gt' => $currentdate)), array('week'));
 		$openweeks[$i] = ($opengame ? true : false);
 	}
 
