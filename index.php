@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once('config/tote.conf.php');
 
 $connection = null;
@@ -14,10 +16,7 @@ $tpl = new Smarty();
 
 date_default_timezone_set('America/New_York');
 
-switch($_GET['a']) {
-	case 'pool':
-		require_once('include/controller/pool.inc.php');
-		break;
+switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	case 'bet':
 		require_once('include/controller/bet.inc.php');
 		break;
@@ -26,6 +25,19 @@ switch($_GET['a']) {
 		break;
 	case 'update':
 		require_once('include/controller/update.inc.php');
+		break;
+	case 'login':
+		if (isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/login.inc.php');
+		break;
+	case 'finishlogin':
+		require_once('include/controller/finishlogin.inc.php');
+		break;
+	case 'logout':
+		unset($_SESSION['user']);
+		require_once('include/controller/pool.inc.php');
 		break;
 	default:
 		require_once('include/controller/pool.inc.php');

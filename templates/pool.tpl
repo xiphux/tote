@@ -1,15 +1,23 @@
 {include file='header.tpl'}
 
-<div>
+<div class="poolInfoDiv">
 {$pool.name} [{$pool.season}-{$pool.season+1}]<br />
 Entry fee: ${$pool.fee}
 </div>
 
-<div>
+<div class="userOptsDiv">
+{if $user}
+Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}<br />
+{if $user.admin}
+<a href="index.php?a=update">Update scores</a><br />
+{/if}
+<a href="index.php?a=logout">Logout</a>
+{else}
+<a href="index.php?a=login">Login</a>
+{/if}
 </div>
 
-<div>
-</div>
+<div class="clear">&nbsp;</div>
 
 <table class="scoreTable">
 
@@ -27,7 +35,7 @@ Entry fee: ${$pool.fee}
 
 {foreach from=$record item=entrant}
 
-<tr class="{cycle values=light,dark}">
+<tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
 
 <td>{if $entrant.user.first_name}{$entrant.user.first_name} {$entrant.user.last_name}{else}{$entrant.user.username}{/if}</td>
 

@@ -192,5 +192,11 @@ if (!$poolobj) {
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
 	$tpl->assign('pool', $poolobj);
+
+	if (!empty($_SESSION['user'])) {
+		$loginuser = $users->findOne(array('username' => $_SESSION['user']), array('first_name', 'last_name', 'username', 'admin'));
+		$tpl->assign('user', $loginuser);
+	}
+
 	$tpl->display('pool.tpl');
 }

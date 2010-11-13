@@ -23,3 +23,14 @@ tr.self {
 tr.self:hover {
 	background-color: #dcdbd5;
 }
+
+div.poolInfoDiv {
+	width: 60%;
+	float: left;
+}
+
+div.userOptsDiv {
+	width: 30%;
+	float: right;
+	text-align: right;
+}

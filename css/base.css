@@ -23,3 +23,7 @@ table th {
 table td {
 	border: 1px solid #d9d8d1;
 }
+
+.clear {
+	clear: both;
+}
