@@ -33,11 +33,26 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			require_once('include/controller/login.inc.php');
 		break;
 	case 'finishlogin':
-		require_once('include/controller/finishlogin.inc.php');
+		if (isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/finishlogin.inc.php');
 		break;
 	case 'logout':
 		unset($_SESSION['user']);
-		require_once('include/controller/pool.inc.php');
+		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		break;
+	case 'changepass':
+		if (!isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/changepass.inc.php');
+		break;
+	case 'finishchangepass':
+		if (!isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/finishchangepass.inc.php');
 		break;
 	default:
 		require_once('include/controller/pool.inc.php');

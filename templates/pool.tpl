@@ -11,6 +11,7 @@ Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.u
 {if $user.admin}
 <a href="index.php?a=update">Update scores</a><br />
 {/if}
+<a href="index.php?a=changepass">Change password</a><br />
 <a href="index.php?a=logout">Logout</a>
 {else}
 <a href="index.php?a=login">Login</a>
