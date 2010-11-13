@@ -83,7 +83,7 @@ function sort_pool($a, $b)
 $poolobj = null;
 
 if (!empty($_GET['p']))
-	$poolobj = $pools->findOne(array('_id' => $_GET['p']));
+	$poolobj = $pools->findOne(array('_id' => new MongoId($_GET['p'])));
 else {
 	// find most recent pool
 	$poolobj = $pools->find()->sort(array('season' => -1))->getNext();
