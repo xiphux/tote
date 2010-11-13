@@ -92,16 +92,23 @@ else {
 if (!$poolobj) {
 	echo "Pool not found";
 } else {
+	$entered = false;
 	$entries = array();
 
 	$lastgame = $games->find(array('season' => (int)$poolobj['season']), array('week'))->sort(array('week' => -1))->getNext();
 	$weeks = $lastgame['week'];
 
+	$poolopen = false;
 	$openweeks = array();
 	$currentdate = new MongoDate(time());
 	for ($i = 1; $i <= $weeks; $i++) {
 		$opengame = $games->findOne(array('season' => $poolobj['season'], 'week' => $i, 'start' => array('$gt' => $currentdate)), array('week'));
-		$openweeks[$i] = ($opengame ? true : false);
+		if ($opengame) {
+			$openweeks[$i] = true;
+			$poolopen = true;
+		} else {
+			$openweeks[$i] = false;
+		}
 	}
 
 	$poolrecord = array();
@@ -110,6 +117,8 @@ if (!$poolobj) {
 		
 		$record = array();
 		$record['user'] = $users->findOne(array('_id' => $entrant['user']), array('username', 'first_name', 'last_name'));
+		if (!empty($_SESSION['user']) && ($record['user']['username'] == $_SESSION['user']))
+			$entered = true;
 		$bets = array();
 		
 		foreach ($entrant['bets'] as $bet) {
@@ -197,6 +206,11 @@ if (!$poolobj) {
 		$loginuser = $users->findOne(array('username' => $_SESSION['user']), array('first_name', 'last_name', 'username', 'admin'));
 		$tpl->assign('user', $loginuser);
 	}
+	if ($entered)
+		$tpl->assign('entered', true);
+
+	if ($poolopen)
+		$tpl->assign('poolopen', true);
 
 	$tpl->display('pool.tpl');
 }

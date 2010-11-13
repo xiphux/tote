@@ -18,10 +18,16 @@ date_default_timezone_set('America/New_York');
 
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	case 'bet':
-		require_once('include/controller/bet.inc.php');
+		if (!isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/bet.inc.php');
 		break;
 	case 'addbet':
-		require_once('include/controller/addbet.inc.php');
+		if (!isset($_SESSION['user']))
+			header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		else
+			require_once('include/controller/addbet.inc.php');
 		break;
 	case 'update':
 		require_once('include/controller/update.inc.php');

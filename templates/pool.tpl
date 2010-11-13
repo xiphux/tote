@@ -3,6 +3,23 @@
 <div class="poolInfoDiv">
 {$pool.name} [{$pool.season}-{$pool.season+1}]<br />
 Entry fee: ${$pool.fee}
+{if $user && $entered && $poolopen}
+<p>
+<form action="index.php" method="get">
+<label for="bet">Bet on week:</label> 
+<select name="w">
+{foreach from=$weeks key=wknum item=open}
+  {if $open}
+    <option value="{$wknum}">Week {$wknum}</option>
+  {/if}
+{/foreach}
+</select>
+<input type="hidden" name="a" value="bet" />
+<input type="hidden" name="p" value="{$pool._id}" />
+<input value="Bet" type="submit" />
+</form>
+</p>
+{/if}
 </div>
 
 <div class="userOptsDiv">
