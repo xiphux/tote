@@ -54,6 +54,18 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		else
 			require_once('include/controller/finishchangepass.inc.php');
 		break;
+	case 'recoverpass':
+		require_once('include/controller/recoverpass.inc.php');
+		break;
+	case 'finishrecoverpass':
+		require_once('include/controller/finishrecoverpass.inc.php');
+		break;
+	case 'resetpass':
+		require_once('include/controller/resetpass.inc.php');
+		break;
+	case 'finishresetpass':
+		require_once('include/controller/finishresetpass.inc.php');
+		break;
 	default:
 		require_once('include/controller/pool.inc.php');
 		break;
