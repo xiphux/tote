@@ -131,7 +131,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		return ((this.home_team == '" . $team1id . "') && (this.away_team == '" . $team2id . "')) || ((this.home_team == '" . $team2id . "') && (this.away_team == '" . $team1id . "'));
 	}";
 
-	$gameobj = $games->findOne(array('season' => $season, 'week' => (int)$week, '$where' => $js));
+	$gameobj = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
 	if (!$gameobj) {
 		echo "error: Couldn't locate " . $team1 . " vs " . $team2 . " for week " . $week . "<br />";
 		return;
@@ -162,8 +162,8 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		return;
 	}
 
-	if (($gameobj['home_score'] != $homescore) || ($gameobj['away_score'] != $awayscore)) {
-		echo 'updating from ' . $awayteam . ' ' . $gameobj['away_score'] . ' @ ' . $hometeam . ' ' . $gameobj['home_score'] . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . '<br />';
+	if (!isset($gameobj['home_score']) || !isset($gameobj['away_score']) || ($gameobj['home_score'] != $homescore) || ($gameobj['away_score'] != $awayscore)) {
+		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . '<br />';
 		/*
 		$games->update(
 			array('_id' => $gameobj['_id']),
