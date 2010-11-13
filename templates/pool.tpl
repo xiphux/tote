@@ -1,5 +1,16 @@
 {include file='header.tpl'}
 
+<div>
+{$pool.name} [{$pool.season}-{$pool.season+1}]<br />
+Entry fee: ${$pool.fee}
+</div>
+
+<div>
+</div>
+
+<div>
+</div>
+
 <table class="scoreTable">
 
 <thead>

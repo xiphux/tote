@@ -191,5 +191,6 @@ if (!$poolobj) {
 
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
+	$tpl->assign('pool', $poolobj);
 	$tpl->display('pool.tpl');
 }
