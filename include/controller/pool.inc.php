@@ -1,52 +1,7 @@
 <?php
 
-$poolcol = 'pools';
-$usercol = 'users';
-$gamecol = 'games';
-$teamcol = 'teams';
-if (!empty($tote_conf['namespace'])) {
-	$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-	$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-}
-
-$pools = $db->selectCollection($poolcol);
-$users = $db->selectCollection($usercol);
-$games = $db->selectCollection($gamecol);
-$teams = $db->selectCollection($teamcol);
-
-$teamcache = array();
-
-function get_team($id)
-{
-	global $teamcache, $teams;
-
-	if (empty($teamcache[(string)$id])) {
-		$teamcache[(string)$id] = $teams->findOne(array('_id' => $id), array('team', 'home', 'abbreviation'));
-	}
-
-	return $teamcache[(string)$id];
-}
-
-$gamecache = array();
-
-function get_game($season, $week, $team)
-{
-	global $gamecache, $games;
-
-	$key = $season . ':' . $week . ':' . $team;
-
-	if (empty($gamecache[$key])) {
-		$js = "function() {
-			return ((this.home_team == '" . $team . "') || (this.away_team == '" . $team . "'));
-		}";
-
-		$gamecache[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
-	}
-
-	return $gamecache[$key];
-}
+require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 
 function sort_pool($a, $b)
 {
@@ -80,24 +35,40 @@ function sort_pool($a, $b)
 	return strcmp($user1, $user2);
 }
 
-$poolobj = null;
+function display_pool($poolID = null)
+{
+	global $db, $tote_conf, $tpl;
 
-if (!empty($_GET['p']))
-	$poolobj = $pools->findOne(array('_id' => new MongoId($_GET['p'])));
-else {
-	// find most recent pool
-	$poolobj = $pools->find()->sort(array('season' => -1))->getNext();
-}
+	$poolcol = 'pools';
+	$usercol = 'users';
+	$gamecol = 'games';
+	if (!empty($tote_conf['namespace'])) {
+		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
+		$usercol = $tote_conf['namespace'] . '.' . $usercol;
+		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
+	}
 
-if (!$poolobj) {
-	echo "Pool not found";
-} else {
-	$entered = false;
-	$entries = array();
+	$pools = $db->selectCollection($poolcol);
+	$users = $db->selectCollection($usercol);
+	$games = $db->selectCollection($gamecol);
 
+	$poolobj = null;
+
+	if (empty($poolID))
+		$poolobj = $pools->find()->sort(array('season' => -1))->getNext();
+	else
+		$poolobj = $pools->findOne(array('_id' => new MongoId($poolID)));
+
+	if (!$poolobj) {
+		echo "Pool not found";
+		return;
+	}
+
+	// Find number of weeks
 	$lastgame = $games->find(array('season' => (int)$poolobj['season']), array('week'))->sort(array('week' => -1))->getNext();
 	$weeks = $lastgame['week'];
 
+	// Find weeks that are open for betting
 	$poolopen = false;
 	$openweeks = array();
 	$currentdate = new MongoDate(time());
@@ -111,16 +82,16 @@ if (!$poolobj) {
 		}
 	}
 
+	$entered = false;
 	$poolrecord = array();
-
 	foreach ($poolobj['entries'] as $entrant) {
 		
 		$record = array();
 		$record['user'] = $users->findOne(array('_id' => $entrant['user']), array('username', 'first_name', 'last_name'));
 		if (!empty($_SESSION['user']) && ($record['user']['username'] == $_SESSION['user']))
 			$entered = true;
+
 		$bets = array();
-		
 		foreach ($entrant['bets'] as $bet) {
 			// remap bets indexed by week
 			$week = $bet['week'];
@@ -131,7 +102,7 @@ if (!$poolobj) {
 		foreach ($bets as $week => $bet) {
 			// find the result of each bet
 	
-			$gameobj = get_game($poolobj['season'], $week, $bet['team']);
+			$gameobj = get_game_by_team($poolobj['season'], $week, $bet['team']);
 
 			if ($gameobj && isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
 				$result = 0;
@@ -155,7 +126,6 @@ if (!$poolobj) {
 		$wins = 0;
 		$losses = 0;
 		$pointspread = 0;
-
 		for ($i = 1; $i <= $weeks; ++$i) {
 			// tabulate
 			if (isset($bets[$i])) {
@@ -206,11 +176,9 @@ if (!$poolobj) {
 		$loginuser = $users->findOne(array('username' => $_SESSION['user']), array('first_name', 'last_name', 'username', 'admin'));
 		$tpl->assign('user', $loginuser);
 	}
-	if ($entered)
-		$tpl->assign('entered', true);
-
-	if ($poolopen)
-		$tpl->assign('poolopen', true);
+	$tpl->assign('entered', $entered);
+	$tpl->assign('poolopen', $poolopen);
 
 	$tpl->display('pool.tpl');
 }
+

@@ -1,3 +1,9 @@
 <?php
 
-$tpl->display('recoverpass.tpl');
+function display_recoverpass()
+{
+	global $tpl;
+
+	$tpl->display('recoverpass.tpl');
+
+}
