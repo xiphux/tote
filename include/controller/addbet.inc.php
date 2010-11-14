@@ -109,7 +109,7 @@ function display_addbet($poolID, $week, $team)
 
 	$pools->update(
 		array('_id' => $pool['_id']),
-		array('$push' => array('entries.' . (string)$userentryindex . '.bets' => array('week' => (int)$week, 'team' => $betteam['_id'])))
+		array('$push' => array('entries.' . (string)$userentryindex . '.bets' => array('week' => (int)$week, 'team' => $betteam['_id'], 'placed' => new MongoDate(time()))))
 	);
 	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?p=' . $pool['_id']);
 }

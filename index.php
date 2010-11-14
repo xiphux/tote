@@ -36,6 +36,18 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'editbets':
+		require_once(TOTE_CONTROLLERDIR . 'editbets.inc.php');
+		display_editbets((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['u']) ? null : $_GET['u']));
+		break;
+
+
+	case 'savebets':
+		require_once(TOTE_CONTROLLERDIR . 'savebets.inc.php');
+		display_savebets((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['u']) ? null : $_POST['u']));
+		break;
+
+
 	case 'update':
 		require_once(TOTE_CONTROLLERDIR . 'update.inc.php');
 		break;

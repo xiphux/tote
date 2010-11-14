@@ -55,8 +55,15 @@ Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.u
 {foreach from=$record item=entrant}
 
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
-
-<td>{if $entrant.user.first_name}{$entrant.user.first_name} {$entrant.user.last_name}{else}{$entrant.user.username}{/if}</td>
+<td>
+{if $user.admin}
+<a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}">
+{/if}
+{if $entrant.user.first_name}{$entrant.user.first_name} {$entrant.user.last_name}{else}{$entrant.user.username}{/if}
+{if $user.admin}
+</a>
+{/if}
+</td>
 
 <td>{$entrant.wins}</td>
 <td>{$entrant.losses}</td>
