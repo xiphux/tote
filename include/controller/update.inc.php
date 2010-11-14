@@ -113,13 +113,13 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 	$team1id = get_team_id($team1);
 	if (empty($team1id)) {
-		echo "error: Couldn't locate " . $team1 . "<br />";
+		echo "error: Couldn't locate " . $team1 . "<br />\n";
 		return;
 	}
 
 	$team2id = get_team_id($team2);
 	if (empty($team2id)) {
-		echo "error: Couldn't locate " . $team2 . "<br />";
+		echo "error: Couldn't locate " . $team2 . "<br />\n";
 		return;
 	}
 
@@ -135,7 +135,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 	$gameobj = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
 	if (!$gameobj) {
-		echo "error: Couldn't locate " . $team1 . " vs " . $team2 . " for week " . $week . "<br />";
+		echo "error: Couldn't locate " . $team1 . " vs " . $team2 . " for week " . $week . "<br />\n";
 		return;
 	}
 
@@ -160,12 +160,12 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		$awayid = $team1id;
 		$awayscore = $team1score;
 	} else {
-		echo 'error during update<br />';
+		echo "error during update<br />\n";
 		return;
 	}
 
 	if (!isset($gameobj['home_score']) || !isset($gameobj['away_score']) || ($gameobj['home_score'] != $homescore) || ($gameobj['away_score'] != $awayscore)) {
-		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . '<br />';
+		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . "<br />\n";
 		$games->update(
 			array('_id' => $gameobj['_id']),
 			array('$set' => array(
@@ -174,7 +174,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 			))
 		);
 	} else {
-		echo 'no update necessary, scores up to date<br />';
+		echo "no update necessary, scores up to date<br />\n";
 	}
 }
 
@@ -189,13 +189,13 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 	$homeid = get_team_id($home);
 	if (empty($homeid)) {
-		echo "error: Couldn't locate " . $home . "<br />";
+		echo "error: Couldn't locate " . $home . "<br />\n";
 		return;
 	}
 
 	$awayid = get_team_id($away);
 	if (empty($awayid)) {
-		echo "error: Couldn't locate " . $away . "<br />";
+		echo "error: Couldn't locate " . $away . "<br />\n";
 		return;
 	}
 
@@ -209,7 +209,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 	if (!$gameobj) {
 		if ($season && $week && $homeid && $awayid && $start) {
 			// add new game
-			echo 'adding game to database<br />';
+			echo "adding game to database<br />\n";
 			$data = array(
 				'season' => $season,
 				'week' => (int)$week,
@@ -219,7 +219,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			);
 			//$games->insert($data);
 		} else {
-			echo "error: couldn't locate game but don't have enough information to add it to database<br />";
+			echo "error: couldn't locate game but don't have enough information to add it to database<br />\n";
 		}
 		return;
 	}
@@ -232,7 +232,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			$st->setTimezone(new DateTimeZone('America/New_York'));
 			echo $st->format('D M j, Y g:i a T');
 		}
-		echo ' to ' . $newstart->format('D M j, Y g:i a T') . '<br />';
+		echo ' to ' . $newstart->format('D M j, Y g:i a T') . "<br />\n";
 		$games->update(
 			array('_id' => $gameobj['_id']),
 			array('$set' => array(
@@ -240,7 +240,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			))
 		);
 	} else {
-		echo 'no update necessary, scheduled start up to date<br />';
+		echo "no update necessary, scheduled start up to date<br />\n";
 	}
 }
 
@@ -267,7 +267,7 @@ $dom = new DOMDocument();
 
 $xpath = new DOMXPath($dom);
 
-echo '<p><strong>Scraping scores and schedule from ' . $url . '...</strong></p>';
+echo '<p><strong>Scraping scores and schedule from ' . $url . "...</strong></p>\n";
 
 $headers = $xpath->evaluate('/html/body//h1');
 
@@ -284,9 +284,9 @@ for ($i = 0; $i < $headers->length; $i++)
 }
 
 if (!$season) {
-	echo "<p>Error: couldn't determine season</p>";
+	echo "<p>Error: couldn't determine season</p>\n";
 } else {
-	echo "<p><strong>Updating " . $season . " season...</strong></p>";
+	echo "<p><strong>Updating " . $season . " season...</strong></p>\n";
 	$tables = $xpath->evaluate('/html/body//table[@class="tablehead"]');
 
 	for ($i = 0; $i < $tables->length; $i++) {
@@ -305,7 +305,7 @@ if (!$season) {
 				// header of the table defining the week
 				if (preg_match('/Week ([0-9]+)/', $row->textContent, $regs)) {
 					$week = $regs[1];
-					echo '<strong>Updating week ' . $week . '...</strong><br />';
+					echo '<strong>Updating week ' . $week . "...</strong><br />\n";
 				} else {
 					break;
 				}
@@ -361,7 +361,7 @@ $raw = load_page($url);
 $dom = new DOMDocument();
 @$dom->loadHTML($raw);
 
-echo '<p><strong>Checking ' . $url . ' for more up to date scores...</strong></p>';
+echo '<p><strong>Checking ' . $url . " for more up to date scores...</strong></p>\n";
 
 $gms = $dom->getElementsByTagName('gms');
 
@@ -371,7 +371,7 @@ for ($i = 0; $i < $gms->length; $i++) {
 	$season = $gmnode->attributes->getNamedItem('y')->value;
 	$week = $gmnode->attributes->getNamedItem('w')->value;
 
-	echo "<p><strong>Updating " . $season . " week " . $week . " ...</strong></p>";
+	echo "<p><strong>Updating " . $season . " week " . $week . " ...</strong></p>\n";
 
 	echo "<p>";
 	for ($j = 0; $j < $gmnode->childNodes->length; $j++) {
@@ -392,14 +392,14 @@ for ($i = 0; $i < $gms->length; $i++) {
 			echo "... ";
 			update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
 		} else if ($quarter == 'P') {
-			echo "Updating " . $visitor . " @ " . $home  . "... not started<br />";
+			echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";
 		} else if ($quarter == 'H') {
-			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently halftime<br />";
+			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently halftime<br />\n";
 		} else {
 			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently quarter " . $quarter;
 			if ((int)$quarter > 4)
 				echo " (overtime)";
-			echo "<br />";
+			echo "<br />\n";
 		}
 	}
 	echo "</p>";
