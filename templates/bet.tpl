@@ -31,7 +31,7 @@ Games for week {$week}:
     {foreach from=$games item=game}
       <tr class="{cycle values=light,dark} {if $game.start->sec < $smarty.now}gamestarted{/if}">
         <td>{$game.away_team.abbreviation} {$game.away_score} @ {$game.home_team.abbreviation} {$game.home_score}</td>
-	<td>{$game.start->sec|date_format:"%b %e, %Y %l:%M %p"}</td>
+	<td>{$game.localstart->format('D M j, Y g:i a T')}</td>
       </tr>
     {/foreach}
   </tbody>

@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('America/New_York');
+
 function team_to_abbr($team)
 {
 	switch ($team) {
@@ -182,7 +184,10 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 {
 	global $db, $tote_conf;
 
-	echo 'Updating ' . $away . ' @ ' . $home . ' at ' . strftime('%c', $start) . '... ';
+	$newstart = new DateTime('@' . $start);
+	$newstart->setTimezone(new DateTimeZone('America/New_York'));
+
+	echo 'Updating ' . $away . ' @ ' . $home . ' at ' . $newstart->format('D M j, Y g:i a T') . '... ';
 
 	$homeid = get_team_id($home);
 	if (empty($homeid)) {
@@ -222,18 +227,20 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 	}
 
 	if ((!isset($gameobj['start'])) || ($gameobj['start']->sec != $start)) {
-		echo 'updating scheduled start';
-		if (isset($gameobj['start']))
-			echo ' from ' . strftime("%c", $gameobj['start']->sec);
-		echo ' to ' . strftime("%c", $start) . '<br />';
-		/*
+		echo 'updating start';
+		if (isset($gameobj['start'])) {
+			echo ' from ';
+			$st = new DateTime('@' . $gameobj['start']->sec);
+			$st->setTimezone(new DateTimeZone('America/New_York'));
+			echo $st->format('D M j, Y g:i a T');
+		}
+		echo ' to ' . $newstart->format('D M j, Y g:i a T') . '<br />';
 		$games->update(
 			array('_id' => $gameobj['_id']),
 			array('$set' => array(
 				'start' => new MongoDate($start)
 			))
 		);
-		*/
 	} else {
 		echo 'no update necessary, scheduled start up to date<br />';
 	}
@@ -309,8 +316,11 @@ if (!$season) {
 			} else if (preg_match('/[A-Z]{3}, ([A-Z]{3} [0-9]+)/', $row->firstChild->textContent, $regs)) {
 
 					// header indicating the date of games
-					$tmp = strtotime($regs[1]);
+					$tmp = DateTime::createFromFormat('M j Y', strtoupper($regs[1]) . ' ' . $season, new DateTimeZone('America/New_York'));
 					if ($tmp !== false) {
+						if ((int)($tmp->format('n')) < 8) {
+							$tmp->modify("+1 year");
+						}
 						$date = $tmp;
 					}
 
@@ -327,24 +337,12 @@ if (!$season) {
 
 					// game that's scheduled
 					$time = strip_tags($row->childNodes->item(2)->textContent);
-					$timestamp = strtotime($time);
-					if ($timestamp !== false) {
-						$year = date('Y', $date);
-						$month = date('n', $date);
-						if ($month < 8) {
-							// (pre)season starts in august,
-							// games before that must be next year
-							$year++;
+					if (preg_match('/^([0-9]+):([0-9]+) ([AP]M)$/', $time, $timeregs)) {
+						if (($timeregs[3] == 'PM') && ((int)$timeregs[1] < 12)) {
+							$timeregs[1] = (int)$timeregs[1] + 12;
 						}
-						$fulltimestamp = mktime(
-							date('H', $timestamp),
-							date('i', $timestamp),
-							date('s', $timestamp),
-							$month,
-							date('j', $date),
-							$year
-						);
-						update_scheduled_game($season, $week, team_to_abbr($regs[1]), team_to_abbr($regs[2]), $fulltimestamp);
+						$date->setTime((int)$timeregs[1], (int)$timeregs[2]);
+						update_scheduled_game($season, $week, team_to_abbr($regs[1]), team_to_abbr($regs[2]), $date->getTimestamp());
 					}
 
 

@@ -19,7 +19,7 @@ $db = $connection->selectDB($tote_conf['database']);
 require_once($tote_conf['smarty'] . 'Smarty.class.php');
 $tpl = new Smarty();
 
-date_default_timezone_set('America/New_York');
+date_default_timezone_set('UTC');
 
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	case 'bet':

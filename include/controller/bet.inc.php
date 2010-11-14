@@ -74,6 +74,9 @@ function display_bet($poolID, $week)
 		$away = get_team($gameobj['away_team']);
 		$gameobj['home_team'] = $home;
 		$gameobj['away_team'] = $away;
+		$st = new DateTime('@' . $gameobj['start']->sec);
+		$st->setTimezone(new DateTimeZone('America/Chicago'));
+		$gameobj['localstart'] = $st;
 		$weekgames[] = $gameobj;
 		if ($gameobj['start']->sec > $now) {
 			$availableteams[(string)$home['_id']] = $home;
