@@ -22,53 +22,90 @@ $tpl = new Smarty();
 date_default_timezone_set('UTC');
 
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
+
 	case 'bet':
 		require_once(TOTE_CONTROLLERDIR . 'bet.inc.php');
 		display_bet((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['w']) ? null : $_GET['w']));
 		break;
+
+
 	case 'addbet':
 		require_once(TOTE_CONTROLLERDIR . 'addbet.inc.php');
 		display_addbet((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['w']) ? null : $_GET['w']), (empty($_GET['t']) ? null : $_GET['t']));
 		break;
+
+
 	case 'update':
 		require_once(TOTE_CONTROLLERDIR . 'update.inc.php');
 		break;
+
+
 	case 'login':
 		require_once(TOTE_CONTROLLERDIR . 'login.inc.php');
 		display_login();
 		break;
+
+
 	case 'finishlogin':
 		require_once(TOTE_CONTROLLERDIR . 'finishlogin.inc.php');
 		display_finishlogin((empty($_POST['username']) ? null : $_POST['username']), (empty($_POST['password']) ? null : $_POST['password']));
 		break;
+
+
 	case 'logout':
 		unset($_SESSION['user']);
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 		break;
+
+
+	case 'editprefs':
+		require_once(TOTE_CONTROLLERDIR . 'editprefs.inc.php');
+		display_editprefs();
+		break;
+
+
+	case 'saveprefs':
+		require_once(TOTE_CONTROLLERDIR . 'saveprefs.inc.php');
+		display_saveprefs((empty($_POST['timezone']) ? null : $_POST['timezone']));
+		break;
+
+
 	case 'changepass':
 		require_once(TOTE_CONTROLLERDIR . 'changepass.inc.php');
 		display_changepass();
 		break;
+
+
 	case 'finishchangepass':
 		require_once(TOTE_CONTROLLERDIR . 'finishchangepass.inc.php');
 		display_finishchangepass((empty($_POST['oldpassword']) ? null : $_POST['oldpassword']), (empty($_POST['newpassword']) ? null : $_POST['newpassword']), (empty($_POST['newpassword2']) ? null : $_POST['newpassword2']));
 		break;
+
+
 	case 'recoverpass':
 		require_once(TOTE_CONTROLLERDIR . 'recoverpass.inc.php');
 		display_recoverpass();
 		break;
+
+
 	case 'finishrecoverpass':
 		require_once(TOTE_CONTROLLERDIR . 'finishrecoverpass.inc.php');
 		display_finishrecoverpass((empty($_POST['email']) ? null : $_POST['email']));
 		break;
+
+
 	case 'resetpass':
 		require_once(TOTE_CONTROLLERDIR . 'resetpass.inc.php');
 		display_resetpass((empty($_GET['k']) ? null : $_GET['k']));
 		break;
+
+
 	case 'finishresetpass':
 		require_once(TOTE_CONTROLLERDIR . 'finishresetpass.inc.php');
 		display_finishresetpass((empty($_POST['key']) ? null : $_POST['key']), (empty($_POST['newpassword']) ? null : $_POST['newpassword']), (empty($_POST['newpassword2']) ? null : $_POST['newpassword2']));
 		break;
+
+
 	default:
 		header("Cache-Control: no-cache, must-revalidate");
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");

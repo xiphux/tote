@@ -40,7 +40,7 @@ function display_bet($poolID, $week)
 		return;
 	}
 
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username'));
+	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'timezone'));
 	if (!$user) {
 		echo "User not found";
 		return;
@@ -75,7 +75,13 @@ function display_bet($poolID, $week)
 		$gameobj['home_team'] = $home;
 		$gameobj['away_team'] = $away;
 		$st = new DateTime('@' . $gameobj['start']->sec);
-		$st->setTimezone(new DateTimeZone('America/Chicago'));
+		$st->setTimezone(new DateTimeZone('America/New_York'));
+		if (!empty($user['timezone'])) {
+			try {
+				$st->setTimezone(new DateTimeZone($user['timezone']));
+			} catch (Exception $e) {
+			}
+		}
 		$gameobj['localstart'] = $st;
 		$weekgames[] = $gameobj;
 		if ($gameobj['start']->sec > $now) {
