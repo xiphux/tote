@@ -19,13 +19,16 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 	}
 
 	$errors = array();
-	if ($reminder == '1') {
-		if (empty($remindertime)) {
-			$errors[] = 'A reminder time is required';
-		} else if (!is_numeric($remindertime)) {
-			$errors[] = 'Reminder time must be a number';
-		} else if ((int)$remindertime < 5) {
-			$errors[] = 'Reminder time must be 5 minutes or greater';
+
+	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
+		if ($reminder == '1') {
+			if (empty($remindertime)) {
+				$errors[] = 'A reminder time is required';
+			} else if (!is_numeric($remindertime)) {
+				$errors[] = 'Reminder time must be a number';
+			} else if ((int)$remindertime < 5) {
+				$errors[] = 'Reminder time must be 5 minutes or greater';
+			}
 		}
 	}
 
@@ -43,12 +46,14 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 			$data['$unset']['timezone'] = 1;
 		}
 
-		if ($reminder) {
-			$data['$set']['reminder'] = true;
-			$data['$set']['remindertime'] = (int)$remindertime * 60;
-		} else {
-			$data['$unset']['reminder'] = 1;
-			$data['$unset']['lastreminder'] = 1;
+		if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
+			if ($reminder) {
+				$data['$set']['reminder'] = true;
+				$data['$set']['remindertime'] = (int)$remindertime * 60;
+			} else {
+				$data['$unset']['reminder'] = 1;
+				$data['$unset']['lastreminder'] = 1;
+			}
 		}
 
 		$users->update(array('_id' => $userobj['_id']), $data);

@@ -26,6 +26,9 @@ function display_editprefs()
 	$tpl->assign('defaulttimezone', 'America/New_York');
 	$tpl->assign('defaultremindertime', 60);
 
+	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true))
+		$tpl->assign('enablereminders', true);
+
 	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(DateTimeZone::AMERICA));
 
 	$tpl->display('editprefs.tpl');

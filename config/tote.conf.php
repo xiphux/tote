@@ -11,3 +11,5 @@ $tote_conf['smarty'] = 'smarty/';
 $tote_conf['sitename'] = 'tote';
 
 $tote_conf['fromemail'] = 'xiphux@gmail.com';
+
+$tote_conf['reminders'] = false;
