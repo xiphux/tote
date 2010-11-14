@@ -76,12 +76,22 @@ function display_savebets($poolID, $entrant)
 	$lastgame = $games->find(array('season' => (int)$pool['season']), array('week'))->sort(array('week' => -1))->getNext();
 	$weeks = $lastgame['week'];
 
+	$actions = array();
+
 	for ($i = 1; $i <= $weeks; $i++) {
 		if (empty($_POST['week' . $i])) {
 			// no bet for the week
 			for ($j = 0; $j < count($userentry['bets']); $j++) {
 				if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
 					// delete existing bet
+					$actions[] = array(
+						'action' => 'edit',
+						'user' => $entrantobj['_id'],
+						'admin' => $user['_id'],
+						'week' => $i,
+						'from_team' => $userentry['bets'][$j]['team'],
+						'time' => new MongoDate(time())
+					);
 					unset($userentry['bets'][$j]);
 					break;
 				}
@@ -93,6 +103,15 @@ function display_savebets($poolID, $entrant)
 				for ($j = 0; $j < count($userentry['bets']); $j++) {
 					if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
 						if ($_POST['week' . $i] != (string)$userentry['bets'][$j]['team']) {
+							$actions[] = array(
+								'action' => 'edit',
+								'user' => $entrantobj['_id'],
+								'admin' => $user['_id'],
+								'week' => $i,
+								'from_team' => $userentry['bets'][$j]['team'],
+								'to_team' => new MongoId($_POST['week' . $i]),
+								'time' => new MongoDate(time())
+							);
 							$userentry['bets'][$j]['team'] = new MongoId($_POST['week' . $i]);
 							$userentry['bets'][$j]['edited'] = new MongoDate(time());
 						}
@@ -104,6 +123,14 @@ function display_savebets($poolID, $entrant)
 
 			if (!$set) {
 				// new bet, add it
+				$actions[] = array(
+					'action' => 'edit',
+					'user' => $entrantobj['_id'],
+					'admin' => $user['_id'],
+					'week' => $i,
+					'to_team' => new MongoId($_POST['week' . $i]),
+					'time' => new MongoDate(time())
+				);
 				$userentry['bets'][] = array(
 					'week' => $i,
 					'team' => new MongoId($_POST['week' . $i]),
@@ -125,6 +152,12 @@ function display_savebets($poolID, $entrant)
 		array('_id' => $pool['_id']),
 		array(
 		'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets'])
+		)
+	);
+	$pools->update(
+		array('_id' => $pool['_id']),
+		array(
+			'$pushAll' => array('actions' => $actions)
 		)
 	);
 	
