@@ -166,7 +166,6 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 	if (!isset($gameobj['home_score']) || !isset($gameobj['away_score']) || ($gameobj['home_score'] != $homescore) || ($gameobj['away_score'] != $awayscore)) {
 		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . '<br />';
-		/*
 		$games->update(
 			array('_id' => $gameobj['_id']),
 			array('$set' => array(
@@ -174,7 +173,6 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 				'away_score' => (int)$awayscore
 			))
 		);
-		*/
 	} else {
 		echo 'no update necessary, scores up to date<br />';
 	}
