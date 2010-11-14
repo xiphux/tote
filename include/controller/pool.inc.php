@@ -104,19 +104,25 @@ function display_pool($poolID = null)
 	
 			$gameobj = get_game_by_team($poolobj['season'], $week, $bet['team']);
 
-			if ($gameobj && isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
-				$result = 0;
-				$gamespread = $gameobj['home_score'] - $gameobj['away_score'];
-				if ($gamespread > 0)
-					$result = 1;
-				else if ($gamespread < 0)
-					$result = -1;
-				if ($gameobj['away_team'] == $bet['team'])
-					$result *= -1;
-				$gamespread = abs($gamespread);
+			if ($gameobj) {
+				if (isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
+					$result = 0;
+					$gamespread = $gameobj['home_score'] - $gameobj['away_score'];
+					if ($gamespread > 0)
+						$result = 1;
+					else if ($gamespread < 0)
+						$result = -1;
+					if ($gameobj['away_team'] == $bet['team'])
+						$result *= -1;
+					$gamespread = abs($gamespread);
 
-				$bets[$week]['result'] = $result;
-				$bets[$week]['spread'] = $gamespread;
+					$bets[$week]['result'] = $result;
+					$bets[$week]['spread'] = $gamespread;
+				}
+
+				$gameobj['home_team'] = get_team($gameobj['home_team']);
+				$gameobj['away_team'] = get_team($gameobj['away_team']);
+				$bets[$week]['game'] = $gameobj;
 			}
 		
 			// also load team object
