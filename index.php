@@ -11,9 +11,9 @@ require_once('config/tote.conf.php');
 
 $connection = null;
 if (!empty($tote_conf['connectionString']))
-	$connection = new Mongo($tote_conf['connectionString']);
+	$connection = new Mongo($tote_conf['connectionString'], array('persist' => 'tote'));
 else
-	$connection = new Mongo();
+	$connection = new Mongo('mongodb://localhost:27017', array('persist' => 'tote'));
 $db = $connection->selectDB($tote_conf['database']);
 
 require_once($tote_conf['smarty'] . 'Smarty.class.php');
