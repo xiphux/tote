@@ -3,9 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title>Tote</title>
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/pool.css" />
-  <link rel="stylesheet" href="css/bet.css" />
+  <link rel="stylesheet" href="css/tote.css" />
 </head>
 
 <body>

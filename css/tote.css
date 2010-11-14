@@ -1,0 +1,75 @@
+table {
+	border: 1px solid #d9d8d1;
+	border-collapse: collapse;
+}
+
+table .dark {
+	background-color: #f6f6f0;
+}
+
+table .dark:hover {
+	background-color: #edece6;
+}
+
+table .light:hover {
+	background-color: #edece6;
+}
+
+table th {
+	border: 1px solid #d9d8d1;
+	background-color: #d9d8d1;
+}
+
+table td {
+	border: 1px solid #d9d8d1;
+}
+
+.clear {
+	clear: both;
+}
+
+.scoreTable {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0px auto;
+}
+
+.scoreTable tbody {
+	text-align: center;
+	font-size: smaller;
+}
+
+.win {
+	color: blue;
+}
+
+.loss {
+	color: red;
+}
+
+tr.self {
+	background-color: #dcdbd5;
+}
+
+tr.self:hover {
+	background-color: #dcdbd5;
+}
+
+div.poolInfoDiv {
+	width: 60%;
+	float: left;
+}
+
+div.userOptsDiv {
+	width: 30%;
+	float: right;
+	text-align: right;
+}
+
+.gamestarted {
+	color: red;
+}
+
+.betTable tbody {
+	text-align: center;
+}
+
