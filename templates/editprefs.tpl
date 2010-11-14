@@ -14,11 +14,16 @@
 <label for="timezone">Timezone:</label>
 <select name="timezone">
 {foreach from=$availabletimezones item=tz}
-<option value="{$tz}" {if ($tz == $usertimezone) || (!$usertimezone && ($tz == $defaulttimezone))}selected="selected"{/if}>{$tz|replace:'_':' '}</option>
+<option value="{$tz}" {if ($tz == $user.timezone) || (!$user.timezone && ($tz == $defaulttimezone))}selected="selected"{/if}>{$tz|replace:'_':' '}</option>
 {/foreach}
 </select>
 </div>
-
+<br />
+<div>
+<input type="checkbox" name="reminder" value="1" {if $user.reminder}checked="checked"{/if} /><label for="reminder">Email me a reminder before the first game of the week</label><br />
+<label for="remindertime">How many minutes beforehand:</label><input type="text" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
+</div>
+<br />
 <div>
 <input type="submit" value="Save" />
 </div>

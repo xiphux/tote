@@ -8,6 +8,7 @@ define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
 
 require_once('config/tote.conf.php');
+require_once($tote_conf['smarty'] . 'Smarty.class.php');
 
 $connection = null;
 if (!empty($tote_conf['connectionString']))
@@ -66,7 +67,11 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	case 'saveprefs':
 		require_once(TOTE_CONTROLLERDIR . 'saveprefs.inc.php');
-		display_saveprefs((empty($_POST['timezone']) ? null : $_POST['timezone']));
+		display_saveprefs(
+			(empty($_POST['timezone']) ? null : $_POST['timezone']),
+			(empty($_POST['reminder']) ? false : $_POST['reminder']),
+			(empty($_POST['remindertime']) ? null : $_POST['remindertime'])
+		);
 		break;
 
 

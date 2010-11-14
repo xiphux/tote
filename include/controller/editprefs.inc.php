@@ -11,17 +11,20 @@ function display_editprefs()
 
 	$usercol = 'users';
 	$users = $db->selectCollection($usercol);
-	$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
+	$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone', 'reminder', 'remindertime'));
 
 	if (!$userobj) {
 		echo "User not found";
 		return;
 	}
 
-	if (!empty($userobj['timezone']))
-		$tpl->assign('usertimezone', $userobj['timezone']);
+	if (!empty($userobj['remindertime']))
+		$userobj['remindertime'] = (int)($userobj['remindertime'] / 60);
+
+	$tpl->assign('user', $userobj);
 
 	$tpl->assign('defaulttimezone', 'America/New_York');
+	$tpl->assign('defaultremindertime', 60);
 
 	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(DateTimeZone::AMERICA));
 
