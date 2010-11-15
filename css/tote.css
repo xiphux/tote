@@ -59,10 +59,18 @@ div.poolInfoDiv {
 	float: left;
 }
 
-div.userOptsDiv {
+div.userOpts {
 	width: 30%;
 	float: right;
 	text-align: right;
+}
+
+div.userOpts table {
+	float: right;
+}
+
+div.userOpts table td {
+	border: 0px;
 }
 
 .gamestarted {

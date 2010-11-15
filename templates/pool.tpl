@@ -22,18 +22,24 @@ Entry fee: ${$pool.fee}
 {/if}
 </div>
 
-<div class="userOptsDiv">
+<div class="userOpts">
+<table>
 {if $user}
-Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}<br />
+<thead>
+  <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
+</thead>
+<tbody>
 {if $user.admin}
-<a href="index.php?a=update">Update scores</a><br />
+<tr><td><a href="index.php?a=update">Update scores</a></td></tr>
 {/if}
-<a href="index.php?a=editprefs">Edit preferences</a></br />
-<a href="index.php?a=changepass">Change password</a><br />
-<a href="index.php?a=logout">Logout</a>
+<tr><td><a href="index.php?a=editprefs">Edit preferences</a></td></tr>
+<tr><td><a href="index.php?a=changepass">Change password</a></td></tr>
+<tr><td><a href="index.php?a=logout">Logout</a></td></tr>
 {else}
-<a href="index.php?a=login">Login</a>
+<tr><td><a href="index.php?a=login">Login</a></td></tr>
 {/if}
+</tbody>
+</table>
 </div>
 
 <div class="clear">&nbsp;</div>
