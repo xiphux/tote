@@ -53,6 +53,18 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'atom':
+		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
+		display_feed('atom', (empty($_GET['p']) ? null : $_GET['p']));
+		break;
+
+
+	case 'rss':
+		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
+		display_feed('rss', (empty($_GET['p']) ? null : $_GET['p']));
+		break;
+
+
 	case 'login':
 		require_once(TOTE_CONTROLLERDIR . 'login.inc.php');
 		display_login();
