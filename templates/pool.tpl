@@ -1,4 +1,4 @@
-{include file='header.tpl'}
+{include file='header.tpl' poolinfo=$pool}
 
 <div class="poolInfoDiv">
 {$pool.name} [{$pool.season}-{$pool.season+1}]<br />
@@ -98,5 +98,9 @@ No Pick
 </tbody>
 
 </table>
+
+<div class="poolIcons">
+<a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}"><img src="images/feed-icon-28x28.png" width="28" height="28" /></a>
+</div>
 
 {include file='footer.tpl'}

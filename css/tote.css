@@ -81,3 +81,7 @@ div.userOpts table td {
 	text-align: center;
 }
 
+.poolIcons {
+	text-align: right;
+	padding: 8px 0px;
+}
