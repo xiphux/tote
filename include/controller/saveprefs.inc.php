@@ -26,8 +26,8 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 				$errors[] = 'A reminder time is required';
 			} else if (!is_numeric($remindertime)) {
 				$errors[] = 'Reminder time must be a number';
-			} else if ((int)$remindertime < 5) {
-				$errors[] = 'Reminder time must be 5 minutes or greater';
+			} else if ((int)$remindertime < 15) {
+				$errors[] = 'Reminder time must be 15 minutes or greater';
 			}
 		}
 	}
