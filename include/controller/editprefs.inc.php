@@ -29,7 +29,7 @@ function display_editprefs()
 	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true))
 		$tpl->assign('enablereminders', true);
 
-	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(DateTimeZone::AMERICA));
+	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(2));
 
 	$tpl->display('editprefs.tpl');
 

@@ -314,7 +314,7 @@ if (!$season) {
 			} else if (preg_match('/[A-Z]{3}, ([A-Z]{3} [0-9]+)/', $row->firstChild->textContent, $regs)) {
 
 					// header indicating the date of games
-					$tmp = DateTime::createFromFormat('M j Y', strtoupper($regs[1]) . ' ' . $season, new DateTimeZone('America/New_York'));
+					$tmp = new DateTime(strtoupper($regs[1]) . ' ' . $season, new DateTimeZone('America/New_York'));
 					if ($tmp !== false) {
 						if ((int)($tmp->format('n')) < 8) {
 							$tmp->modify("+1 year");
@@ -340,7 +340,7 @@ if (!$season) {
 							$timeregs[1] = (int)$timeregs[1] + 12;
 						}
 						$date->setTime((int)$timeregs[1], (int)$timeregs[2]);
-						update_scheduled_game($season, $week, team_to_abbr($regs[1]), team_to_abbr($regs[2]), $date->getTimestamp());
+						update_scheduled_game($season, $week, team_to_abbr($regs[1]), team_to_abbr($regs[2]), (int)$date->format("U"));
 					}
 
 
