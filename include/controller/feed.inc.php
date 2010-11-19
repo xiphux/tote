@@ -7,12 +7,25 @@ function display_feed($format, $poolID)
 {
 	global $db, $tote_conf, $tpl;
 
+	$usercol = 'users';
 	$poolcol = 'pools';
 	if (!empty($tote_conf['namespace'])) {
 		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
+		$usercol = $tote_conf['namespace'] . '.' . $usercol;
 	}
 
 	$pools = $db->selectCollection($poolcol);
+	$users = $db->selectCollection($usercol);
+
+	if (($format == 'html') && !isset($_SESSION['user'])) {
+		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		return;
+	}
+
+	$userobj = null;
+	if ($format == 'html') {
+		$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
+	}
 
 	$poolobj = null;
 
@@ -52,6 +65,13 @@ function display_feed($format, $poolID)
 
 			$sec = $action['time']->sec;
 			$action['time'] = new DateTime('@' . $sec);
+			if ($format == 'html') {
+				if ($userobj && !empty($userobj['timezone'])) {
+					$action['time']->setTimezone(new DateTimeZone($userobj['timezone']));
+				} else {
+					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
+				}
+			}
 			if ((!$updated) || ($updated->getTimestamp() < $sec))
 				$updated = $action['time'];
 
@@ -76,6 +96,8 @@ function display_feed($format, $poolID)
 	} else if ($format == 'rss') {
 		header('Content-type: text/xml; charset=UTF-8');
 		$tpl->display('rss.tpl');
+	} else if ($format == 'html') {
+		$tpl->display('history.tpl');
 	}
 
 }

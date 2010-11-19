@@ -1,3 +1,7 @@
+.center {
+	text-align: center;
+}
+
 table {
 	border: 1px solid #d9d8d1;
 	border-collapse: collapse;
@@ -84,4 +88,8 @@ div.userOpts table td {
 .poolIcons {
 	text-align: right;
 	padding: 8px 0px;
+}
+
+.historyTable td {
+	padding: 3px 3px;
 }

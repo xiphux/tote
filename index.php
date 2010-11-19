@@ -64,6 +64,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_feed('rss', (empty($_GET['p']) ? null : $_GET['p']));
 		break;
 
+	
+	case 'history':
+		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
+		display_feed('html', (empty($_GET['p']) ? null : $_GET['p']));
+		break;
+
 
 	case 'login':
 		require_once(TOTE_CONTROLLERDIR . 'login.inc.php');
