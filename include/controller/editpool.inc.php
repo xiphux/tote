@@ -21,7 +21,7 @@ function sort_users($a, $b)
 		}
 	}
 
-	return strcmp($aname, $bname);
+	return strcasecmp($aname, $bname);
 }
 
 function display_editpool($poolID)

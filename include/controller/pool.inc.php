@@ -92,11 +92,13 @@ function display_pool($poolID = null)
 			$entered = true;
 
 		$bets = array();
-		foreach ($entrant['bets'] as $bet) {
-			// remap bets indexed by week
-			$week = $bet['week'];
-			if (!empty($week))
-				$bets[(int)$week] = array('team' => $bet['team']);
+		if (!empty($entrant['bets'])) {
+			foreach ($entrant['bets'] as $bet) {
+				// remap bets indexed by week
+				$week = $bet['week'];
+				if (!empty($week))
+					$bets[(int)$week] = array('team' => $bet['team']);
+			}
 		}
 
 		foreach ($bets as $week => $bet) {

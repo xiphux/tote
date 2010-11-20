@@ -6,8 +6,12 @@
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
   <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
+  {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
+{elseif $source == 'editpool'}
+<script type="text/javascript" src="js/editpool.js"></script>
+{/if}
  {if $poolinfo}
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}" type="application/atom+xml" />
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (RSS)" href="{$SCRIPT_NAME}?a=rss&p={$pool._id}" type="application/rss+xml" />

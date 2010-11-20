@@ -99,13 +99,25 @@ div.userOpts table td {
 }
 
 div.userEditDiv {
-	width: 45%;
+	width: 40%;
 	float: left;
 }
 
 div.poolEditDiv {
-	width: 45%;
+	width: 40%;
 	float: right;
+}
+
+div.movementDiv {
+	height: 500px;
+	width: 19%;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+}
+
+div.movementDiv div {
+	margin-top: 100%;
 }
 
 div.availableUsers {
@@ -122,4 +134,20 @@ div.poolUsers {
 
 div.userListItem {
 	border: 1px solid #d9d8d1;
+}
+
+div.userListItem table {
+	width: 100%;
+}
+
+div.userListItem table td.checkbox {
+	width: 1%;
+}
+
+div.userListItem table td.alert {
+	text-align: right;
+}
+
+div.selected {
+	background-color: yellow;
 }

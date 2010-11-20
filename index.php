@@ -59,6 +59,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'ajaxeditpool':
+		require_once(TOTE_CONTROLLERDIR . 'ajaxeditpool.inc.php');
+		display_ajaxeditpool((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['m']) ? null : $_POST['m']), (empty($_POST['u']) ? null : $_POST['u']));
+		break;
+
+
 	case 'atom':
 		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
 		display_feed('atom', (empty($_GET['p']) ? null : $_GET['p']));

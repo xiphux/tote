@@ -1,4 +1,4 @@
-{include file='header.tpl' poolinfo=$pool}
+{include file='header.tpl' poolinfo=$pool source='pool'}
 
 <div class="poolInfoDiv">
 {$pool.name} [{$pool.season}-{$pool.season+1}]<br />
