@@ -91,11 +91,13 @@ function display_bet($poolID, $week)
 	}
 
 	$bets = array();
-	foreach ($userentry['bets'] as $bet) {
-		// Don't allow teams player already bet on
-		$team = get_team($bet['team']);
-		$bets[(int)$bet['week']] = $team;
-		unset($availableteams[(string)$team['_id']]);
+	if (!empty($userentry['bets'])) {
+		foreach ($userentry['bets'] as $bet) {
+			// Don't allow teams player already bet on
+			$team = get_team($bet['team']);
+			$bets[(int)$bet['week']] = $team;
+			unset($availableteams[(string)$team['_id']]);
+		}
 	}
 
 	uasort($availableteams, 'sort_teams');
