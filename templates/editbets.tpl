@@ -6,9 +6,9 @@
 <table>
 {foreach from=$bets key=week item=bet}
 <tr>
-<td><label for="week{$week}">Week {$week}:</label></td>
+<td><label for="week[{$week}]">Week {$week}:</label></td>
 <td>
-<select name="week{$week}">
+<select name="week[{$week}]">
 <option value="">No bet</option>
 {foreach from=$teams item=team}
 <option value="{$team._id}" {if $team._id == $bet}selected="selected"{/if}>{$team.home} {$team.team}</option>

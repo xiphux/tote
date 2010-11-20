@@ -5,7 +5,7 @@ function sort_bets($a, $b)
 	return ($a['week'] > $b['week'] ? 1 : -1);
 }
 
-function display_savebets($poolID, $entrant)
+function display_savebets($poolID, $entrant, $weekbets)
 {
 	global $db, $tote_conf, $tpl;
 
@@ -79,7 +79,7 @@ function display_savebets($poolID, $entrant)
 	$actions = array();
 
 	for ($i = 1; $i <= $weeks; $i++) {
-		if (empty($_POST['week' . $i])) {
+		if (empty($weekbets[$i])) {
 			// no bet for the week
 			for ($j = 0; $j < count($userentry['bets']); $j++) {
 				if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
@@ -102,17 +102,17 @@ function display_savebets($poolID, $entrant)
 			if (isset($userentry['bets'])) {
 				for ($j = 0; $j < count($userentry['bets']); $j++) {
 					if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
-						if ($_POST['week' . $i] != (string)$userentry['bets'][$j]['team']) {
+						if ($weekbets[$i] != (string)$userentry['bets'][$j]['team']) {
 							$actions[] = array(
 								'action' => 'edit',
 								'user' => $entrantobj['_id'],
 								'admin' => $user['_id'],
 								'week' => $i,
 								'from_team' => $userentry['bets'][$j]['team'],
-								'to_team' => new MongoId($_POST['week' . $i]),
+								'to_team' => new MongoId($weekbets[$i]),
 								'time' => new MongoDate(time())
 							);
-							$userentry['bets'][$j]['team'] = new MongoId($_POST['week' . $i]);
+							$userentry['bets'][$j]['team'] = new MongoId($weekbets[$i]);
 							$userentry['bets'][$j]['edited'] = new MongoDate(time());
 						}
 						$set = true;
@@ -128,12 +128,12 @@ function display_savebets($poolID, $entrant)
 					'user' => $entrantobj['_id'],
 					'admin' => $user['_id'],
 					'week' => $i,
-					'to_team' => new MongoId($_POST['week' . $i]),
+					'to_team' => new MongoId($weekbets[$i]),
 					'time' => new MongoDate(time())
 				);
 				$userentry['bets'][] = array(
 					'week' => $i,
-					'team' => new MongoId($_POST['week' . $i]),
+					'team' => new MongoId($weekbets[$i]),
 					'edited' => new MongoDate(time())
 				);
 			}

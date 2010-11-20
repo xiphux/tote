@@ -44,7 +44,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	case 'savebets':
 		require_once(TOTE_CONTROLLERDIR . 'savebets.inc.php');
-		display_savebets((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['u']) ? null : $_POST['u']));
+		display_savebets((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['u']) ? null : $_POST['u']), (empty($_POST['week']) ? null : $_POST['week']));
 		break;
 
 
