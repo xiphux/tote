@@ -32,7 +32,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	case 'addbet':
 		require_once(TOTE_CONTROLLERDIR . 'addbet.inc.php');
-		display_addbet((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['w']) ? null : $_GET['w']), (empty($_GET['t']) ? null : $_GET['t']));
+		display_addbet((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['w']) ? null : $_POST['w']), (empty($_POST['t']) ? null : $_POST['t']));
 		break;
 
 

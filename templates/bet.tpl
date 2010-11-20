@@ -39,7 +39,7 @@ Games for week {$week}:
 </p>
 
 <p>
-<form action="index.php?a=addbet" method="get">
+<form action="index.php?a=addbet" method="post">
 <label for="t">Bet on week {$week}:</label>
 <select name="t">
 <option value="">Choose a team...</option>
@@ -49,7 +49,6 @@ Games for week {$week}:
 </select>
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="w" value="{$week}" />
-<input type="hidden" name="a" value="addbet" />
 <input type="submit" value="Bet" />
 </form>
 </p>
