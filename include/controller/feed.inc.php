@@ -72,7 +72,7 @@ function display_feed($format, $poolID)
 					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
 				}
 			}
-			if ((!$updated) || ($updated->getTimestamp() < $sec))
+			if ((!$updated) || ((int)$updated->format('U') < $sec))
 				$updated = $action['time'];
 
 			$actions[$sec][] = $action;
