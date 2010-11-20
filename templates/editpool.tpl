@@ -33,8 +33,6 @@ Available users:
   </div>
   {/foreach}
  </div>
- <div><a href="{$SCRIPT_NAME}?a=newuser">Add a new user</a>
- </div>
 </div>
 
 <div class="movementDiv">
