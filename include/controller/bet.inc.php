@@ -64,6 +64,16 @@ function display_bet($poolID, $week)
 		return;
 	}
 
+	if (!empty($userentry['bets'])) {
+		foreach ($userentry['bets'] as $bet) {
+			if (($bet['week'] == $week) && (!empty($bet['team']))) {
+				$prevbet = get_team($bet['team']);
+				echo 'You already bet on the ' . $prevbet['home'] . ' ' . $prevbet['team'] . ' for week ' . $week;
+				return;
+			}
+		}
+	}
+
 	$gameobjs = $games->find(array('season' => (int)$pool['season'], 'week' => (int)$week), array('home_team', 'away_team', 'home_score', 'away_score', 'start'))->sort(array('start' => 1));
 	$availableteams = array();
 	$weekgames = array();
