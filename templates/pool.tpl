@@ -1,8 +1,7 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
 <div class="poolInfoDiv">
-{$pool.name} [{$pool.season}-{$pool.season+1}]<br />
-Entry fee: ${$pool.fee}
+{$pool.name} [{$pool.season}-{$pool.season+1}]
 {if $user && $entered && $poolopen}
 <p>
 <form action="index.php" method="get">
