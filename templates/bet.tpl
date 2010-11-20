@@ -3,7 +3,7 @@
 {if $bets}
 <p>
 Your other bets:
-<table class="betTable">
+<table class="betTable displayTable">
   <thead>
     <th>Week</th>
     <th>Team</th>
@@ -22,7 +22,7 @@ Your other bets:
 
 <p>
 Games for week {$week}:
-<table class="betTable">
+<table class="betTable displayTable">
   <thead>
     <th>Teams</th>
     <th>Game time</th>

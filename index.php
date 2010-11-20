@@ -52,6 +52,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		require_once(TOTE_CONTROLLERDIR . 'update.inc.php');
 		break;
 
+	
+	case 'editpool':
+		require_once(TOTE_CONTROLLERDIR . 'editpool.inc.php');
+		display_editpool((empty($_GET['p']) ? null : $_GET['p']));
+		break;
+
 
 	case 'atom':
 		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');

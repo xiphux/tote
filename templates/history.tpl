@@ -4,7 +4,7 @@
 {$pool.name} [{$pool.season}-{$pool.season+1}] History
 </div>
 
-<table class="historyTable">
+<table class="historyTable displayTable">
 <thead>
 <th>Timestamp</th>
 <th>User</th>
