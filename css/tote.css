@@ -108,6 +108,17 @@ div.poolEditDiv {
 	float: right;
 }
 
+div.poolEditToolbar div.left {
+	width: 40%;
+	float: left;
+}
+
+div.poolEditToolbar div.right {
+	width: 40%;
+	float: right;
+	text-align: right;
+}
+
 div.movementDiv {
 	height: 500px;
 	width: 19%;

@@ -65,6 +65,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'setpoolname':
+		require_once(TOTE_CONTROLLERDIR . 'setpoolname.inc.php');
+		display_setpoolname((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['poolname']) ? null : $_POST['poolname']));
+		break;
+
+
 	case 'atom':
 		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
 		display_feed('atom', (empty($_GET['p']) ? null : $_GET['p']));

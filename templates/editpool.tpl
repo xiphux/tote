@@ -1,10 +1,20 @@
 {include file='header.tpl' source='editpool'}
 
-<div>
+<span style="display: none" id="poolID">{$pool._id}</span>
+
+<div class="poolEditToolbar">
+<div class="left">
 <a href="{$SCRIPT_NAME}?p={$pool._id}">Back</a>
 </div>
-
-<span style="display: none" id="poolID">{$pool._id}</span>
+<div class="right">
+<form action="{$SCRIPT_NAME}?a=setpoolname" method="post">
+<label for="poolname">Pool name:</label> <input type="text" name="poolname" value="{$pool.name}" /><input type="submit" value="Set" />
+<input type="hidden" name="p" value="{$pool._id}" />
+</form>
+</div>
+<div class="clear">
+</div>
+</div>
 
 <div class="userEditDiv">
 Available users:
