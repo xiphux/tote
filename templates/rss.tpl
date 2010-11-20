@@ -48,6 +48,22 @@
 	 ]]>
        </content:encoded>
        {/if}
+     {elseif $action.action == 'addentrant'}
+       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} added to pool</title>
+       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} added to pool</description>
+       <content:encoded>
+         <![CDATA[
+	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} added {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} to the pool.</p>
+	 ]]>
+       </content:encoded>
+     {elseif $action.action == 'removeentrant'}
+       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} removed from pool</title>
+       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} removed from pool</description>
+       <content:encoded>
+         <![CDATA[
+	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} removed {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} from the pool.</p>
+	 ]]>
+       </content:encoded>
      {/if}
    </item>
  {/foreach}

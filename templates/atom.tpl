@@ -54,6 +54,20 @@
 	 </div>
        </content>
        {/if}
+     {elseif $action.action == 'addentrant'}
+       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} added to pool</title>
+       <content type="xhtml">
+         <div xmlns="http://www.w3.org/1999/xhtml">
+	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} added {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} to the pool.</p>
+	 </div>
+       </content>
+     {elseif $action.action == 'removeentrant'}
+       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} removed from pool</title>
+       <content type="xhtml">
+         <div xmlns="http://www.w3.org/1999/xhtml">
+	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} removed {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} from the pool.</p>
+	 </div>
+       </content>
      {/if}
    </entry>
  {/foreach}

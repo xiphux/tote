@@ -19,7 +19,7 @@
   <td>{$action.time->format('r')}</td>
   <td>{if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}</td>
   <td>{if $action.admin}{if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if}{/if}</td>
-  <td class="center">{$action.week}</td>
+  <td class="center">{if $action.week && ($action.week > 0)}{$action.week}{/if}</td>
   <td>
   {if $action.action == 'bet'}
   Bet added: {$action.team.abbreviation}
@@ -31,6 +31,10 @@
     {elseif $action.to_team}
     Admin added bet on {$action.to_team.abbreviation}
     {/if}
+  {elseif $action.action == 'addentrant'}
+    Admin added user to pool
+  {elseif $action.action == 'removeentrant'}
+    Admin removed user from pool
   {/if}
   </td>
 </tr>

@@ -53,14 +53,30 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 
 	switch ($modification) {
 		case 'add':
+			$actions = array();
 			foreach ($modusers as $adduser) {
 				$pools->update(array('_id' => $pool['_id']), array('$push' => array('entries' => array('user' => new MongoId($adduser)))));
+				$actions[] = array(
+					'action' => 'addentrant',
+					'user' => new MongoId($adduser),
+					'admin' => $user['_id'],
+					'time' => new MongoDate(time())
+				);
 			}
+			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
 			break;
 		case 'remove':
+			$actions = array();
 			foreach ($modusers as $removeuser) {
 				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => new MongoId($removeuser)))));
+				$actions[] = array(
+					'action' => 'removeentrant',
+					'user' => new MongoId($removeuser),
+					'admin' => $user['_id'],
+					'time' => new MongoDate(time())
+				);
 			}
+			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
 			break;
 		default:
 			echo "Unknown modification";
