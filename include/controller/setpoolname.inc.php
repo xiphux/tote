@@ -46,6 +46,12 @@ function display_setpoolname($poolID, $poolname)
 		return;
 	}
 
+	$duplicate = $pools->findOne(array('name' => $poolname, 'season' => $pool['season'], '_id' => array('$ne' => $pool['_id'])), array('name', 'season'));
+	if (!empty($duplicate)) {
+		echo "There is already a pool with the name \"" . $poolname . "\" for this season";
+		return;
+	}
+
 	$pools->update(array('_id' => $pool['_id']), array('$set' => array('name' => $poolname)));
 
 	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editpool&p=' . $poolID);
