@@ -48,20 +48,24 @@ function display_feed($format, $poolID)
 			
 			if (!empty($action['user'])) {
 				$action['user'] = get_user($action['user']);
-				$action['user_name'] = $action['user']['username'];
-				if (!empty($action['user']['first_name'])) {
-					$action['user_name'] = $action['user']['first_name'];
-					if (!empty($action['user']['last_name']))
-						$action['user_name'] .= ' ' . $action['user']['last_name'];
+				if (!empty($action['user'])) {
+					$action['user_name'] = $action['user']['username'];
+					if (!empty($action['user']['first_name'])) {
+						$action['user_name'] = $action['user']['first_name'];
+						if (!empty($action['user']['last_name']))
+							$action['user_name'] .= ' ' . $action['user']['last_name'];
+					}
 				}
 			}
 			if (!empty($action['admin'])) {
 				$action['admin'] = get_user($action['admin']);
-				$action['admin_name'] = $action['admin']['username'];
-				if (!empty($action['admin']['first_name'])) {
-					$action['admin_name'] = $action['admin']['first_name'];
-					if (!empty($action['admin']['last_name']))
-						$action['admin_name'] .= ' ' . $action['admin']['last_name'];
+				if (!empty($action['admin'])) {
+					$action['admin_name'] = $action['admin']['username'];
+					if (!empty($action['admin']['first_name'])) {
+						$action['admin_name'] = $action['admin']['first_name'];
+						if (!empty($action['admin']['last_name']))
+							$action['admin_name'] .= ' ' . $action['admin']['last_name'];
+					}
 				}
 			}
 
