@@ -51,7 +51,7 @@ function display_editusers()
 		return;
 	}
 
-	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email'));
+	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'admin'));
 	$userarray = array();
 	foreach ($allusers as $u) {
 		$userarray[] = $u;
