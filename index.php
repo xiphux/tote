@@ -126,6 +126,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'deleteuser':
+		require_once(TOTE_CONTROLLERDIR . 'deleteuser.inc.php');
+		display_deleteuser((empty($_GET['u']) ? null : $_GET['u']));
+		break;
+
+
 	case 'login':
 		require_once(TOTE_CONTROLLERDIR . 'login.inc.php');
 		display_login();
