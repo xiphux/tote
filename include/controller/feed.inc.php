@@ -17,14 +17,16 @@ function display_feed($format, $poolID)
 	$pools = $db->selectCollection($poolcol);
 	$users = $db->selectCollection($usercol);
 
-	if (($format == 'html') && !isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
+	//if (($format == 'html') && !isset($_SESSION['user'])) {
+	//	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+	//	return;
+	//}
 
 	$userobj = null;
 	if ($format == 'html') {
-		$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
+		if (!empty($_SESSION['user'])) {
+			$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
+		}
 	}
 
 	$poolobj = null;
