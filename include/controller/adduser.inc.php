@@ -3,18 +3,13 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -22,6 +17,8 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	if (empty($user['admin'])) {
 		return redirect();
 	}
+
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$errors = array();
 	if (empty($username)) {

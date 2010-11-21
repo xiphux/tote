@@ -1,26 +1,23 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_controller.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_feed($format, $poolID)
 {
 	global $tpl;
 
-	$pools = get_controller(TOTE_COLLECTION_POOLS);
-	$users = get_controller(TOTE_COLLECTION_USERS);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
-	//if (($format == 'html') && !isset($_SESSION['user'])) {
-	//	return redirect();
-	//}
-
-	$userobj = null;
+	$user = null;
 	if ($format == 'html') {
-		if (!empty($_SESSION['user'])) {
-			$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
-		}
+		$user = user_logged_in();
+		//if (!$user) {
+		//	return redirect();
+		//}
 	}
 
 	$poolobj = null;
@@ -78,8 +75,8 @@ function display_feed($format, $poolID)
 			$sec = $action['time']->sec;
 			$action['time'] = new DateTime('@' . $sec);
 			if ($format == 'html') {
-				if ($userobj && !empty($userobj['timezone'])) {
-					$action['time']->setTimezone(new DateTimeZone($userobj['timezone']));
+				if ($user && !empty($user['timezone'])) {
+					$action['time']->setTimezone(new DateTimeZone($user['timezone']));
 				} else {
 					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
 				}

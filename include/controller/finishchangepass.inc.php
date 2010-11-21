@@ -3,12 +3,14 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
+	$user = user_logged_in();	
+	if (!$user) {
 		return redirect();
 	}
 
@@ -30,25 +32,19 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 
 		if ($newpassword == $newpassword2) {
 
-			$users = get_collection(TOTE_COLLECTION_USERS);
+			if (md5($user['salt'] . $user['username'] . md5($user['username'] . ':' . $oldpassword)) == $user['password']) {
+				$hashdata = generate_password_hash($user['username'], $newpassword);
+				$users = get_collection(TOTE_COLLECTION_USERS);
 
-			$userobj = $users->findOne(array('username' => $_SESSION['user']));
-
-			if ($userobj) {
-				if (md5($userobj['salt'] . $userobj['username'] . md5($userobj['username'] . ':' . $oldpassword)) == $userobj['password']) {
-					$hashdata = generate_password_hash($userobj['username'], $newpassword);
-					$users->update(
-						array('_id' => $userobj['_id']),
-						array('$set' => array(
-							'salt' => $hashdata['salt'],
-							'password' => $hashdata['passwordhash']
-						))
-					);
-				} else {
-					$errors[] = 'Old password incorrect';
-				}
+				$users->update(
+					array('_id' => $user['_id']),
+					array('$set' => array(
+						'salt' => $hashdata['salt'],
+						'password' => $hashdata['passwordhash']
+					))
+				);
 			} else {
-				$errors[] = 'User not found';
+				$errors[] = 'Old password incorrect';
 			}
 		} else {
 			$errors[] = 'Passwords don\'t match';

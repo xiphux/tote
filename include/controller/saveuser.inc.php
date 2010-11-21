@@ -2,18 +2,13 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -26,6 +21,8 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		echo "User required";
 		return;
 	}
+
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$edituser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'admin', 'first_name', 'last_name', 'email'));
 	if (!$edituser) {

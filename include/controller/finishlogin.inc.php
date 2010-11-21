@@ -2,12 +2,13 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_finishlogin($user, $pass)
 {
 	global $tpl;
 
-	if (isset($_SESSION['user'])) {
+	if (user_logged_in()) {
 		return redirect();
 	}
 

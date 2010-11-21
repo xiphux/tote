@@ -2,21 +2,15 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_saveprefs($timezone, $reminder, $remindertime)
 {
 	global $tpl, $tote_conf;
 
-	if (!isset($_SESSION['user'])) {
+	$user = user_logged_in();
+	if (!$user) {
 		return redirect();
-	}
-
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
-
-	if (!$userobj) {
-		echo "User not found";
-		return;
 	}
 
 	$errors = array();
@@ -57,7 +51,9 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 			}
 		}
 
-		$users->update(array('_id' => $userobj['_id']), $data);
+		$users = get_collection(TOTE_COLLECTION_USERS);
+
+		$users->update(array('_id' => $user['_id']), $data);
 		redirect();
 	}
 

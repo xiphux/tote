@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function sort_users($a, $b)
 {
@@ -30,13 +31,7 @@ function display_editusers()
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -44,6 +39,8 @@ function display_editusers()
 	if (empty($user['admin'])) {
 		return redirect();
 	}
+
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'admin'));
 	$userarray = array();

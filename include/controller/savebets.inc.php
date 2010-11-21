@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function sort_bets($a, $b)
 {
@@ -12,16 +13,7 @@ function display_savebets($poolID, $entrant, $weekbets)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -34,6 +26,11 @@ function display_savebets($poolID, $entrant, $weekbets)
 		echo "Pool is required";
 		return;
 	}
+
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {

@@ -2,27 +2,21 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_editprefs()
 {
 	global $tpl, $tote_conf;
 
-	if (!isset($_SESSION['user'])) {
+	$user = user_logged_in();
+	if (!$user) {
 		return redirect();
 	}
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone', 'reminder', 'remindertime'));
+	if (!empty($user['remindertime']))
+		$user['remindertime'] = (int)($user['remindertime'] / 3600);
 
-	if (!$userobj) {
-		echo "User not found";
-		return;
-	}
-
-	if (!empty($userobj['remindertime']))
-		$userobj['remindertime'] = (int)($userobj['remindertime'] / 3600);
-
-	$tpl->assign('user', $userobj);
+	$tpl->assign('user', $user);
 
 	$tpl->assign('defaulttimezone', 'America/New_York');
 	$tpl->assign('defaultremindertime', 1);

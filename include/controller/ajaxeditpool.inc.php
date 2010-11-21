@@ -2,20 +2,13 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_ajaxeditpool($poolID, $modification, $modusers)
 {
-	if (!isset($_SESSION['user'])) {
-		echo "User not logged in";
-		return;
-	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
+	$user = user_logged_in();
 	if (!$user) {
-		echo "Logged in user not found";
+		echo "User not logged in";
 		return;
 	}
 
@@ -28,6 +21,8 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 		echo "Pool is required";
 		return;
 	}
+
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {

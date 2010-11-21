@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function sort_teams($a, $b)
 {
@@ -13,28 +14,23 @@ function display_bet($poolID, $week)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
+	$user = user_logged_in();
+	if (!$user) {
 		return redirect();
 	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	if (empty($poolID)) {
 		echo "Pool is required";
 		return;
 	}
 
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'entries'));
 	if (!$pool) {
 		echo "Unknown pool";
-		return;
-	}
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'timezone'));
-	if (!$user) {
-		echo "User not found";
 		return;
 	}
 

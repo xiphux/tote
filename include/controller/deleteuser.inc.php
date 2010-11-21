@@ -1,19 +1,13 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_deleteuser($userid)
 {
 	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -26,6 +20,9 @@ function display_deleteuser($userid)
 		echo "User to delete is required";
 		return;
 	}
+
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	$deleteuser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'first_name', 'last_name'));
 	if (!$deleteuser) {

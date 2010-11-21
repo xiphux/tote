@@ -2,17 +2,11 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_setpoolname($poolID, $poolname)
 {
-	if (!isset($_SESSION['user'])) {
-		return redirect();
-	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
 		return redirect();
 	}
@@ -25,6 +19,8 @@ function display_setpoolname($poolID, $poolname)
 		echo "Pool is required";
 		return;
 	}
+
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {
