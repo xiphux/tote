@@ -1,12 +1,13 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+
 function display_login()
 {
 	global $tpl;
 
 	if (isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$tpl->display('login.tpl');

@@ -1,12 +1,12 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 
 function display_setpoolname($poolID, $poolname)
 {
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
@@ -14,13 +14,11 @@ function display_setpoolname($poolID, $poolname)
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($poolID)) {
@@ -47,5 +45,5 @@ function display_setpoolname($poolID, $poolname)
 
 	$pools->update(array('_id' => $pool['_id']), array('$set' => array('name' => $poolname)));
 
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editpool&p=' . $poolID);
+	return redirect(array('a' => 'editpool', 'p' => $poolID));
 }

@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 
 function display_finishlogin($user, $pass)
@@ -7,8 +8,7 @@ function display_finishlogin($user, $pass)
 	global $tpl;
 
 	if (isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$errors = array();
@@ -37,7 +37,7 @@ function display_finishlogin($user, $pass)
 		$tpl->assign('errors', $errors);
 		$tpl->display('login.tpl');
 	} else {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		redirect();
 	}
 }
 

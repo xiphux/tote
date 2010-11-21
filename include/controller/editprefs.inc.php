@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 
 function display_editprefs()
@@ -7,8 +8,7 @@ function display_editprefs()
 	global $tpl, $tote_conf;
 
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$users = get_collection(TOTE_COLLECTION_USERS);

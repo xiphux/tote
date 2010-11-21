@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 
 function sort_bets($a, $b)
@@ -12,8 +13,7 @@ function display_savebets($poolID, $entrant, $weekbets)
 	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
@@ -23,13 +23,11 @@ function display_savebets($poolID, $entrant, $weekbets)
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($poolID)) {
@@ -172,5 +170,5 @@ function display_savebets($poolID, $entrant, $weekbets)
 		)
 	);
 	
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+	redirect();
 }

@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 
@@ -8,21 +9,18 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$errors = array();
@@ -81,7 +79,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		$data['salt'] = $hashdata['salt'];
 		$data['password'] = $hashdata['passwordhash'];
 		$users->insert($data);
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
+		redirect(array('a' => 'editusers'));
 	}
 
 }

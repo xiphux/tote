@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_controller.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
@@ -12,8 +13,7 @@ function display_feed($format, $poolID)
 	$users = get_controller(TOTE_COLLECTION_USERS);
 
 	//if (($format == 'html') && !isset($_SESSION['user'])) {
-	//	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-	//	return;
+	//	return redirect();
 	//}
 
 	$userobj = null;

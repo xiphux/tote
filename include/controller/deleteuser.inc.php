@@ -7,8 +7,7 @@ function display_deleteuser($userid)
 	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
@@ -16,13 +15,11 @@ function display_deleteuser($userid)
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	if (empty($userid)) {
@@ -66,5 +63,5 @@ function display_deleteuser($userid)
 
 	$users->remove(array('_id' => $deleteuser['_id']));
 
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
+	redirect(array('a' => 'editusers'));
 }

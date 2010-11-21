@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 
@@ -8,8 +9,7 @@ function display_addbet($poolID, $week, $team)
 	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
@@ -124,6 +124,7 @@ function display_addbet($poolID, $week, $team)
 			)
 		))
 	);
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?p=' . $pool['_id']);
+
+	redirect(array('p' => $pool['_id']));
 }
 
