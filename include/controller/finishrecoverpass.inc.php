@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
 
 function display_finishrecoverpass($email)
 {
@@ -17,8 +18,7 @@ function display_finishrecoverpass($email)
 
 		$userobj = $users->findOne(array('email' => $email));
 		if ($userobj) {
-			mt_srand(microtime(true)*100000 + memory_get_usage(true));
-			$key = md5(uniqid(mt_rand(), true));
+			$key = generate_salt();
 			$users->update(
 				array('_id' => $userobj['_id']),
 				array('$set' => array('recoverykey' => $key))
