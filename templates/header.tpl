@@ -10,6 +10,7 @@
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
 {elseif $source == 'editpool'}
+<script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/editpool.js"></script>
 {elseif $source == 'newuser'}
 <script type="text/javascript" src="js/newuser.js"></script>
