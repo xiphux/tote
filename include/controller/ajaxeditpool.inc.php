@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+
 function display_ajaxeditpool($poolID, $modification, $modusers)
 {
 	global $db, $tote_conf;
@@ -19,7 +21,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 	$pools = $db->selectCollection($poolcol);
 	$users = $db->selectCollection($usercol);
 
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
 	if (!$user) {
 		echo "Logged in user not found";
 		return;
@@ -51,15 +53,32 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 		return;
 	}
 
+	$adminusername = $user['username'];
+	if (!empty($user['first_name'])) {
+		$adminusername = $user['first_name'];
+		if (!empty($adminusername))
+			$adminusername .= ' ' . $user['last_name'];
+	}
+
 	switch ($modification) {
 		case 'add':
 			$actions = array();
 			foreach ($modusers as $adduser) {
-				$pools->update(array('_id' => $pool['_id']), array('$push' => array('entries' => array('user' => new MongoId($adduser)))));
+				$adduserid = new MongoId($adduser);
+				$pools->update(array('_id' => $pool['_id']), array('$push' => array('entries' => array('user' => $adduserid))));
+				$adduserobj = get_user($adduserid);
+				$addusername = $adduserobj['username'];
+				if (!empty($adduserobj['first_name'])) {
+					$addusername = $adduserobj['first_name'];
+					if (!empty($adduserobj['last_name']))
+						$addusername .= ' ' . $adduserobj['last_name'];
+				}
 				$actions[] = array(
 					'action' => 'addentrant',
-					'user' => new MongoId($adduser),
+					'user' => $adduserid,
+					'user_name' => $addusername,
 					'admin' => $user['_id'],
+					'admin_name' => $adminusername,
 					'time' => new MongoDate(time())
 				);
 			}
@@ -68,11 +87,21 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 		case 'remove':
 			$actions = array();
 			foreach ($modusers as $removeuser) {
-				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => new MongoId($removeuser)))));
+				$removeuserid = new MongoId($removeuser);
+				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => $removeuserid))));
+				$removeuserobj = get_user($removeuserid);
+				$removeusername = $removeuserobj['username'];
+				if (!empty($removeuserobj['first_name'])) {
+					$removeusername = $removeuserobj['first_name'];
+					if (!empty($removeuserobj['last_name']))
+						$removeusername .= ' ' . $removeuserobj['last_name'];
+				}
 				$actions[] = array(
 					'action' => 'removeentrant',
 					'user' => new MongoId($removeuser),
+					'user_name' => $removeusername,
 					'admin' => $user['_id'],
+					'admin_name' => $adminusername,
 					'time' => new MongoDate(time())
 				);
 			}

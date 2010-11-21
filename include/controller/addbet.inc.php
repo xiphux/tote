@@ -35,7 +35,7 @@ function display_addbet($poolID, $week, $team)
 		return;
 	}
 
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username'));
+	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'first_name', 'last_name'));
 	if (!$user) {
 		echo "User not found";
 		return;
@@ -115,9 +115,16 @@ function display_addbet($poolID, $week, $team)
 				'team' => $betteam['_id'],
 				'placed' => new MongoDate(time())
 			),
+			$username = $user['username'];
+			if (!empty($user['first_name'])) {
+				$username = $user['first_name'];
+				if (!empty($user['last_name']))
+					$username .= ' ' . $user['last_name'];
+			}
 			'actions' => array(
 				'action' => 'bet',
 				'user' => $user['_id'],
+				'user_name' => $username,
 				'week' => (int)$week,
 				'team' => $betteam['_id'],
 				'time' => new MongoDate(time())

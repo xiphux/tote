@@ -30,7 +30,7 @@ function display_savebets($poolID, $entrant, $weekbets)
 	$games = $db->selectCollection($gamecol);
 	$teams = $db->selectCollection($teamcol);
 
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
 	if (!$user) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 		return;
@@ -68,6 +68,20 @@ function display_savebets($poolID, $entrant, $weekbets)
 		}
 	}
 
+	$adminname = $user['username'];
+	if (!empty($user['first_name'])) {
+		$adminname = $user['first_name'];
+		if (!empty($user['last_name']))
+			$adminname .= ' ' . $user['last_name'];
+	}
+
+	$entrantname = $entrantobj['username'];
+	if (!empty($entrantobj['first_name'])) {
+		$entrantname = $entrantobj['first_name'];
+		if (!empty($entrantobj['last_name']))
+			$entrantname .= ' ' . $user['last_name'];
+	}
+
 	if (!$userentry) {
 		echo "Entrant not in pool";
 		return;
@@ -87,7 +101,9 @@ function display_savebets($poolID, $entrant, $weekbets)
 					$actions[] = array(
 						'action' => 'edit',
 						'user' => $entrantobj['_id'],
+						'user_name' => $entrantname,
 						'admin' => $user['_id'],
+						'admin_name' => $adminname,
 						'week' => $i,
 						'from_team' => $userentry['bets'][$j]['team'],
 						'time' => new MongoDate(time())
@@ -106,7 +122,9 @@ function display_savebets($poolID, $entrant, $weekbets)
 							$actions[] = array(
 								'action' => 'edit',
 								'user' => $entrantobj['_id'],
+								'user_name' => $entrantname,
 								'admin' => $user['_id'],
+								'admin_name' => $adminname,
 								'week' => $i,
 								'from_team' => $userentry['bets'][$j]['team'],
 								'to_team' => new MongoId($weekbets[$i]),
@@ -126,7 +144,9 @@ function display_savebets($poolID, $entrant, $weekbets)
 				$actions[] = array(
 					'action' => 'edit',
 					'user' => $entrantobj['_id'],
+					'user_name' => $entrantname,
 					'admin' => $user['_id'],
+					'admin_name' => $adminname,
 					'week' => $i,
 					'to_team' => new MongoId($weekbets[$i]),
 					'time' => new MongoDate(time())

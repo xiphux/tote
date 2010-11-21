@@ -13,55 +13,55 @@
      <guid isPermaLink="false">tag:{$domain},{$action.time->format('Y-m-d')}:{$pool._id}:{$time}:{$action.week}:{$action.user._id}</guid>
      <pubDate>{$action.time->format('r')}</pubDate>
      {if $action.action == 'bet'}
-       <author>{$action.user.email} ({if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if})</author>
-       <title>{if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet: {$action.team.abbreviation}</title>
-       <description>{if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet: {$action.team.abbreviation}</description>
+       <author>{$action.user.email} ({$action.user_name})</author>
+       <title>{$action.user_name}'s week {$action.week} bet: {$action.team.abbreviation}</title>
+       <description>{$action.user_name}'s week {$action.week} bet: {$action.team.abbreviation}</description>
        <content:encoded>
          <![CDATA[
-           <p>{if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} bet on the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
+           <p>{$action.user_name} bet on the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
 	 ]]>
        </content:encoded>
      {elseif $action.action == 'edit'}
-     	<author>{$action.admin.email} ({if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if})</author>
+     	<author>{$action.admin.email} ({$action.admin_name})</author>
        {if $action.from_team && $action.to_team}
-       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
-       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} changed {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
+	   <p>Admin {$action.admin_name} changed {$action.user_name}'s week {$action.week} bet from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
 	 ]]>
        </content:encoded>
        {elseif $action.from_team}
-       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet {$action.from_team.abbreviation} removed</title>
-       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet {$action.from_team.abbreviation} removed</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.from_team.abbreviation} removed</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} bet {$action.from_team.abbreviation} removed</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} removed {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet on the {$action.from_team.home} {$action.from_team.team}.</p>
+	   <p>Admin {$action.admin_name} removed {$action.user_name}'s week {$action.week} bet on the {$action.from_team.home} {$action.from_team.team}.</p>
 	 ]]>
        </content:encoded>
        {elseif $action.to_team}
-       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet {$action.to_team.abbreviation} added</title>
-       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet {$action.to_team.abbreviation} added</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.to_team.abbreviation} added</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} bet {$action.to_team.abbreviation} added</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} added the {$action.to_team.home} {$action.to_team.team} as {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}'s week {$action.week} bet.</p>
+	   <p>Admin {$action.admin_name} added the {$action.to_team.home} {$action.to_team.team} as {$action.user_name}'s week {$action.week} bet.</p>
 	 ]]>
        </content:encoded>
        {/if}
      {elseif $action.action == 'addentrant'}
-       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} added to pool</title>
-       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} added to pool</description>
+       <title>Edit: {$action.user_name} added to pool</title>
+       <description>Edit: {$action.user_name} added to pool</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} added {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} to the pool.</p>
+	   <p>Admin {$action.admin_name} added {$action.user_name} to the pool.</p>
 	 ]]>
        </content:encoded>
      {elseif $action.action == 'removeentrant'}
-       <title>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} removed from pool</title>
-       <description>Edit: {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} removed from pool</description>
+       <title>Edit: {$action.user_name} removed from pool</title>
+       <description>Edit: {$action.user_name} removed from pool</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if} removed {if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if} from the pool.</p>
+	   <p>Admin {$action.admin_name} removed {$action.user_name} from the pool.</p>
 	 ]]>
        </content:encoded>
      {/if}

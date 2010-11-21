@@ -17,8 +17,8 @@
 {foreach from=$timeactions item=action}
 <tr class="{cycle values=light,dark}">
   <td>{$action.time->format('r')}</td>
-  <td>{if $action.user.first_name}{$action.user.first_name}{if $action.user.last_name} {$action.user.last_name}{/if}{else}{$action.user.username}{/if}</td>
-  <td>{if $action.admin}{if $action.admin.first_name}{$action.admin.first_name}{if $action.admin.last_name} {$action.admin.last_name}{/if}{else}{$action.admin.username}{/if}{/if}</td>
+  <td>{$action.user_name}</td>
+  <td>{if $action.admin_name}{$action.admin_name}{/if}</td>
   <td class="center">{if $action.week && ($action.week > 0)}{$action.week}{/if}</td>
   <td>
   {if $action.action == 'bet'}
