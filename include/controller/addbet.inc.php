@@ -107,6 +107,13 @@ function display_addbet($poolID, $week, $team)
 		return;
 	}
 
+	$username = $user['username'];
+	if (!empty($user['first_name'])) {
+		$username = $user['first_name'];
+		if (!empty($user['last_name']))
+			$username .= ' ' . $user['last_name'];
+	}
+
 	$pools->update(
 		array('_id' => $pool['_id']),
 		array('$push' => array(
@@ -115,12 +122,6 @@ function display_addbet($poolID, $week, $team)
 				'team' => $betteam['_id'],
 				'placed' => new MongoDate(time())
 			),
-			$username = $user['username'];
-			if (!empty($user['first_name'])) {
-				$username = $user['first_name'];
-				if (!empty($user['last_name']))
-					$username .= ' ' . $user['last_name'];
-			}
 			'actions' => array(
 				'action' => 'bet',
 				'user' => $user['_id'],
