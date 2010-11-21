@@ -1,6 +1,6 @@
 <?php
 
-function display_saveuser($userid, $username, $firstname, $lastname, $email, $admin)
+function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 {
 	global $db, $tote_conf, $tpl;
 
@@ -39,13 +39,6 @@ function display_saveuser($userid, $username, $firstname, $lastname, $email, $ad
 	}
 
 	$errors = array();
-	if (empty($username)) {
-		$errors[] = "Username is required";
-	} else {
-		$existinguser = $users->findOne(array('username' => $username, '_id' => array('$ne' => $edituser['_id'])), array('username', 'email'));
-		if ($existinguser)
-			$errors[] = "A user with that username already exists";
-	}
 
 	if (empty($email)) {
 		$errors[] = "Email is required";
@@ -64,8 +57,7 @@ function display_saveuser($userid, $username, $firstname, $lastname, $email, $ad
 			$tpl->assign('firstname', $firstname);
 		if (!empty($lastname))
 			$tpl->assign('lastname', $lastname);
-		if (!empty($username))
-			$tpl->assign('username', $username);
+		$tpl->assign('username', $edituser['username']);
 		if (!empty($email))
 			$tpl->assign('email', $email);
 		if (!empty($admin) && (strcasecmp($admin, 'on') == 0))
@@ -76,8 +68,6 @@ function display_saveuser($userid, $username, $firstname, $lastname, $email, $ad
 		$data = array();
 		$setdata = array();
 		$unsetdata = array();
-		if ($username != $edituser['username'])
-			$setdata['username'] = $username;
 		if ($firstname != $edituser['first_name'])
 			$setdata['first_name'] = $firstname;
 		if ($lastname != $edituser['last_name'])

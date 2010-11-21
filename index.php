@@ -105,7 +105,6 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		require_once(TOTE_CONTROLLERDIR . 'saveuser.inc.php');
 		display_saveuser(
 			(empty($_POST['u']) ? null : $_POST['u']),
-			(empty($_POST['username']) ? null : $_POST['username']),
 			(empty($_POST['firstname']) ? null : $_POST['firstname']),
 			(empty($_POST['lastname']) ? null : $_POST['lastname']),
 			(empty($_POST['email']) ? null : $_POST['email']),
