@@ -1,9 +1,9 @@
-{include file='header.tpl'}
+{include file='header.tpl' source='editusers'}
 
 <div><a href="{$SCRIPT_NAME}?a=newuser">Add a new user</a></div>
 
 <div>
-<table class="displayTable">
+<table class="displayTable userTable">
 <thead>
 <th>First name</th>
 <th>Last name</th>
@@ -16,9 +16,9 @@
 <tr class="{cycle values=light,dark}">
  <td>{$eachuser.first_name}</td>
  <td>{$eachuser.last_name}</td>
- <td>{$eachuser.username}</td>
+ <td class="username">{$eachuser.username}</td>
  <td>{$eachuser.email}</td>
- <td><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}">Delete</a></td>
+ <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}" class="deleteLink">Delete</a></td>
 </tr>
 {/foreach}
 </tbody>

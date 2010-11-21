@@ -13,6 +13,8 @@
 <script type="text/javascript" src="js/editpool.js"></script>
 {elseif $source == 'newuser'}
 <script type="text/javascript" src="js/newuser.js"></script>
+{elseif $source == 'editusers'}
+<script type="text/javascript" src="js/editusers.js"></script>
 {/if}
  {if $poolinfo}
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}" type="application/atom+xml" />

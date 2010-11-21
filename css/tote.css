@@ -162,3 +162,11 @@ div.userListItem table td.alert {
 div.selected {
 	background-color: yellow;
 }
+
+table.userTable td {
+	padding: 3px 3px;
+}
+
+table.userTable td.action a {
+	margin: 0px 5px;
+}
