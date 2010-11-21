@@ -42,6 +42,9 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		$existinguser = $users->findOne(array('email' => $email), array('username', 'email'));
 		if ($existinguser)
 			$errors[] = "A user with that email address already exists";
+		if (!preg_match('/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
+			$errors[] = "Email must be valid";
+		}
 	}
 
 	if (empty($password)) {
