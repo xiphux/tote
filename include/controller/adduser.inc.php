@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2)
 {
@@ -76,12 +77,9 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 			$data['first_name'] = $firstname;
 		if (!empty($lastname))
 			$data['last_name'] = $lastname;
-		mt_srand(microtime(true)*100000 + memory_get_usage(true));
-		$salt = md5(uniqid(mt_rand(), true));
-		$hash = md5($username . ':' . $password);
-		$saltedHash = md5($salt . $username . $hash);
-		$data['salt'] = $salt;
-		$data['password'] = $saltedHash;
+		$hashdata = generate_password_hash($username, $password);
+		$data['salt'] = $hashdata['salt'];
+		$data['password'] = $hashdata['passwordhash'];
 		$users->insert($data);
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
 	}

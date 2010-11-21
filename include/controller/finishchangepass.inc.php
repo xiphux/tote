@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 {
@@ -35,15 +36,12 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 
 			if ($userobj) {
 				if (md5($userobj['salt'] . $userobj['username'] . md5($userobj['username'] . ':' . $oldpassword)) == $userobj['password']) {
-					mt_srand(microtime(true)*100000 + memory_get_usage(true));
-					$salt = md5(uniqid(mt_rand(), true));
-					$hash = md5($userobj['username'] . ':' . $newpassword);
-					$saltedHash = md5($salt . $userobj['username'] . $hash);
+					$hashdata = generate_password_hash($userobj['username'], $newpassword);
 					$users->update(
 						array('_id' => $userobj['_id']),
 						array('$set' => array(
-							'salt' => $salt,
-							'password' => $saltedHash
+							'salt' => $hashdata['salt'],
+							'password' => $hashdata['passwordhash']
 						))
 					);
 				} else {
