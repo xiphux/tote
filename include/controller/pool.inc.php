@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 
@@ -37,20 +38,11 @@ function sort_pool($a, $b)
 
 function display_pool($poolID = null)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);;
 
 	$poolobj = null;
 

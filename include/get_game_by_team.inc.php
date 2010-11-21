@@ -1,15 +1,14 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 $gamecachebyteam = array();
 
 function get_game_by_team($season, $week, $team)
 {
-	global $gamecachebyteam, $db, $tote_conf;
+	global $gamecachebyteam;
 
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace']))
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	$games = $db->selectCollection($gamecol);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$key = $season . ':' . $week . ':' . $team;
 

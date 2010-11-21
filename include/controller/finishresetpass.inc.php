@@ -1,8 +1,10 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 function display_finishresetpass($key, $newpassword, $newpassword2)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
 	$errors = array();
 
@@ -20,11 +22,8 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 
 	if (!(empty($key) || empty($newpassword) || empty($newpassword2))) {
 		if ($newpassword == $newpassword2) {
-			$usercol = 'users';
-			if (!empty($tote_conf['namespace']))
-				$usercol = $tote_conf['namespace'] . '.' . $usercol;
 
-			$users = $db->selectCollection($usercol);
+			$users = get_collection(TOTE_COLLECTION_USERS);
 
 			$userobj = $users->findOne(array('recoverykey' => $key));
 			if ($userobj) {

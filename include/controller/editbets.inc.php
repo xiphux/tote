@@ -1,29 +1,20 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 function display_editbets($poolID, $entrant)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 		return;
 	}
 
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$gamecol = 'games';
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
-	$teams = $db->selectCollection($teamcol);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
 	if (!$user) {

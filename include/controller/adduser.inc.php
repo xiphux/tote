@@ -1,20 +1,17 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 		return;
 	}
 
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$users = $db->selectCollection($usercol);
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
 	if (!$user) {

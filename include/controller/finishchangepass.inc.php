@@ -1,8 +1,10 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 {
-	global $tpl, $db, $tote_conf;
+	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
@@ -26,9 +28,8 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 	if (!(empty($oldpassword) || empty($newpassword) || empty($newpassword2))) {
 
 		if ($newpassword == $newpassword2) {
-			$usercol = 'users';
 
-			$users = $db->selectCollection($usercol);
+			$users = get_collection(TOTE_COLLECTION_USERS);
 
 			$userobj = $users->findOne(array('username' => $_SESSION['user']));
 

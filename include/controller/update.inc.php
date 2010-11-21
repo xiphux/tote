@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 date_default_timezone_set('America/New_York');
 
 function team_to_abbr($team)
@@ -76,13 +78,9 @@ $teamids = array();
 
 function lookup_team_id($team)
 {
-	global $db, $tote_conf, $teamids;
+	global $teamids;
 
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace']))
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-
-	$teams = $db->selectCollection($teamcol);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	$teamobj = $teams->findOne(array('abbreviation' => $team));
 	if ($teamobj) {
@@ -105,8 +103,6 @@ function get_team_id($team)
 
 function update_finished_game($season, $week, $team1, $team1score, $team2, $team2score, $skipmsg = false)
 {
-	global $db, $tote_conf, $teamids;
-
 	if (!$skipmsg) {
 		echo 'Updating ' . $team1 . ' ' . $team1score . ', ' . $team2 . ' ' . $team2score . '... ';
 	}
@@ -123,11 +119,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		return;
 	}
 
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace']))
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-
-	$games = $db->selectCollection($gamecol);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$js = "function() {
 		return ((this.home_team == '" . $team1id . "') && (this.away_team == '" . $team2id . "')) || ((this.home_team == '" . $team2id . "') && (this.away_team == '" . $team1id . "'));
@@ -180,8 +172,6 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 function update_scheduled_game($season, $week, $away, $home, $start)
 {
-	global $db, $tote_conf;
-
 	$newstart = new DateTime('@' . $start);
 	$newstart->setTimezone(new DateTimeZone('America/New_York'));
 
@@ -199,11 +189,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 		return;
 	}
 
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace']))
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-
-	$games = $db->selectCollection($gamecol);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$gameobj = $games->findOne(array('season' => $season, 'week' => (int)$week, 'home_team' => $homeid, 'away_team' => $awayid));
 	if (!$gameobj) {

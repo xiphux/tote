@@ -1,21 +1,15 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_controller.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 
 function display_feed($format, $poolID)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	$usercol = 'users';
-	$poolcol = 'pools';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
+	$pools = get_controller(TOTE_COLLECTION_POOLS);
+	$users = get_controller(TOTE_COLLECTION_USERS);
 
 	//if (($format == 'html') && !isset($_SESSION['user'])) {
 	//	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');

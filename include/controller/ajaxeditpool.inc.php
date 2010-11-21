@@ -1,25 +1,17 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 
 function display_ajaxeditpool($poolID, $modification, $modusers)
 {
-	global $db, $tote_conf;
-
 	if (!isset($_SESSION['user'])) {
 		echo "User not logged in";
 		return;
 	}
 
-	$poolcol = 'pools';
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
 	if (!$user) {

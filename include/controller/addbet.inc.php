@@ -1,28 +1,20 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 
 function display_addbet($poolID, $week, $team)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
 	if (!isset($_SESSION['user'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 		return;
 	}
 
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$teams = $db->selectCollection($teamcol);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	if (empty($poolID)) {
 		echo "Pool is required";
