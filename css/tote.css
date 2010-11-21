@@ -43,7 +43,7 @@ table.displayTable td {
 
 .scoreTable tbody {
 	text-align: center;
-	font-size: smaller;
+	font-size: 12px;
 }
 
 .win {
