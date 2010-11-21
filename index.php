@@ -89,6 +89,43 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	case 'editusers':
+		require_once(TOTE_CONTROLLERDIR . 'editusers.inc.php');
+		display_editusers();
+		break;
+
+	
+	case 'edituser':
+		require_once(TOTE_CONTROLLERDIR . 'edituser.inc.php');
+		display_edituser(empty($_GET['u']) ? null : $_GET['u']);
+		break;
+
+	
+	case 'saveuser':
+		require_once(TOTE_CONTROLLERDIR . 'saveuser.inc.php');
+		display_saveuser(empty($_GET['u']) ? null : $_GET['u']);
+		break;
+
+	
+	case 'newuser':
+		require_once(TOTE_CONTROLLERDIR . 'newuser.inc.php');
+		display_newuser();
+		break;
+
+
+	case 'adduser':
+		require_once(TOTE_CONTROLLERDIR . 'adduser.inc.php');
+		display_adduser(
+			(empty($_POST['username']) ? null : $_POST['username']),
+			(empty($_POST['firstname']) ? null : $_POST['firstname']),
+			(empty($_POST['lastname']) ? null : $_POST['lastname']),
+			(empty($_POST['email']) ? null : $_POST['email']),
+			(empty($_POST['password']) ? null : $_POST['password']),
+			(empty($_POST['password2']) ? null : $_POST['password2'])
+		);
+		break;
+
+
 	case 'login':
 		require_once(TOTE_CONTROLLERDIR . 'login.inc.php');
 		display_login();
