@@ -54,11 +54,11 @@ table.displayTable td {
 	color: red;
 }
 
-tr.self {
+table.scoreTable tr.self {
 	background-color: #dcdbd5;
 }
 
-tr.self:hover {
+table.scoreTable tr.self:hover {
 	background-color: #dcdbd5;
 }
 
