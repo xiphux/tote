@@ -1,8 +1,8 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
 
 function display_finishlogin($user, $pass)
 {
@@ -23,13 +23,8 @@ function display_finishlogin($user, $pass)
 	}
 
 	if (!(empty($user) || empty($pass))) {
-
-		$users = get_collection(TOTE_COLLECTION_USERS);
-
-		$userobj = $users->findOne(array('username' => $user));
-
-		if ($userobj && (md5($userobj['salt'] . $userobj['username'] . md5($userobj['username'] . ':' . $pass)) == $userobj['password']))
-			$_SESSION['user'] = $userobj['username'];
+		if (user_password_valid($user, $pass))
+			$_SESSION['user'] = $user;
 		else
 			$errors[] = 'Incorrect username or password';
 	}

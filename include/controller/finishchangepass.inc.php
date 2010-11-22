@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
 
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 {
@@ -32,7 +33,7 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 
 		if ($newpassword == $newpassword2) {
 
-			if (md5($user['salt'] . $user['username'] . md5($user['username'] . ':' . $oldpassword)) == $user['password']) {
+			if (user_password_valid($user['username'], $oldpassword, $user['salt'], $user['password'])) {
 				$hashdata = generate_password_hash($user['username'], $newpassword);
 				$users = get_collection(TOTE_COLLECTION_USERS);
 
