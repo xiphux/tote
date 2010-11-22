@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_addbet($poolID, $week, $team)
 {
@@ -94,12 +95,7 @@ function display_addbet($poolID, $week, $team)
 		return;
 	}
 
-	$username = $user['username'];
-	if (!empty($user['first_name'])) {
-		$username = $user['first_name'];
-		if (!empty($user['last_name']))
-			$username .= ' ' . $user['last_name'];
-	}
+	$username = user_readable_name($user);
 
 	$pools->update(
 		array('_id' => $pool['_id']),

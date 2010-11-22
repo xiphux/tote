@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_deleteuser($userid)
 {
@@ -32,19 +33,9 @@ function display_deleteuser($userid)
 		return;
 	}
 
-	$adminname = $user['username'];
-	if (!empty($user['first_name'])) {
-		$adminname = $user['first_name'];
-		if (!empty($user['last_name']))
-			$adminname .= ' ' . $user['last_name'];
-	}
+	$adminname = user_readable_name($user);
 
-	$username = $deleteuser['username'];
-	if (!empty($deleteuser['first_name'])) {
-		$username = $deleteuser['first_name'];
-		if (!empty($deleteuser['last_name']))
-			$username .= ' ' . $deleteuser['last_name'];
-	}
+	$username = user_readable_name($deleteuser);
 
 	$action = array(
 		'action' => 'removeentrant',

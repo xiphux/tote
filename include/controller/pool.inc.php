@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 function sort_pool($a, $b)
 {
@@ -20,22 +21,7 @@ function sort_pool($a, $b)
 	if ($a['spread'] != $b['spread'])
 		return ($a['spread'] > $b['spread'] ? -1 : 1);
 
-	$user1 = $a['user']['username'];
-	if (!empty($a['user']['first_name'])) {
-		$user1 = $a['user']['first_name'];
-		if (!empty($a['user']['last_name']))
-			$user1 .= ' ' . $a['user']['last_name'];
-		$user1 = trim($user1);
-	}
-	$user2 = $b['user']['username'];
-	if (!empty($b['user']['first_name'])) {
-		$user2 = $b['user']['first_name'];
-		if (!empty($b['user']['last_name']))
-			$user2 .= ' ' . $b['user']['last_name'];
-		$user2 = trim($user2);
-	}
-
-	return strcmp($user1, $user2);
+	return sort_users($a['user'], $b['user']);
 }
 
 function display_pool($poolID = null)

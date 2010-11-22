@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_ajaxeditpool($poolID, $modification, $modusers)
 {
@@ -41,12 +42,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 		return;
 	}
 
-	$adminusername = $user['username'];
-	if (!empty($user['first_name'])) {
-		$adminusername = $user['first_name'];
-		if (!empty($adminusername))
-			$adminusername .= ' ' . $user['last_name'];
-	}
+	$adminusername = user_readable_name($user);
 
 	switch ($modification) {
 		case 'add':
@@ -55,12 +51,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 				$adduserid = new MongoId($adduser);
 				$pools->update(array('_id' => $pool['_id']), array('$push' => array('entries' => array('user' => $adduserid))));
 				$adduserobj = get_user($adduserid);
-				$addusername = $adduserobj['username'];
-				if (!empty($adduserobj['first_name'])) {
-					$addusername = $adduserobj['first_name'];
-					if (!empty($adduserobj['last_name']))
-						$addusername .= ' ' . $adduserobj['last_name'];
-				}
+				$addusername = user_readable_name($adduserobj);
 				$actions[] = array(
 					'action' => 'addentrant',
 					'user' => $adduserid,
@@ -78,12 +69,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 				$removeuserid = new MongoId($removeuser);
 				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => $removeuserid))));
 				$removeuserobj = get_user($removeuserid);
-				$removeusername = $removeuserobj['username'];
-				if (!empty($removeuserobj['first_name'])) {
-					$removeusername = $removeuserobj['first_name'];
-					if (!empty($removeuserobj['last_name']))
-						$removeusername .= ' ' . $removeuserobj['last_name'];
-				}
+				$removeusername = user_readable_name($removeuserobj);
 				$actions[] = array(
 					'action' => 'removeentrant',
 					'user' => new MongoId($removeuser),

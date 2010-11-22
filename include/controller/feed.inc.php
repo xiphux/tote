@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_feed($format, $poolID)
 {
@@ -42,23 +43,13 @@ function display_feed($format, $poolID)
 			if (!empty($action['user'])) {
 				$action['user'] = get_user($action['user']);
 				if (!empty($action['user'])) {
-					$action['user_name'] = $action['user']['username'];
-					if (!empty($action['user']['first_name'])) {
-						$action['user_name'] = $action['user']['first_name'];
-						if (!empty($action['user']['last_name']))
-							$action['user_name'] .= ' ' . $action['user']['last_name'];
-					}
+					$action['user_name'] = user_readable_name($action['user']);
 				}
 			}
 			if (!empty($action['admin'])) {
 				$action['admin'] = get_user($action['admin']);
 				if (!empty($action['admin'])) {
-					$action['admin_name'] = $action['admin']['username'];
-					if (!empty($action['admin']['first_name'])) {
-						$action['admin_name'] = $action['admin']['first_name'];
-						if (!empty($action['admin']['last_name']))
-							$action['admin_name'] .= ' ' . $action['admin']['last_name'];
-					}
+					$action['admin_name'] = user_readable_name($action['admin']);
 				}
 			}
 

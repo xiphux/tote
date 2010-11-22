@@ -5,28 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-
-function sort_users($a, $b)
-{
-	$aname = $a['username'];
-	$bname = $b['username'];
-
-	if (!empty($a['first_name'])) {
-		$aname = $a['first_name'];
-		if (!empty($a['last_name'])) {
-			$aname .= ' ' . $a['last_name'];
-		}
-	}
-
-	if (!empty($b['first_name'])) {
-		$bname = $b['first_name'];
-		if (!empty($b['last_name'])) {
-			$bname .= ' ' . $b['last_name'];
-		}
-	}
-
-	return strcasecmp($aname, $bname);
-}
+require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 function display_editpool($poolID)
 {

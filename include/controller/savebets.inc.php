@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function sort_bets($a, $b)
 {
@@ -56,19 +57,9 @@ function display_savebets($poolID, $entrant, $weekbets)
 		}
 	}
 
-	$adminname = $user['username'];
-	if (!empty($user['first_name'])) {
-		$adminname = $user['first_name'];
-		if (!empty($user['last_name']))
-			$adminname .= ' ' . $user['last_name'];
-	}
+	$adminname = user_readable_name($user);
 
-	$entrantname = $entrantobj['username'];
-	if (!empty($entrantobj['first_name'])) {
-		$entrantname = $entrantobj['first_name'];
-		if (!empty($entrantobj['last_name']))
-			$entrantname .= ' ' . $user['last_name'];
-	}
+	$entrantname = user_readable_name($entrantobj);
 
 	if (!$userentry) {
 		echo "Entrant not in pool";
