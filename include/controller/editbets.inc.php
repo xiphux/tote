@@ -34,7 +34,7 @@ function display_editbets($poolID, $entrant)
 		return;
 	}
 
-	$entrantobj = get_user(new MongoId($entrant));
+	$entrantobj = get_user($entrant);
 	if (!$entrantobj) {
 		echo "Entrant not found";
 		return;

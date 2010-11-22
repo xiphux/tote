@@ -39,7 +39,7 @@ function display_savebets($poolID, $entrant, $weekbets)
 		return;
 	}
 
-	$entrantobj = get_user(new MongoId($entrant));
+	$entrantobj = get_user($entrant);
 	if (!$entrantobj) {
 		echo "Entrant not found";
 		return;

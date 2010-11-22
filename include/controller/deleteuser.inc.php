@@ -25,7 +25,7 @@ function display_deleteuser($userid)
 	$users = get_collection(TOTE_COLLECTION_USERS);
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
-	$deleteuser = get_user(new MongoId($userid))
+	$deleteuser = get_user($userid)
 	if (!$deleteuser) {
 		echo "Could not find user to delete";
 		return;

@@ -25,7 +25,7 @@ function display_edituser($userid)
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
 
-	$edituser = get_user(new MongoId($userid));
+	$edituser = get_user($userid);
 	if (!$edituser) {
 		echo "User not found";
 		return;
