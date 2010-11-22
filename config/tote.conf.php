@@ -12,4 +12,4 @@ $tote_conf['sitename'] = 'tote';
 
 $tote_conf['fromemail'] = 'xiphux@gmail.com';
 
-$tote_conf['reminders'] = false;
+$tote_conf['reminders'] = true;

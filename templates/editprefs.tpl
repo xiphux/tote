@@ -23,7 +23,7 @@
 <br />
 <div>
 <input type="checkbox" name="reminder" value="1" {if $user.reminder}checked="checked"{/if} /><label for="reminder">Email me a reminder before the first game of the week</label><br />
-<label for="remindertime">How many minutes beforehand:</label><input type="text" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
+<label for="remindertime">How many hours beforehand:</label><input type="text" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
 </div>
 {/if}
 
