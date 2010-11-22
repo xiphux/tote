@@ -27,8 +27,6 @@ function display_editpool($poolID)
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 	$users = get_collection(TOTE_COLLECTION_USERS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {

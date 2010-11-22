@@ -25,7 +25,6 @@ function display_editbets($poolID, $entrant)
 	}
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 

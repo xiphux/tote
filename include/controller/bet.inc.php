@@ -25,7 +25,6 @@ function display_bet($poolID, $week)
 	}
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'entries'));

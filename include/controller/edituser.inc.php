@@ -24,8 +24,6 @@ function display_edituser($userid)
 		return;
 	}
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
 	$edituser = get_user($userid);
 	if (!$edituser) {
 		echo "User not found";
