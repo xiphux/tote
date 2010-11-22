@@ -46,38 +46,38 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 
 	switch ($modification) {
 		case 'add':
-			$actions = array();
-			foreach ($modusers as $adduser) {
-				$adduserid = new MongoId($adduser);
-				$pools->update(array('_id' => $pool['_id']), array('$push' => array('entries' => array('user' => $adduserid))));
-				$adduserobj = get_user($adduserid);
-				$addusername = user_readable_name($adduserobj);
-				$actions[] = array(
-					'action' => 'addentrant',
-					'user' => $adduserid,
-					'user_name' => $addusername,
-					'admin' => $user['_id'],
-					'admin_name' => $adminusername,
-					'time' => new MongoDate(time())
-				);
-			}
-			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
-			break;
 		case 'remove':
 			$actions = array();
-			foreach ($modusers as $removeuser) {
-				$removeuserid = new MongoId($removeuser);
-				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => $removeuserid))));
-				$removeuserobj = get_user($removeuserid);
-				$removeusername = user_readable_name($removeuserobj);
-				$actions[] = array(
-					'action' => 'removeentrant',
-					'user' => new MongoId($removeuser),
-					'user_name' => $removeusername,
+			$moduserdata = array();
+			foreach ($modusers as $muser) {
+				$muserid = new MongoId($muser);
+				if ($modification == 'add') {
+					$moduserdata[] = array('user' => $muserid);
+				} else if ($modification == 'remove') {
+					$moduserdata[] = $muserid;
+				}
+				$muserobj = get_user($muserid);
+				$musername = user_readable_name($muserobj);
+				$action = array(
+					'action' => 'addentrant',
+					'user' => $muserid,
+					'user_name' => $musername,
 					'admin' => $user['_id'],
 					'admin_name' => $adminusername,
 					'time' => new MongoDate(time())
 				);
+				if ($modification == 'add') {
+					$action['action'] = 'addentrant';
+					$actions[] = $action;
+				} else if ($modification == 'remove') {
+					$action['action'] = 'removeentrant';
+					$actions[] = $action;
+				}
+			}
+			if ($modification == 'add') {
+				$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('entries' => $moduserdata)));
+			} else if ($modification == 'remove') {
+				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => array('$in' => $moduserdata)))));
 			}
 			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
 			break;
