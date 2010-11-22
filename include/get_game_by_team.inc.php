@@ -13,11 +13,7 @@ function get_game_by_team($season, $week, $team)
 	$key = $season . ':' . $week . ':' . $team;
 
 	if (empty($gamecachebyteam[$key])) {
-		$js = "function() {
-			return ((this.home_team == '" . $team . "') || (this.away_team == '" . $team . "'));
-		}";
-
-		$gamecachebyteam[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
+		$gamecachebyteam[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$or' => array(array('home_team' => $team), array('away_team' => $team))));
 	}
 
 	return $gamecachebyteam[$key];
