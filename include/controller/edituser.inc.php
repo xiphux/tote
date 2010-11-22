@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_edituser($userid)
@@ -24,7 +25,7 @@ function display_edituser($userid)
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
 
-	$edituser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'admin', 'first_name', 'last_name', 'email'));
+	$edituser = get_user(new MongoId($userid));
 	if (!$edituser) {
 		echo "User not found";
 		return;

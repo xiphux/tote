@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_deleteuser($userid)
@@ -24,7 +25,7 @@ function display_deleteuser($userid)
 	$users = get_collection(TOTE_COLLECTION_USERS);
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
-	$deleteuser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'first_name', 'last_name'));
+	$deleteuser = get_user(new MongoId($userid))
 	if (!$deleteuser) {
 		echo "Could not find user to delete";
 		return;

@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function display_editbets($poolID, $entrant)
@@ -33,7 +34,7 @@ function display_editbets($poolID, $entrant)
 		return;
 	}
 
-	$entrantobj = $users->findOne(array('_id' => new MongoId($entrant)), array('username', 'first_name', 'last_name'));
+	$entrantobj = get_user(new MongoId($entrant));
 	if (!$entrantobj) {
 		echo "Entrant not found";
 		return;

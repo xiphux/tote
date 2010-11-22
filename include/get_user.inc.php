@@ -11,7 +11,7 @@ function get_user($id)
 	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	if (empty($usercache[(string)$id])) {
-		$usercache[(string)$id] = $users->findOne(array('_id' => $id), array('username', 'first_name', 'last_name', 'email'));
+		$usercache[(string)$id] = $users->findOne(array('_id' => $id), array('username', 'admin', 'first_name', 'last_name', 'email'));
 	}
 
 	return $usercache[(string)$id];

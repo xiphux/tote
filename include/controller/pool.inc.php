@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
@@ -82,7 +83,7 @@ function display_pool($poolID = null)
 	foreach ($poolobj['entries'] as $entrant) {
 		
 		$record = array();
-		$record['user'] = $users->findOne(array('_id' => $entrant['user']), array('username', 'first_name', 'last_name'));
+		$record['user'] = get_user($entrant['user']);
 		if ($user && ($record['user']['username'] == $user['username']))
 			$entered = true;
 
