@@ -148,12 +148,7 @@ function display_savebets($poolID, $entrant, $weekbets)
 	$pools->update(
 		array('_id' => $pool['_id']),
 		array(
-		'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets'])
-		)
-	);
-	$pools->update(
-		array('_id' => $pool['_id']),
-		array(
+			'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets']),
 			'$pushAll' => array('actions' => $actions)
 		)
 	);
