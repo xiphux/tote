@@ -19,12 +19,12 @@ function display_editprefs()
 	}
 
 	if (!empty($userobj['remindertime']))
-		$userobj['remindertime'] = (int)($userobj['remindertime'] / 60);
+		$userobj['remindertime'] = (int)($userobj['remindertime'] / 3600);
 
 	$tpl->assign('user', $userobj);
 
 	$tpl->assign('defaulttimezone', 'America/New_York');
-	$tpl->assign('defaultremindertime', 60);
+	$tpl->assign('defaultremindertime', 1);
 
 	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true))
 		$tpl->assign('enablereminders', true);

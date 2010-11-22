@@ -26,8 +26,8 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 				$errors[] = 'A reminder time is required';
 			} else if (!is_numeric($remindertime)) {
 				$errors[] = 'Reminder time must be a number';
-			} else if ((int)$remindertime < 15) {
-				$errors[] = 'Reminder time must be 15 minutes or greater';
+			} else if ((int)$remindertime < 1) {
+				$errors[] = 'Reminder time must be 1 hour or greater';
 			}
 		}
 	}
@@ -49,7 +49,7 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 		if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 			if ($reminder) {
 				$data['$set']['reminder'] = true;
-				$data['$set']['remindertime'] = (int)$remindertime * 60;
+				$data['$set']['remindertime'] = (int)$remindertime * 3600;
 			} else {
 				$data['$unset']['reminder'] = 1;
 				$data['$unset']['lastreminder'] = 1;
