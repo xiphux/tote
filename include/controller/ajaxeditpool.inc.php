@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 
 function display_ajaxeditpool($poolID, $modification, $modusers)
 {
@@ -12,7 +13,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 		return;
 	}
 
-	if (empty($user['admin'])) {
+	if (!user_is_admin($user)) {
 		echo "User is not an admin";
 		return;
 	}

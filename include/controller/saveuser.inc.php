@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 
 function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 {
@@ -14,7 +15,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		return redirect();
 	}
 
-	if (empty($user['admin'])) {
+	if (!user_is_admin($user)) {
 		return redirect();
 	}
 
@@ -68,10 +69,10 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		if ($email != $edituser['email'])
 			$setdata['email'] = $email;
 		if (!empty($admin) && (strcasecmp($admin, 'on') == 0)) {
-			if (empty($edituser['admin']))
+			if (!user_is_admin($edituser))
 				$setdata['admin'] = true;
 		} else {
-			if (!empty($edituser['admin']) && ($edituser['admin'] == true))
+			if (user_is_admin($edituser))
 				$unsetdata['admin'] = 1;
 		}
 		if (count($setdata) > 0)
