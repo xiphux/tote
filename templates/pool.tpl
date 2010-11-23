@@ -30,7 +30,7 @@
 <tbody>
 {if $user.admin}
 <tr><td><a href="index.php?a=update">Update scores</a></td></tr>
-<tr><td><a href="index.php?a=editpool&p={$pool._id}">Edit pool</a></td></tr>
+<tr><td><a href="index.php?a=editpool&p={$pool._id}">Manage pool</a></td></tr>
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
 {/if}
 <tr><td><a href="index.php?a=editprefs">Edit preferences</a></td></tr>

@@ -1,27 +1,22 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+
 function display_editprefs()
 {
-	global $tpl, $db, $tote_conf;
+	global $tpl, $tote_conf;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	$user = user_logged_in();
+	if (!$user) {
+		return redirect();
 	}
 
-	$usercol = 'users';
-	$users = $db->selectCollection($usercol);
-	$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone', 'reminder', 'remindertime'));
+	if (!empty($user['remindertime']))
+		$user['remindertime'] = (int)($user['remindertime'] / 3600);
 
-	if (!$userobj) {
-		echo "User not found";
-		return;
-	}
-
-	if (!empty($userobj['remindertime']))
-		$userobj['remindertime'] = (int)($userobj['remindertime'] / 3600);
-
-	$tpl->assign('user', $userobj);
+	$tpl->assign('user', $user);
 
 	$tpl->assign('defaulttimezone', 'America/New_York');
 	$tpl->assign('defaultremindertime', 1);

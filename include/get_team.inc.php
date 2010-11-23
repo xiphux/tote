@@ -1,15 +1,14 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 $teamcache = array();
 
 function get_team($id)
 {
-	global $teamcache, $tote_conf, $db;
+	global $teamcache;
 
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace']))
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-	$teams = $db->selectCollection($teamcol);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
 	if (empty($teamcache[(string)$id])) {
 		$teamcache[(string)$id] = $teams->findOne(array('_id' => $id), array('team', 'home', 'abbreviation'));

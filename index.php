@@ -151,8 +151,9 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 
 	case 'logout':
+		require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 		unset($_SESSION['user']);
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		redirect();
 		break;
 
 

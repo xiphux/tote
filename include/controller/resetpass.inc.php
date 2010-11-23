@@ -1,19 +1,17 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 function display_resetpass($key)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
 	$errors = array();
 
 	if (empty($key)) {
 		$errors[] = 'A recovery key is required';
 	} else {
-		$usercol = 'users';
-		if (!empty($tote_conf['namespace']))
-			$usercol = $tote_conf['namespace'] . '.' . $usercol;
-
-		$users = $db->selectCollection($usercol);
+		$users = get_collection(TOTE_COLLECTION_USERS);
 
 		$userobj = $users->findOne(array('recoverykey' => $key));
 		if (!$userobj) {

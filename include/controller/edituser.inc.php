@@ -1,30 +1,22 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+
 function display_edituser($userid)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$users = $db->selectCollection($usercol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
 
 	if (empty($userid)) {
@@ -32,7 +24,7 @@ function display_edituser($userid)
 		return;
 	}
 
-	$edituser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'admin', 'first_name', 'last_name', 'email'));
+	$edituser = get_user($userid);
 	if (!$edituser) {
 		echo "User not found";
 		return;
@@ -45,7 +37,7 @@ function display_edituser($userid)
 		$tpl->assign('lastname', $edituser['last_name']);
 	if (!empty($edituser['email']))
 		$tpl->assign('email', $edituser['email']);
-	if (!empty($edituser['admin']) && ($edituser['admin'] == true))
+	if (user_is_admin($edituser))
 		$tpl->assign('admin', true);
 	$tpl->assign('userid', $userid);
 	$tpl->display('edituser.tpl');

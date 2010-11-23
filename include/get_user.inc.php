@@ -1,19 +1,31 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 $usercache = array();
 
 function get_user($id)
 {
-	global $usercache, $tote_conf, $db;
+	global $usercache;
 
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace']))
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	$users = $db->selectCollection($usercol);
+	$stringid = '';
+	$objid = null;
 
-	if (empty($usercache[(string)$id])) {
-		$usercache[(string)$id] = $users->findOne(array('_id' => $id), array('username', 'first_name', 'last_name', 'email'));
+	if (is_string($id)) {
+		$stringid = $id;
+	} else if ($id instanceof MongoId) {
+		$objid = $id;
+		$stringid = (string)$id;
+	} else {
+		return;
 	}
 
-	return $usercache[(string)$id];
+	if (empty($usercache[$stringid])) {
+		$users = get_collection(TOTE_COLLECTION_USERS);
+		if (!$objid)
+			$objid = new MongoId($stringid);
+		$usercache[$stringid] = $users->findOne(array('_id' => $objid), array('username', 'admin', 'first_name', 'last_name', 'email'));
+	}
+
+	return $usercache[$stringid];
 }

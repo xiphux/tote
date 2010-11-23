@@ -1,43 +1,31 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_addbet($poolID, $week, $team)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	$user = user_logged_in();
+	if (!$user) {
+		return redirect();
 	}
-
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$teams = $db->selectCollection($teamcol);
 
 	if (empty($poolID)) {
 		echo "Pool is required";
 		return;
 	}
 
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$teams = get_collection(TOTE_COLLECTION_TEAMS);
+
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'entries'));
 	if (!$pool) {
 		echo "Unknown pool";
-		return;
-	}
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'first_name', 'last_name'));
-	if (!$user) {
-		echo "User not found";
 		return;
 	}
 
@@ -107,12 +95,7 @@ function display_addbet($poolID, $week, $team)
 		return;
 	}
 
-	$username = $user['username'];
-	if (!empty($user['first_name'])) {
-		$username = $user['first_name'];
-		if (!empty($user['last_name']))
-			$username .= ' ' . $user['last_name'];
-	}
+	$username = user_readable_name($user);
 
 	$pools->update(
 		array('_id' => $pool['_id']),
@@ -132,6 +115,7 @@ function display_addbet($poolID, $week, $team)
 			)
 		))
 	);
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?p=' . $pool['_id']);
+
+	redirect(array('p' => $pool['_id']));
 }
 

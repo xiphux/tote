@@ -1,32 +1,24 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 function display_feed($format, $poolID)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	$usercol = 'users';
-	$poolcol = 'pools';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-
-	//if (($format == 'html') && !isset($_SESSION['user'])) {
-	//	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-	//	return;
-	//}
-
-	$userobj = null;
+	$user = null;
 	if ($format == 'html') {
-		if (!empty($_SESSION['user'])) {
-			$userobj = $users->findOne(array('username' => $_SESSION['user']), array('timezone'));
-		}
+		$user = user_logged_in();
+		//if (!$user) {
+		//	return redirect();
+		//}
 	}
 
 	$poolobj = null;
@@ -51,23 +43,13 @@ function display_feed($format, $poolID)
 			if (!empty($action['user'])) {
 				$action['user'] = get_user($action['user']);
 				if (!empty($action['user'])) {
-					$action['user_name'] = $action['user']['username'];
-					if (!empty($action['user']['first_name'])) {
-						$action['user_name'] = $action['user']['first_name'];
-						if (!empty($action['user']['last_name']))
-							$action['user_name'] .= ' ' . $action['user']['last_name'];
-					}
+					$action['user_name'] = user_readable_name($action['user']);
 				}
 			}
 			if (!empty($action['admin'])) {
 				$action['admin'] = get_user($action['admin']);
 				if (!empty($action['admin'])) {
-					$action['admin_name'] = $action['admin']['username'];
-					if (!empty($action['admin']['first_name'])) {
-						$action['admin_name'] = $action['admin']['first_name'];
-						if (!empty($action['admin']['last_name']))
-							$action['admin_name'] .= ' ' . $action['admin']['last_name'];
-					}
+					$action['admin_name'] = user_readable_name($action['admin']);
 				}
 			}
 
@@ -84,8 +66,8 @@ function display_feed($format, $poolID)
 			$sec = $action['time']->sec;
 			$action['time'] = new DateTime('@' . $sec);
 			if ($format == 'html') {
-				if ($userobj && !empty($userobj['timezone'])) {
-					$action['time']->setTimezone(new DateTimeZone($userobj['timezone']));
+				if ($user && !empty($user['timezone'])) {
+					$action['time']->setTimezone(new DateTimeZone($user['timezone']));
 				} else {
 					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
 				}

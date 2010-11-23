@@ -1,12 +1,15 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
+
 function display_finishlogin($user, $pass)
 {
-	global $tpl, $db, $tote_conf;
+	global $tpl;
 
-	if (isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (user_logged_in()) {
+		return redirect();
 	}
 
 	$errors = array();
@@ -20,16 +23,8 @@ function display_finishlogin($user, $pass)
 	}
 
 	if (!(empty($user) || empty($pass))) {
-		$usercol = 'users';
-		if (!empty($tote_conf['namespace']))
-			$usercol = $tote_conf['namespace'] . '.' . $usercol;
-
-		$users = $db->selectCollection($usercol);
-
-		$userobj = $users->findOne(array('username' => $user));
-
-		if ($userobj && (md5($userobj['salt'] . $userobj['username'] . md5($userobj['username'] . ':' . $pass)) == $userobj['password']))
-			$_SESSION['user'] = $userobj['username'];
+		if (user_password_valid($user, $pass))
+			$_SESSION['user'] = $user;
 		else
 			$errors[] = 'Incorrect username or password';
 	}
@@ -38,7 +33,7 @@ function display_finishlogin($user, $pass)
 		$tpl->assign('errors', $errors);
 		$tpl->display('login.tpl');
 	} else {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+		redirect();
 	}
 }
 

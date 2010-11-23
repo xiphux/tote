@@ -1,33 +1,22 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+
 function display_deleteuser($userid)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$usercol = 'users';
-	$poolcol = 'pools';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-	}
-
-	$users = $db->selectCollection($usercol);
-	$pools = $db->selectCollection($poolcol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
 
 	if (empty($userid)) {
@@ -35,25 +24,18 @@ function display_deleteuser($userid)
 		return;
 	}
 
-	$deleteuser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'first_name', 'last_name'));
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+
+	$deleteuser = get_user($userid)
 	if (!$deleteuser) {
 		echo "Could not find user to delete";
 		return;
 	}
 
-	$adminname = $user['username'];
-	if (!empty($user['first_name'])) {
-		$adminname = $user['first_name'];
-		if (!empty($user['last_name']))
-			$adminname .= ' ' . $user['last_name'];
-	}
+	$adminname = user_readable_name($user);
 
-	$username = $deleteuser['username'];
-	if (!empty($deleteuser['first_name'])) {
-		$username = $deleteuser['first_name'];
-		if (!empty($deleteuser['last_name']))
-			$username .= ' ' . $deleteuser['last_name'];
-	}
+	$username = user_readable_name($deleteuser);
 
 	$action = array(
 		'action' => 'removeentrant',
@@ -71,5 +53,5 @@ function display_deleteuser($userid)
 
 	$users->remove(array('_id' => $deleteuser['_id']));
 
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
+	redirect(array('a' => 'editusers'));
 }

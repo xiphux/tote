@@ -1,24 +1,19 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+
 $gamecachebyteam = array();
 
 function get_game_by_team($season, $week, $team)
 {
-	global $gamecachebyteam, $db, $tote_conf;
+	global $gamecachebyteam;
 
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace']))
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	$games = $db->selectCollection($gamecol);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$key = $season . ':' . $week . ':' . $team;
 
 	if (empty($gamecachebyteam[$key])) {
-		$js = "function() {
-			return ((this.home_team == '" . $team . "') || (this.away_team == '" . $team . "'));
-		}";
-
-		$gamecachebyteam[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$where' => $js));
+		$gamecachebyteam[$key] = $games->findOne(array('season' => (int)$season, 'week' => (int)$week, '$or' => array(array('home_team' => $team), array('away_team' => $team))));
 	}
 
 	return $gamecachebyteam[$key];

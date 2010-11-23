@@ -1,6 +1,9 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 function sort_teams($a, $b)
 {
@@ -9,40 +12,24 @@ function sort_teams($a, $b)
 
 function display_bet($poolID, $week)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	$user = user_logged_in();
+	if (!$user) {
+		return redirect();
 	}
-
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
 
 	if (empty($poolID)) {
 		echo "Pool is required";
 		return;
 	}
 
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'entries'));
 	if (!$pool) {
 		echo "Unknown pool";
-		return;
-	}
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'timezone'));
-	if (!$user) {
-		echo "User not found";
 		return;
 	}
 

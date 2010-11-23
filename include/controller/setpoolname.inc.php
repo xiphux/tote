@@ -1,39 +1,27 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+
 function display_setpoolname($poolID, $poolname)
 {
-	global $db, $tote_conf;
-
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$poolcol = 'pools';
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
 
 	if (empty($poolID)) {
 		echo "Pool is required";
 		return;
 	}
+
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {
@@ -54,5 +42,5 @@ function display_setpoolname($poolID, $poolname)
 
 	$pools->update(array('_id' => $pool['_id']), array('$set' => array('name' => $poolname)));
 
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editpool&p=' . $poolID);
+	return redirect(array('a' => 'editpool', 'p' => $poolID));
 }
