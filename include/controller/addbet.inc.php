@@ -6,16 +6,27 @@ require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
+/**
+ * addbet controller
+ *
+ * add a bet to the database
+ *
+ * @param string $poolID pool ID
+ * @param string $week week number
+ * @param string $team team ID
+ */
 function display_addbet($poolID, $week, $team)
 {
 	global $tpl;
 
 	$user = user_logged_in();
 	if (!$user) {
+		// user must be logged in
 		return redirect();
 	}
 
 	if (empty($poolID)) {
+		// need to know the pool
 		echo "Pool is required";
 		return;
 	}
@@ -23,22 +34,29 @@ function display_addbet($poolID, $week, $team)
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 	$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
-	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'entries'));
+	$pool = $pools->findOne(
+		array('_id' => new MongoId($poolID)),
+		array('season', 'entries')
+	);
 	if (!$pool) {
+		// pool must exist
 		echo "Unknown pool";
 		return;
 	}
 
 	if (empty($week)) {
+		// week is required
 		echo "Week is required";
 		return;
 	}
 
 	if (empty($team)) {
+		// bet is required
 		echo "A bet is required";
 		return;
 	}
 
+	// find the user's entry in the pool
 	$userentry = null;
 	$userentryindex = -1;
 	for ($i = 0; $i < count($pool['entries']); $i++) {
@@ -50,16 +68,19 @@ function display_addbet($poolID, $week, $team)
 	}
 
 	if (!$userentry) {
+		// can't bet if you aren't in the pool
 		echo "You are not entered in this pool";
 		return;
 	}
 
 	$betteam = $teams->findOne(array('_id' => new MongoId($team)));
 	if (!$betteam) {
+		// need to bet on a valid team
 		echo "Invalid team";
 		return;
 	}
 
+	// check and see if user has bet on this team or this week already
 	$weekbet = false;
 	$teambet = false;
 	foreach ($pool['entries'] as $entrant) {
@@ -74,23 +95,27 @@ function display_addbet($poolID, $week, $team)
 	}
 
 	if ($weekbet) {
+		// user already bet on this week
 		echo "You've already bet on " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week;
 		return;
 	}
 
 	if ($teambet) {
+		// user already bet on this team
 		echo "You've already bet on " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet;
 		return;
 	}
 
-	// test if game already started
+	// find game user is betting on
 	$betgame = get_game_by_team((int)$pool['season'], (int)$week, $betteam['_id']);
 	if (!$betgame) {
+		// user bet on a bye team
 		echo $betteam['home'] . ' ' . $betteam['team'] . " aren't playing this week";
 		return;
 	}
 
 	if ($betgame['start']->sec < time()) {
+		// can't bet after the game has started
 		echo "This game has already started";
 		return;
 	}
@@ -99,23 +124,26 @@ function display_addbet($poolID, $week, $team)
 
 	$pools->update(
 		array('_id' => $pool['_id']),
-		array('$push' => array(
-			'entries.' . (string)$userentryindex . '.bets' => array(
-				'week' => (int)$week,
-				'team' => $betteam['_id'],
-				'placed' => new MongoDate(time())
-			),
-			'actions' => array(
-				'action' => 'bet',
-				'user' => $user['_id'],
-				'user_name' => $username,
-				'week' => (int)$week,
-				'team' => $betteam['_id'],
-				'time' => new MongoDate(time())
+		array(
+			'$push' => array(
+				'entries.' . (string)$userentryindex . '.bets' => array(	// add bet
+					'week' => (int)$week,
+					'team' => $betteam['_id'],
+					'placed' => new MongoDate(time())
+				),
+				'actions' => array(	// audit bet entry
+					'action' => 'bet',
+					'user' => $user['_id'],
+					'user_name' => $username,
+					'week' => (int)$week,
+					'team' => $betteam['_id'],
+					'time' => new MongoDate(time())
+				)
 			)
-		))
+		)
 	);
 
+	// go back to the pool view
 	redirect(array('p' => $pool['_id']));
 }
 

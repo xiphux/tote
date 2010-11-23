@@ -1,17 +1,31 @@
 <?php
+/**
+ * Tote
+ *
+ * Reminder mailer script
+ *
+ * @author Christopher Han <xiphux@gmail.com>
+ * @copyright Copyright (c) 2010 Christopher Han
+ * @package Tote
+ */
 
+// define include directories
 define('TOTE_BASEDIR', dirname(__FILE__) . '/');
 define('TOTE_CONFIGDIR', TOTE_BASEDIR . 'config/');
 define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 
 require_once(TOTE_CONFIGDIR . 'tote.conf.php');
 
+// only if reminders are turned on in the config
 if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 
+	// create Smarty
 	require_once($tote_conf['smarty'] . 'Smarty.class.php');
 
+	// work with UTC timestamps internally
 	date_default_timezone_set('UTC');
 
+	// create MongoDB connection
 	$connection = null;
 	if (!empty($tote_conf['connectionString']))
 		$connection = new Mongo($tote_conf['connectionString'], array('persist' => 'tote'));
@@ -27,18 +41,28 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 	$users = get_collection(TOTE_COLLECTION_USERS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 
-	$reminderusers = $users->find(array('email' => array('$exists' => true), 'reminder' => true, 'remindertime' => array('$exists' => true)), array('email', 'username', 'first_name', 'last_name', 'reminder', 'remindertime', 'lastreminder', 'timezone'));
+	// find all users...
+	$reminderusers = $users->find(
+		array(
+			'email' => array('$exists' => true),		// that have an email address
+			'reminder' => true,				// and have reminders turned on
+			'remindertime' => array('$exists' => true)	// and have a reminder time defined
+		),
+		array('email', 'username', 'first_name', 'last_name', 'reminder', 'remindertime', 'lastreminder', 'timezone')		// load these fields
+	);
 
-	// find upcoming game
+	// find running season's year
 	$year = (int)date('Y');
 	if ((int)date('n') < 2) {
 		// January is part of the previous year's season
 		$year--;
 	}
 
+	// Find the number of weeks in the season
 	$lastgame = $games->find(array('season' => (int)$year), array('week'))->sort(array('week' => -1))->getNext();
 	$weeks = $lastgame['week'];
 
+	// find the upcoming unstarted week
 	$currentdate = new MongoDate(time());
 	$firstgame = null;
 	$weekgames = null;
@@ -49,13 +73,16 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 		if ($closedgame)
 			continue;
 
-		// this week is open - get the first game's start time
+		// this week is open - get the first game
 		$weekgames = $games->find(array('season' => (int)$year, 'week' => $i))->sort(array('start' => 1));
 		$firstgame = $weekgames->getNext();
 		break;
 	}
 
 	if ($firstgame) {
+		// we have an upcoming week
+
+		// get the data for the games for this week
 		$weekgamedata = array();
 		foreach ($weekgames as $gm) {
 			$gm['home_team'] = get_team($gm['home_team']);
@@ -64,6 +91,7 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 			$weekgamedata[] = $gm;
 		}
 
+		// set up data needed to generate reminder email
 		$tpl->assign('sitename', $tote_conf['sitename']);
 		$tpl->assign('week', $firstgame['week']);
 		$tpl->assign('year', $year);
@@ -71,17 +99,22 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 		$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
 			'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
 			'X-Mailer: PHP/' . phpversion();
+
+
+		// now process all users that want reminders
 		foreach ($reminderusers as $user) {
+
 			if ((time() + (int)$user['remindertime']) < $firstgame['start']->sec) {
-				// too early
+				// too early - haven't reached user's reminder time yet
 				continue;
 			}
 
 			if (!empty($user['lastreminder']) && (($user['lastreminder']->sec + $user['remindertime']) > $firstgame['start']->sec)) {
-				// already reminded user for this week
+				// we already reminded the user this week, don't do it again
 				continue;
 			}
-			
+		
+			// use the user's preferred timezone, otherwise default to Eastern
 			$tz = 'America/New_York';
 			if (!empty($user['timezone']))
 				$tz = $user['timezone'];
@@ -90,15 +123,25 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 				$weekgamedata[$i]['localstart']->setTimezone(new DateTimeZone($tz));
 			}
 
+			// set up user-specific data for the mail template
 			$tpl->clear_assign('games');
 			$tpl->assign('games', $weekgamedata);
 			$tpl->clear_assign('user');
 			$tpl->assign('user', $user);
-			
+		
+			// send the mail
 			$message = $tpl->fetch('reminderemail.tpl');
 			mail($user['email'], $subject, $message, $headers);
 
-			$users->update(array('_id' => $user['_id']), array('$set' => array('lastreminder' => new MongoDate(time()))));
+			// mark the user as messaged
+			$users->update(
+				array('_id' => $user['_id']),
+				array(
+					'$set' => array(
+						'lastreminder' => new MongoDate(time())
+					)
+				)
+			);
 		}
 	}
 

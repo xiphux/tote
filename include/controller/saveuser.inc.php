@@ -6,20 +6,34 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 
+/**
+ * saveuser controller
+ *
+ * after editing a user, save the changes in the database
+ *
+ * @param string $userid user id to save
+ * @param string $firstname first name
+ * @param string $lastname last name
+ * @param string $email email address
+ * @param string $admin admin flag
+ */
 function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 {
 	global $tpl;
 
 	$user = user_logged_in();
 	if (!$user) {
+		// user must be logged in
 		return redirect();
 	}
 
 	if (!user_is_admin($user)) {
+		// need to be an admin to change a user
 		return redirect();
 	}
 
 	if (empty($userid)) {
+		// need to know what user to edit
 		echo "User required";
 		return;
 	}
@@ -28,6 +42,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 
 	$edituser = get_user($userid);
 	if (!$edituser) {
+		// needs to be a valid user
 		echo "User not found";
 		return;
 	}
@@ -35,17 +50,30 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 	$errors = array();
 
 	if (empty($email)) {
+		// need the email address
 		$errors[] = "Email is required";
 	} else {
-		$existinguser = $users->findOne(array('email' => $email, '_id' => array('$ne' => $edituser['_id'])), array('username', 'email'));
-		if ($existinguser)
+		$existinguser = $users->findOne(
+			array(
+				'email' => $email,
+				'_id' => array(
+					'$ne' => $edituser['_id']
+				)
+			),
+			array('username', 'email')
+		);
+		if ($existinguser) {
+			// no duplicate emails
 			$errors[] = "A user with that email address already exists";
+		}
 		if (!preg_match('/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
+			// must be a valid email address
 			$errors[] = "Email must be valid";
 		}
 	}
 
 	if (count($errors) > 0) {
+		// if we have errors, go back to the edit page and display them
 		$tpl->assign("errors", $errors);
 		if (!empty($firstname))
 			$tpl->assign('firstname', $firstname);
@@ -59,6 +87,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		$tpl->assign('userid', $userid);
 		$tpl->display('edituser.tpl');
 	} else {
+		// set data
 		$data = array();
 		$setdata = array();
 		$unsetdata = array();
@@ -82,6 +111,8 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		if (count($data) > 0) {
 			$users->update(array('_id' => $edituser['_id']), $data);
 		}
+
+		// go back to edit users page
 		redirect(array('a' => 'editusers'));
 	}
 
