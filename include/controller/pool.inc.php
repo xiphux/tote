@@ -1,7 +1,11 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 function sort_pool($a, $b)
 {
@@ -17,40 +21,15 @@ function sort_pool($a, $b)
 	if ($a['spread'] != $b['spread'])
 		return ($a['spread'] > $b['spread'] ? -1 : 1);
 
-	$user1 = $a['user']['username'];
-	if (!empty($a['user']['first_name'])) {
-		$user1 = $a['user']['first_name'];
-		if (!empty($a['user']['last_name']))
-			$user1 .= ' ' . $a['user']['last_name'];
-		$user1 = trim($user1);
-	}
-	$user2 = $b['user']['username'];
-	if (!empty($b['user']['first_name'])) {
-		$user2 = $b['user']['first_name'];
-		if (!empty($b['user']['last_name']))
-			$user2 .= ' ' . $b['user']['last_name'];
-		$user2 = trim($user2);
-	}
-
-	return strcmp($user1, $user2);
+	return sort_users($a['user'], $b['user']);
 }
 
 function display_pool($poolID = null)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);;
 
 	$poolobj = null;
 
@@ -82,13 +61,15 @@ function display_pool($poolID = null)
 		}
 	}
 
+	$user = user_logged_in();
+
 	$entered = false;
 	$poolrecord = array();
 	foreach ($poolobj['entries'] as $entrant) {
 		
 		$record = array();
-		$record['user'] = $users->findOne(array('_id' => $entrant['user']), array('username', 'first_name', 'last_name'));
-		if (!empty($_SESSION['user']) && ($record['user']['username'] == $_SESSION['user']))
+		$record['user'] = get_user($entrant['user']);
+		if ($user && ($record['user']['username'] == $user['username']))
 			$entered = true;
 
 		$bets = array();
@@ -180,9 +161,8 @@ function display_pool($poolID = null)
 	$tpl->assign('record', $poolrecord);
 	$tpl->assign('pool', $poolobj);
 
-	if (!empty($_SESSION['user'])) {
-		$loginuser = $users->findOne(array('username' => $_SESSION['user']), array('first_name', 'last_name', 'username', 'admin'));
-		$tpl->assign('user', $loginuser);
+	if ($user) {
+		$tpl->assign('user', $user);
 	}
 	$tpl->assign('entered', $entered);
 	$tpl->assign('poolopen', $poolopen);

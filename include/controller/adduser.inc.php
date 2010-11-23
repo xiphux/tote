@@ -1,31 +1,25 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$users = $db->selectCollection($usercol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
+
+	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$errors = array();
 	if (empty($username)) {
@@ -79,14 +73,11 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 			$data['first_name'] = $firstname;
 		if (!empty($lastname))
 			$data['last_name'] = $lastname;
-		mt_srand(microtime(true)*100000 + memory_get_usage(true));
-		$salt = md5(uniqid(mt_rand(), true));
-		$hash = md5($username . ':' . $password);
-		$saltedHash = md5($salt . $username . $hash);
-		$data['salt'] = $salt;
-		$data['password'] = $saltedHash;
+		$hashdata = generate_password_hash($username, $password);
+		$data['salt'] = $hashdata['salt'];
+		$data['password'] = $hashdata['passwordhash'];
 		$users->insert($data);
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
+		redirect(array('a' => 'editusers'));
 	}
 
 }

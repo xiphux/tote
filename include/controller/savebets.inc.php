@@ -1,5 +1,12 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+
 function sort_bets($a, $b)
 {
 	return ($a['week'] > $b['week'] ? 1 : -1);
@@ -7,38 +14,15 @@ function sort_bets($a, $b)
 
 function display_savebets($poolID, $entrant, $weekbets)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$poolcol = 'pools';
-	$usercol = 'users';
-	$gamecol = 'games';
-	$teamcol = 'teams';
-	if (!empty($tote_conf['namespace'])) {
-		$poolcol = $tote_conf['namespace'] . '.' . $poolcol;
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-		$teamcol = $tote_conf['namespace'] . '.' . $teamcol;
-	}
-
-	$pools = $db->selectCollection($poolcol);
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
-	$teams = $db->selectCollection($teamcol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin', 'first_name', 'last_name'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
 
 	if (empty($poolID)) {
@@ -46,13 +30,16 @@ function display_savebets($poolID, $entrant, $weekbets)
 		return;
 	}
 
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {
 		echo "Unknown pool";
 		return;
 	}
 
-	$entrantobj = $users->findOne(array('_id' => new MongoId($entrant)), array('username', 'first_name', 'last_name'));
+	$entrantobj = get_user($entrant);
 	if (!$entrantobj) {
 		echo "Entrant not found";
 		return;
@@ -68,19 +55,9 @@ function display_savebets($poolID, $entrant, $weekbets)
 		}
 	}
 
-	$adminname = $user['username'];
-	if (!empty($user['first_name'])) {
-		$adminname = $user['first_name'];
-		if (!empty($user['last_name']))
-			$adminname .= ' ' . $user['last_name'];
-	}
+	$adminname = user_readable_name($user);
 
-	$entrantname = $entrantobj['username'];
-	if (!empty($entrantobj['first_name'])) {
-		$entrantname = $entrantobj['first_name'];
-		if (!empty($entrantobj['last_name']))
-			$entrantname .= ' ' . $user['last_name'];
-	}
+	$entrantname = user_readable_name($entrantobj);
 
 	if (!$userentry) {
 		echo "Entrant not in pool";
@@ -171,15 +148,10 @@ function display_savebets($poolID, $entrant, $weekbets)
 	$pools->update(
 		array('_id' => $pool['_id']),
 		array(
-		'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets'])
-		)
-	);
-	$pools->update(
-		array('_id' => $pool['_id']),
-		array(
+			'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets']),
 			'$pushAll' => array('actions' => $actions)
 		)
 	);
 	
-	header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
+	redirect();
 }

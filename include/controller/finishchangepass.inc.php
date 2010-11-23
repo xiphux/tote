@@ -1,12 +1,18 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
+
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 {
-	global $tpl, $db, $tote_conf;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	$user = user_logged_in();	
+	if (!$user) {
+		return redirect();
 	}
 
 	$errors = array();
@@ -26,30 +32,20 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 	if (!(empty($oldpassword) || empty($newpassword) || empty($newpassword2))) {
 
 		if ($newpassword == $newpassword2) {
-			$usercol = 'users';
 
-			$users = $db->selectCollection($usercol);
+			if (user_password_valid($user['username'], $oldpassword, $user['salt'], $user['password'])) {
+				$hashdata = generate_password_hash($user['username'], $newpassword);
+				$users = get_collection(TOTE_COLLECTION_USERS);
 
-			$userobj = $users->findOne(array('username' => $_SESSION['user']));
-
-			if ($userobj) {
-				if (md5($userobj['salt'] . $userobj['username'] . md5($userobj['username'] . ':' . $oldpassword)) == $userobj['password']) {
-					mt_srand(microtime(true)*100000 + memory_get_usage(true));
-					$salt = md5(uniqid(mt_rand(), true));
-					$hash = md5($userobj['username'] . ':' . $newpassword);
-					$saltedHash = md5($salt . $userobj['username'] . $hash);
-					$users->update(
-						array('_id' => $userobj['_id']),
-						array('$set' => array(
-							'salt' => $salt,
-							'password' => $saltedHash
-						))
-					);
-				} else {
-					$errors[] = 'Old password incorrect';
-				}
+				$users->update(
+					array('_id' => $user['_id']),
+					array('$set' => array(
+						'salt' => $hashdata['salt'],
+						'password' => $hashdata['passwordhash']
+					))
+				);
 			} else {
-				$errors[] = 'User not found';
+				$errors[] = 'Old password incorrect';
 			}
 		} else {
 			$errors[] = 'Passwords don\'t match';

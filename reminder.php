@@ -19,19 +19,13 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 		$connection = new Mongo('mongodb://localhost:27017', array('persist' => 'tote'));
 	$db = $connection->selectDB($tote_conf['database']);
 
+	require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 	require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 
 	$tpl = new Smarty;
 
-	$usercol = 'users';
-	$gamecol = 'games';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-		$gamecol = $tote_conf['namespace'] . '.' . $gamecol;
-	}
-
-	$users = $db->selectCollection($usercol);
-	$games = $db->selectCollection($gamecol);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$reminderusers = $users->find(array('email' => array('$exists' => true), 'reminder' => true, 'remindertime' => array('$exists' => true)), array('email', 'username', 'first_name', 'last_name', 'reminder', 'remindertime', 'lastreminder', 'timezone'));
 

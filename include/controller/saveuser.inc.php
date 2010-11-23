@@ -1,30 +1,22 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+
 function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 {
-	global $db, $tote_conf, $tpl;
+	global $tpl;
 
-	if (!isset($_SESSION['user'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
-	}
-
-	$usercol = 'users';
-	if (!empty($tote_conf['namespace'])) {
-		$usercol = $tote_conf['namespace'] . '.' . $usercol;
-	}
-
-	$users = $db->selectCollection($usercol);
-
-	$user = $users->findOne(array('username' => $_SESSION['user']), array('username', 'admin'));
+	$user = user_logged_in();
 	if (!$user) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+		return redirect();
 	}
 
-	if (empty($user['admin'])) {
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
-		return;
+	if (!user_is_admin($user)) {
+		return redirect();
 	}
 
 	if (empty($userid)) {
@@ -32,7 +24,9 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		return;
 	}
 
-	$edituser = $users->findOne(array('_id' => new MongoId($userid)), array('username', 'admin', 'first_name', 'last_name', 'email'));
+	$users = get_collection(TOTE_COLLECTION_USERS);
+
+	$edituser = get_user($userid);
 	if (!$edituser) {
 		echo "User not found";
 		return;
@@ -75,10 +69,10 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		if ($email != $edituser['email'])
 			$setdata['email'] = $email;
 		if (!empty($admin) && (strcasecmp($admin, 'on') == 0)) {
-			if (empty($edituser['admin']))
+			if (!user_is_admin($edituser))
 				$setdata['admin'] = true;
 		} else {
-			if (!empty($edituser['admin']) && ($edituser['admin'] == true))
+			if (user_is_admin($edituser))
 				$unsetdata['admin'] = 1;
 		}
 		if (count($setdata) > 0)
@@ -88,7 +82,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		if (count($data) > 0) {
 			$users->update(array('_id' => $edituser['_id']), $data);
 		}
-		header('Location: http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=editusers');
+		redirect(array('a' => 'editusers'));
 	}
 
 }
