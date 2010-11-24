@@ -7,6 +7,14 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
+/**
+ * feed controller
+ *
+ * displays pool audit history in a variety of formats
+ *
+ * @param string $format format to display
+ * @param string $poolID pool to display
+ */
 function display_feed($format, $poolID)
 {
 	global $tpl;
@@ -21,14 +29,15 @@ function display_feed($format, $poolID)
 		//}
 	}
 
+	// if we don't have a pool, try to find the most recent pool
 	$poolobj = null;
-
 	if (empty($poolID))
 		$poolobj = $pools->find()->sort(array('season' => -1))->getNext();
 	else
 		$poolobj = $pools->findOne(array('_id' => new MongoId($poolID)));
 
 	if (!$poolobj) {
+		// we need some pool
 		echo "Pool not found";
 		return;
 	}
@@ -39,30 +48,43 @@ function display_feed($format, $poolID)
 
 	if (isset($poolobj['actions'])) {
 		foreach ($poolobj['actions'] as $action) {
-			
+		
+			// load user data
 			if (!empty($action['user'])) {
 				$action['user'] = get_user($action['user']);
 				if (!empty($action['user'])) {
+					// use the readable name from the user record
+					// if the record still exists
 					$action['user_name'] = user_readable_name($action['user']);
 				}
 			}
+
+			// load admin data
 			if (!empty($action['admin'])) {
 				$action['admin'] = get_user($action['admin']);
 				if (!empty($action['admin'])) {
+					// use the readable name from the user record
+					// if the record still exists
 					$action['admin_name'] = user_readable_name($action['admin']);
 				}
 			}
 
+			// load team data
 			if (!empty($action['team'])) {
 				$action['team'] = get_team($action['team']);
 			}
+
+			// load from team data (for edits)
 			if (!empty($action['from_team'])) {
 				$action['from_team'] = get_team($action['from_team']);
 			}
+
+			// load to team data (for edits)
 			if (!empty($action['to_team'])) {
 				$action['to_team'] = get_team($action['to_team']);
 			}
 
+			// format times with timezones
 			$sec = $action['time']->sec;
 			$action['time'] = new DateTime('@' . $sec);
 			if ($format == 'html') {
@@ -72,16 +94,21 @@ function display_feed($format, $poolID)
 					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
 				}
 			}
+
+			// keep the most recent updated time
 			if ((!$updated) || ((int)$updated->format('U') < $sec))
 				$updated = $action['time'];
 
+			// index by time
 			$actions[$sec][] = $action;
 
 		}
 	}
 
+	// sort by time descending
 	krsort($actions);
 
+	// set data
 	$tpl->assign('pool', $poolobj);
 	if ($updated)
 		$tpl->assign('updated', $updated);
@@ -91,12 +118,15 @@ function display_feed($format, $poolID)
 	$tpl->assign('self', 'http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php');
 	
 	if ($format == 'atom') {
+		// display atom feed
 		header('Content-type: application/atom+xml; charset=UTF-8');
 		$tpl->display('atom.tpl');
 	} else if ($format == 'rss') {
+		// display rss feed
 		header('Content-type: text/xml; charset=UTF-8');
 		$tpl->display('rss.tpl');
 	} else if ($format == 'html') {
+		// display history html page
 		$tpl->display('history.tpl');
 	}
 
