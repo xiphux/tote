@@ -168,7 +168,10 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// deleteuser - delete a user
 	case 'deleteuser':
 		require_once(TOTE_CONTROLLERDIR . 'deleteuser.inc.php');
-		display_deleteuser((empty($_GET['u']) ? null : $_GET['u']));
+		display_deleteuser(
+			(empty($_GET['u']) ? null : $_GET['u']),
+			(empty($_GET['csrftoken']) ? null : $_GET['csrftoken'])
+		);
 		break;
 
 
