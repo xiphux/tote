@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
@@ -12,8 +13,9 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
  * @param string $timezone timezone preference
  * @param string $reminder whether we want reminders
  * @param string $remindertime reminder time
+ * @param string $csrftoken CSRF request token
  */
-function display_saveprefs($timezone, $reminder, $remindertime)
+function display_saveprefs($timezone, $reminder, $remindertime, $csrftoken)
 {
 	global $tpl, $tote_conf;
 
@@ -21,6 +23,11 @@ function display_saveprefs($timezone, $reminder, $remindertime)
 	if (!$user) {
 		// user must be logged in
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	$errors = array();

@@ -61,7 +61,8 @@ function initEditPool() {
 			data: {
 				p: $('span#poolID').text(),
 				m: 'add',
-				u: aUsers
+				u: aUsers,
+				csrftoken: TOTE_CSRF_TOKEN
 			},
 			success: function(msg) {
 				if (msg && (msg.length > 0)) {
@@ -96,7 +97,8 @@ function initEditPool() {
 			data: {
 				p: $('span#poolID').text(),
 				m: 'remove',
-				u: pUsers
+				u: pUsers,
+				csrftoken: TOTE_CSRF_TOKEN
 			},
 			success: function(msg) {
 				if (msg && (msg.length > 0)) {

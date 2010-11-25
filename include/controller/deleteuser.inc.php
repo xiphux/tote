@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
+require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
@@ -10,8 +12,11 @@ require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
  * deleteuser controller
  *
  * deletes a user from the database
+ *
+ * @param string $userid user id to delete
+ * @param string $csrftoken CSRF request token
  */
-function display_deleteuser($userid)
+function display_deleteuser($userid, $csrftoken)
 {
 	global $tpl;
 
@@ -26,6 +31,11 @@ function display_deleteuser($userid)
 		return redirect();
 	}
 
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
+	}
+
 	if (empty($userid)) {
 		// need to know which user to delete
 		echo "User to delete is required";
@@ -35,7 +45,7 @@ function display_deleteuser($userid)
 	$users = get_collection(TOTE_COLLECTION_USERS);
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
-	$deleteuser = get_user($userid)
+	$deleteuser = get_user($userid);
 	if (!$deleteuser) {
 		// must be a valid user to delete
 		echo "Could not find user to delete";

@@ -49,6 +49,7 @@ Games for week {$week}:
 </select>
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="w" value="{$week}" />
+<input type="hidden" name="csrftoken" value="{$csrftoken}" />
 <input type="submit" value="Bet" />
 </form>
 </p>

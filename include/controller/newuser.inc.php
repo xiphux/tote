@@ -25,6 +25,7 @@ function display_newuser()
 		return redirect();
 	}
 
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->display('newuser.tpl');
 
 }

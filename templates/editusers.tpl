@@ -20,7 +20,7 @@
  <td class="username">{$eachuser.username}</td>
  <td>{$eachuser.email}</td>
  <td>{if $eachuser.admin}Yes{/if}</td>
- <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}" class="deleteLink">Delete</a></td>
+ <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}&csrftoken={$csrftoken}" class="deleteLink">Delete</a></td>
 </tr>
 {/foreach}
 </tbody>

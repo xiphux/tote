@@ -48,7 +48,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// addbet - process the user's submitted bet
 	case 'addbet':
 		require_once(TOTE_CONTROLLERDIR . 'addbet.inc.php');
-		display_addbet((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['w']) ? null : $_POST['w']), (empty($_POST['t']) ? null : $_POST['t']));
+		display_addbet(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['w']) ? null : $_POST['w']),
+			(empty($_POST['t']) ? null : $_POST['t']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 	// editbets - edit a user's bets
@@ -61,7 +66,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// savebets - save the changes to a user's bet
 	case 'savebets':
 		require_once(TOTE_CONTROLLERDIR . 'savebets.inc.php');
-		display_savebets((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['u']) ? null : $_POST['u']), (empty($_POST['week']) ? null : $_POST['week']));
+		display_savebets(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['u']) ? null : $_POST['u']),
+			(empty($_POST['week']) ? null : $_POST['week']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
@@ -80,14 +90,23 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// ajaxeditpool - used to asynchronously save changes when editing pool
 	case 'ajaxeditpool':
 		require_once(TOTE_CONTROLLERDIR . 'ajaxeditpool.inc.php');
-		display_ajaxeditpool((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['m']) ? null : $_POST['m']), (empty($_POST['u']) ? null : $_POST['u']));
+		display_ajaxeditpool(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['m']) ? null : $_POST['m']),
+			(empty($_POST['u']) ? null : $_POST['u']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
 	// setpoolname - used to save the changes to a pool's name
 	case 'setpoolname':
 		require_once(TOTE_CONTROLLERDIR . 'setpoolname.inc.php');
-		display_setpoolname((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['poolname']) ? null : $_POST['poolname']));
+		display_setpoolname(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['poolname']) ? null : $_POST['poolname']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
@@ -134,7 +153,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['firstname']) ? null : $_POST['firstname']),
 			(empty($_POST['lastname']) ? null : $_POST['lastname']),
 			(empty($_POST['email']) ? null : $_POST['email']),
-			(empty($_POST['admin']) ? null : $_POST['admin'])
+			(empty($_POST['admin']) ? null : $_POST['admin']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
 
@@ -155,7 +175,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['lastname']) ? null : $_POST['lastname']),
 			(empty($_POST['email']) ? null : $_POST['email']),
 			(empty($_POST['password']) ? null : $_POST['password']),
-			(empty($_POST['password2']) ? null : $_POST['password2'])
+			(empty($_POST['password2']) ? null : $_POST['password2']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
 
@@ -163,7 +184,10 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// deleteuser - delete a user
 	case 'deleteuser':
 		require_once(TOTE_CONTROLLERDIR . 'deleteuser.inc.php');
-		display_deleteuser((empty($_GET['u']) ? null : $_GET['u']));
+		display_deleteuser(
+			(empty($_GET['u']) ? null : $_GET['u']),
+			(empty($_GET['csrftoken']) ? null : $_GET['csrftoken'])
+		);
 		break;
 
 
@@ -183,9 +207,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	// logout - log user out of the system
 	case 'logout':
-		require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-		unset($_SESSION['user']);
-		redirect();
+		require_once(TOTE_CONTROLLERDIR . 'logout.inc.php');
+		display_logout();
 		break;
 
 
@@ -202,7 +225,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_saveprefs(
 			(empty($_POST['timezone']) ? null : $_POST['timezone']),
 			(empty($_POST['reminder']) ? false : $_POST['reminder']),
-			(empty($_POST['remindertime']) ? null : $_POST['remindertime'])
+			(empty($_POST['remindertime']) ? null : $_POST['remindertime']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
 
@@ -217,7 +241,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// finishchangepass - save changed password in the database
 	case 'finishchangepass':
 		require_once(TOTE_CONTROLLERDIR . 'finishchangepass.inc.php');
-		display_finishchangepass((empty($_POST['oldpassword']) ? null : $_POST['oldpassword']), (empty($_POST['newpassword']) ? null : $_POST['newpassword']), (empty($_POST['newpassword2']) ? null : $_POST['newpassword2']));
+		display_finishchangepass(
+			(empty($_POST['oldpassword']) ? null : $_POST['oldpassword']),
+			(empty($_POST['newpassword']) ? null : $_POST['newpassword']),
+			(empty($_POST['newpassword2']) ? null : $_POST['newpassword2']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 

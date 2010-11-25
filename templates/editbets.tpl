@@ -21,6 +21,7 @@
 <div>
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="u" value="{$entrant._id}" />
+<input type="hidden" name="csrftoken" value="{$csrftoken}" />
 <input type="submit" value="Save" />
 </form>
 

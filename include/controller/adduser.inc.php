@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
@@ -17,8 +18,9 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  * @param string $email email address
  * @param string $password password
  * @param string $password2 confirm password
+ * @param string $csrftoken CSRF request token
  */
-function display_adduser($username, $firstname, $lastname, $email, $password, $password2)
+function display_adduser($username, $firstname, $lastname, $email, $password, $password2, $csrftoken)
 {
 	global $tpl;
 
@@ -31,6 +33,11 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	if (!user_is_admin($user)) {
 		// must be an admin to add a user
 		return redirect();
+	}
+	
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
@@ -97,6 +104,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 			$tpl->assign('username', $username);
 		if (!empty($email))
 			$tpl->assign('email', $email);
+		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('newuser.tpl');
 	} else {
 		// insert user into database
