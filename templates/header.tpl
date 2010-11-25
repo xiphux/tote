@@ -5,7 +5,7 @@
   <title>Tote</title>
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
-  {if $csrftoken}
+  {if $csrftoken && $jstoken}
   <script type="text/javascript">
     var TOTE_CSRF_TOKEN="{$csrftoken}"
   </script>
