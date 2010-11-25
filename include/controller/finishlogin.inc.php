@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
@@ -38,6 +39,9 @@ function display_finishlogin($user, $pass)
 			// if username and password are valid,
 			// store user logged in in session
 			$_SESSION['user'] = $user;
+
+			// create CSRF token
+			$_SESSION['csrftoken'] = generate_salt();
 		} else {
 			$errors[] = 'Incorrect username or password';
 		}

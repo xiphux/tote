@@ -17,6 +17,8 @@ function display_changepass()
 		return redirect();
 	}
 
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
+
 	$tpl->display('changepass.tpl');
 
 }

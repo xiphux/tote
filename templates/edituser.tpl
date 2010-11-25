@@ -35,6 +35,7 @@
   </tr>
 </table>
 <input type="hidden" name="u" value="{$userid}" />
+<input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
 
 {include file='footer.tpl'}

@@ -39,6 +39,7 @@ function display_editusers()
 	usort($userarray, 'sort_users');
 
 	// set data and display
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('allusers', $userarray);
 	$tpl->display('editusers.tpl');
 }

@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
@@ -12,8 +13,9 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  *
  * @param string $poolID pool id
  * @param string $poolname new name
+ * @param string $csrftoken CSRF request token
  */
-function display_setpoolname($poolID, $poolname)
+function display_setpoolname($poolID, $poolname, $csrftoken)
 {
 	$user = user_logged_in();
 	if (!$user) {
@@ -24,6 +26,11 @@ function display_setpoolname($poolID, $poolname)
 	if (!user_is_admin($user)) {
 		// need to be an admin to change the name
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	if (empty($poolID)) {

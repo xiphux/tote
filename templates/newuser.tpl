@@ -40,6 +40,7 @@
     <td><input type="submit" value="Create" /></td>
   </tr>
 </table>
+<input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
 
 {include file='footer.tpl'}

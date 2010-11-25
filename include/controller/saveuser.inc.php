@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
@@ -16,8 +17,9 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  * @param string $lastname last name
  * @param string $email email address
  * @param string $admin admin flag
+ * @param string $csrftoken CSRF request token
  */
-function display_saveuser($userid, $firstname, $lastname, $email, $admin)
+function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrftoken)
 {
 	global $tpl;
 
@@ -30,6 +32,11 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 	if (!user_is_admin($user)) {
 		// need to be an admin to change a user
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	if (empty($userid)) {
@@ -85,6 +92,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin)
 		if (!empty($admin) && (strcasecmp($admin, 'on') == 0))
 			$tpl->assign('admin', $admin);
 		$tpl->assign('userid', $userid);
+		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('edituser.tpl');
 	} else {
 		// set data

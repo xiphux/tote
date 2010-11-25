@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
@@ -14,8 +15,9 @@ require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
  * @param string $oldpassword old password
  * @param string $newpassword new password
  * @param string $newpassword2 confirmed new password
+ * @param string $csrftoken CSRF request token
  */
-function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
+function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $csrftoken)
 {
 	global $tpl;
 
@@ -23,6 +25,11 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 	if (!$user) {
 		// user must be logged in
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	$errors = array();
@@ -73,6 +80,7 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2)
 		// if we have errors, send them back to the change pass form
 		// with the errors displayed
 		$tpl->assign('errors', $errors);
+		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('changepass.tpl');
 	} else {
 		// password change successful

@@ -37,6 +37,8 @@ function display_editprefs()
 	// only makes sense to choose from US timezones at the moment
 	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(2));
 
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
+
 	$tpl->display('editprefs.tpl');
 
 }

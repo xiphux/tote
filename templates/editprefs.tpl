@@ -28,6 +28,7 @@
 {/if}
 
 <br />
+<input type="hidden" name="csrftoken" value="{$csrftoken}" />
 <div>
 <input type="submit" value="Save" />
 </div>

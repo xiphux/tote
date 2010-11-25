@@ -85,6 +85,7 @@ function display_editpool($poolID)
 		$tpl->assign('availableusers', $availableusers);
 	}
 	$tpl->assign('pool', $pool);
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->display('editpool.tpl');
 
 }
