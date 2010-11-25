@@ -206,7 +206,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_saveprefs(
 			(empty($_POST['timezone']) ? null : $_POST['timezone']),
 			(empty($_POST['reminder']) ? false : $_POST['reminder']),
-			(empty($_POST['remindertime']) ? null : $_POST['remindertime'])
+			(empty($_POST['remindertime']) ? null : $_POST['remindertime']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
 
