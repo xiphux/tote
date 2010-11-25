@@ -161,7 +161,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['lastname']) ? null : $_POST['lastname']),
 			(empty($_POST['email']) ? null : $_POST['email']),
 			(empty($_POST['password']) ? null : $_POST['password']),
-			(empty($_POST['password2']) ? null : $_POST['password2'])
+			(empty($_POST['password2']) ? null : $_POST['password2']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
 
