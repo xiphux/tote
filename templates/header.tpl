@@ -5,6 +5,11 @@
   <title>Tote</title>
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
+  {if $csrftoken}
+  <script type="text/javascript">
+    var TOTE_CSRF_TOKEN="{$csrftoken}"
+  </script>
+  {/if}
   <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
   {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>

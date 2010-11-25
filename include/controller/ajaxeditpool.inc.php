@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
@@ -14,8 +15,9 @@ require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
  * @param string $poolID pool ID
  * @param string $modification type of modification to do
  * @param array $modusers list of users being modified
+ * @param string $csrftoken CSRF request token
  */
-function display_ajaxeditpool($poolID, $modification, $modusers)
+function display_ajaxeditpool($poolID, $modification, $modusers, $csrftoken)
 {
 	$user = user_logged_in();
 	if (!$user) {
@@ -27,6 +29,11 @@ function display_ajaxeditpool($poolID, $modification, $modusers)
 	if (!user_is_admin($user)) {
 		// need to be an admin to edit the pool
 		echo "User is not an admin";
+		return;
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
 		return;
 	}
 

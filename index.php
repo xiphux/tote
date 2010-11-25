@@ -85,14 +85,23 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// ajaxeditpool - used to asynchronously save changes when editing pool
 	case 'ajaxeditpool':
 		require_once(TOTE_CONTROLLERDIR . 'ajaxeditpool.inc.php');
-		display_ajaxeditpool((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['m']) ? null : $_POST['m']), (empty($_POST['u']) ? null : $_POST['u']));
+		display_ajaxeditpool(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['m']) ? null : $_POST['m']),
+			(empty($_POST['u']) ? null : $_POST['u']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
 	// setpoolname - used to save the changes to a pool's name
 	case 'setpoolname':
 		require_once(TOTE_CONTROLLERDIR . 'setpoolname.inc.php');
-		display_setpoolname((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['poolname']) ? null : $_POST['poolname']));
+		display_setpoolname(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['poolname']) ? null : $_POST['poolname']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
