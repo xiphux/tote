@@ -48,7 +48,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// addbet - process the user's submitted bet
 	case 'addbet':
 		require_once(TOTE_CONTROLLERDIR . 'addbet.inc.php');
-		display_addbet((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['w']) ? null : $_POST['w']), (empty($_POST['t']) ? null : $_POST['t']));
+		display_addbet(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['w']) ? null : $_POST['w']),
+			(empty($_POST['t']) ? null : $_POST['t']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 	// editbets - edit a user's bets

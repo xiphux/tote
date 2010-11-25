@@ -142,6 +142,7 @@ function display_bet($poolID, $week)
 	uasort($availableteams, 'sort_teams');
 
 	// set data for display
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('teams', $availableteams);
 	$tpl->assign('week', $week);
 	if (count($bets) > 0) {

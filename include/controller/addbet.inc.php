@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
@@ -14,8 +15,9 @@ require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
  * @param string $poolID pool ID
  * @param string $week week number
  * @param string $team team ID
+ * @param string $csrftoken CSRF request token
  */
-function display_addbet($poolID, $week, $team)
+function display_addbet($poolID, $week, $team, $csrftoken)
 {
 	global $tpl;
 
@@ -23,6 +25,11 @@ function display_addbet($poolID, $week, $team)
 	if (!$user) {
 		// user must be logged in
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	if (empty($poolID)) {
