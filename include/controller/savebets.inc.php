@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
@@ -26,8 +27,9 @@ function sort_bets($a, $b)
  * @param string $poolID pool id
  * @param string $entrant entrant user id
  * @param string $weekbets array of bets for the week
+ * @param string $csrftoken CSRF request token
  */
-function display_savebets($poolID, $entrant, $weekbets)
+function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 {
 	global $tpl;
 
@@ -40,6 +42,11 @@ function display_savebets($poolID, $entrant, $weekbets)
 	if (!user_is_admin($user)) {
 		// must be an admin to save bets
 		return redirect();
+	}
+
+	if (!validate_csrftoken($csrftoken)) {
+		echo "Invalid request token";
+		return;
 	}
 
 	if (empty($poolID)) {

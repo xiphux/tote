@@ -66,7 +66,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// savebets - save the changes to a user's bet
 	case 'savebets':
 		require_once(TOTE_CONTROLLERDIR . 'savebets.inc.php');
-		display_savebets((empty($_POST['p']) ? null : $_POST['p']), (empty($_POST['u']) ? null : $_POST['u']), (empty($_POST['week']) ? null : $_POST['week']));
+		display_savebets(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['u']) ? null : $_POST['u']),
+			(empty($_POST['week']) ? null : $_POST['week']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 

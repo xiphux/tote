@@ -102,6 +102,7 @@ function display_editbets($poolID, $entrant)
 	$tpl->assign('entrant', $entrantobj);
 	$tpl->assign('teams', $allteams);
 	$tpl->assign('bets', $userbets);
+	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 
 	$tpl->display('editbets.tpl');
 }
