@@ -183,9 +183,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	// logout - log user out of the system
 	case 'logout':
-		require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-		unset($_SESSION['user']);
-		redirect();
+		require_once(TOTE_CONTROLLERDIR . 'logout.inc.php');
+		display_logout();
 		break;
 
 
