@@ -222,7 +222,12 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// finishchangepass - save changed password in the database
 	case 'finishchangepass':
 		require_once(TOTE_CONTROLLERDIR . 'finishchangepass.inc.php');
-		display_finishchangepass((empty($_POST['oldpassword']) ? null : $_POST['oldpassword']), (empty($_POST['newpassword']) ? null : $_POST['newpassword']), (empty($_POST['newpassword2']) ? null : $_POST['newpassword2']));
+		display_finishchangepass(
+			(empty($_POST['oldpassword']) ? null : $_POST['oldpassword']),
+			(empty($_POST['newpassword']) ? null : $_POST['newpassword']),
+			(empty($_POST['newpassword2']) ? null : $_POST['newpassword2']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
 		break;
 
 
