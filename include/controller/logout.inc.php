@@ -10,5 +10,6 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 function display_logout()
 {
 	unset($_SESSION['user']);
+	unset($_SESSION['csrftoken']);
 	redirect();
 }
