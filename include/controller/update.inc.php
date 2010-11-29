@@ -150,6 +150,8 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
 		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
 		'X-Mailer: PHP/' . phpversion();
+	if (!empty($tote_conf['bccemail']))
+		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 
 	$seasonpools = $pools->find(array('season' => $season));
 
