@@ -28,6 +28,10 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 		$connection = new Mongo('mongodb://localhost:27017', array('persist' => 'tote'));
 	$db = $connection->selectDB($tote_conf['database']);
 
+	// create Smarty
+	require_once($tote_conf['smarty'] . 'Smarty.class.php');
+	$tpl = new Smarty();
+
 	// use update controller
 	require_once(TOTE_CONTROLLERDIR . 'update.inc.php');
 
