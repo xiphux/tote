@@ -13,9 +13,10 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
  * @param string $timezone timezone preference
  * @param string $reminder whether we want reminders
  * @param string $remindertime reminder time
+ * @param string $resultnotification whether we want game result notifications
  * @param string $csrftoken CSRF request token
  */
-function display_saveprefs($timezone, $reminder, $remindertime, $csrftoken)
+function display_saveprefs($timezone, $reminder, $remindertime, $resultnotification, $csrftoken)
 {
 	global $tpl, $tote_conf;
 
@@ -76,6 +77,12 @@ function display_saveprefs($timezone, $reminder, $remindertime, $csrftoken)
 				$data['$unset']['reminder'] = 1;
 				$data['$unset']['lastreminder'] = 1;
 			}
+		}
+
+		if ($resultnotification && $resultnotification == '1') {
+			$data['$set']['resultnotification'] = true;
+		} else {
+			$data['$unset']['resultnotification'] = 1;
 		}
 
 		$users = get_collection(TOTE_COLLECTION_USERS);
