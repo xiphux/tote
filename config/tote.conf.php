@@ -45,6 +45,14 @@ $tote_conf['sitename'] = 'football.chris-han.net';
 $tote_conf['fromemail'] = 'xiphux@gmail.com';
 
 /**
+ * bccemail
+ *
+ * email address to BCC all outgoing emails to
+ * (for debugging purposes)
+ */
+//$tote_conf['bccemail'] = 'xiphux@gmail.com';
+
+/**
  * reminders
  *
  * set to true to enable the reminder settings

@@ -1,6 +1,8 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 
 // times are reported on websites in Eastern
 date_default_timezone_set('America/New_York');
@@ -122,6 +124,99 @@ function get_team_id($team)
 }
 
 /**
+ * For users that have bet on this game and have notifications
+ * turned on, let them know
+ *
+ * @param int $season season
+ * @param int $week week
+ * @param object $hometeam home team id
+ * @param int $homescore home team score
+ * @param int $awayteam away team id
+ * @param int $awayscore away team score
+ */
+function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, $awayscore)
+{
+	global $tpl, $tote_conf;
+
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$users = get_collection(TOTE_COLLECTION_USERS);
+
+	$tpl->assign('week', $week);
+	$tpl->assign('hometeam', get_team($hometeam));
+	$tpl->assign('awayteam', get_team($awayteam));
+	$tpl->assign('homescore', $homescore);
+	$tpl->assign('awayscore', $awayscore);
+
+	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
+		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+	if (!empty($tote_conf['bccemail']))
+		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
+
+	$seasonpools = $pools->find(array('season' => $season));
+
+	// go through all pools for this season
+	foreach ($seasonpools as $pool) {
+
+		$tpl->assign('pool', $pool);
+
+		// go through all entrants in the pool
+		foreach ($pool['entries'] as $entrant) {
+		
+			// check if the user has notifications turned on
+			$entrantuser = $users->findOne(array('_id' => $entrant['user']), array('resultnotification', 'username', 'email', 'first_name', 'last_name'));
+			if ($entrantuser && isset($entrantuser['resultnotification']) && ($entrantuser['resultnotification'] === true) && !empty($entrantuser['email'])) {
+				foreach ($entrant['bets'] as $bet) {
+					if ($bet['week'] != $week) {
+						// wrong week
+						continue;
+					}
+
+					if (($bet['team'] != $hometeam) && ($bet['team'] != $awayteam)) {
+						// didn't bet on this game
+						continue;
+					}
+
+					$win = false;
+					$loss = false;
+					if (
+						(($bet['team'] == $hometeam) && ($homescore > $awayscore)) ||
+						(($bet['team'] == $awayteam) && ($awayscore > $homescore))
+					) {
+						$win = true;
+					} else if (
+						(($bet['team'] == $hometeam) && ($awayscore > $homescore)) ||
+						(($bet['team'] == $awayteam) && ($homescore > $awayscore))
+					) {
+						$loss = true;
+					}
+					// (otherwise assume push)
+
+					$subject = '';
+					if ($win) {
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet won';
+					} else if ($loss) {
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet lost';
+					} else {
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet pushed';
+					}
+
+					$tpl->assign('user', $entrantuser);
+					$tpl->assign('bet', get_team($bet['team']));
+					if ($win)
+						$tpl->assign('win', true);
+					if ($loss)
+						$tpl->assign('loss', true);
+					$message = $tpl->fetch('notificationemail.tpl');
+					mail($entrantuser['email'], $subject, $message, $headers);
+				}
+			}
+
+		}
+	}
+}
+
+/**
  * For a game that has finished and has scores,
  * update it in the database if necessary
  *
@@ -204,6 +299,10 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 		// scores don't match what we have in database - update it
 		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . "<br />\n";
+		if (!(isset($gameobj['home_score']) || isset($gameobj['away_score']))) {
+			// send notification emails if recording scores for the first time
+			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
+		}
 		$games->update(
 			array('_id' => $gameobj['_id']),
 			array('$set' => array(
