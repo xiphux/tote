@@ -34,7 +34,7 @@ $tote_conf['smarty'] = '/home/xiphux/smarty/';
  *
  * name of site to use in various displays/emails
  */
-$tote_conf['sitename'] = 'football.xiphux.com';
+$tote_conf['sitename'] = 'football.chris-han.net';
 
 /**
  * fromemail
