@@ -1,9 +1,22 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
 <div class="poolInfoDiv">
+<div class="poolNavDiv">
+{if $allpools && (count($allpools) > 1)}
+<form action="index.php" method="get">
+<select id="poolNameSelect" name="p">
+{foreach from=$allpools item=eachpool}
+<option value="{$eachpool._id}" {if $eachpool._id == $pool._id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
+{/foreach}
+</select>
+<input type="submit" value="Go" id="poolNameSubmit" />
+</form>
+{else}
 {$pool.name} [{$pool.season}-{$pool.season+1}]
+{/if}
+</div>
 {if $user && $entered && $poolopen}
-<p>
+<div class="poolBetDiv">
 <form action="index.php" method="get">
 <label for="bet">Bet on week:</label> 
 <select name="w">
@@ -17,7 +30,7 @@
 <input type="hidden" name="p" value="{$pool._id}" />
 <input value="Bet" type="submit" />
 </form>
-</p>
+</div>
 {/if}
 </div>
 
@@ -32,6 +45,7 @@
 <tr><td><a href="index.php?a=update">Update scores</a></td></tr>
 <tr><td><a href="index.php?a=editpool&p={$pool._id}">Manage pool</a></td></tr>
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
+<tr><td><a href="index.php?a=newpool">New pool</a></td></tr>
 {/if}
 <tr><td><a href="index.php?a=editprefs">Edit preferences</a></td></tr>
 <tr><td><a href="index.php?a=changepass">Change password</a></td></tr>

@@ -170,3 +170,11 @@ table.userTable td {
 table.userTable td.action a {
 	margin: 0px 5px;
 }
+
+div.poolBetDiv {
+	margin-top: 30px;
+}
+
+div.poolActionsDiv {
+	margin-top: 20px;
+}
