@@ -63,16 +63,18 @@ function display_editpool($poolID)
 	}
 
 	$poolusers = array();
-	foreach ($pool['entries'] as $entrant) {
-		// for each entrant in the pool, move them from the available
-		// users list to the pool user list
-		$poolusers[(string)$entrant['user']] = $availableusers[(string)$entrant['user']];
-		if (!empty($entrant['bets']) && (count($entrant['bets']) > 0)) {
-			// flag a user if they have bets, so we can make that clear
-			// in the admin page
-			$poolusers[(string)$entrant['user']]['hasbets'] = true;
+	if (!empty($pool['entries'])) {
+		foreach ($pool['entries'] as $entrant) {
+			// for each entrant in the pool, move them from the available
+			// users list to the pool user list
+			$poolusers[(string)$entrant['user']] = $availableusers[(string)$entrant['user']];
+			if (!empty($entrant['bets']) && (count($entrant['bets']) > 0)) {
+				// flag a user if they have bets, so we can make that clear
+				// in the admin page
+				$poolusers[(string)$entrant['user']]['hasbets'] = true;
+			}
+			unset($availableusers[(string)$entrant['user']]);
 		}
-		unset($availableusers[(string)$entrant['user']]);
 	}
 
 	// set data and display
