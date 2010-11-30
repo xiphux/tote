@@ -4,12 +4,12 @@
 <div class="poolNavDiv">
 {if $allpools && (count($allpools) > 1)}
 <form action="index.php" method="get">
-<select name="p">
+<select id="poolNameSelect" name="p">
 {foreach from=$allpools item=eachpool}
 <option value="{$eachpool._id}" {if $eachpool._id == $pool._id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
 {/foreach}
 </select>
-<input type="submit" value="Go" />
+<input type="submit" value="Go" id="poolNameSubmit" />
 </form>
 {else}
 {$pool.name} [{$pool.season}-{$pool.season+1}]
