@@ -136,7 +136,16 @@ function initEditPoolTips()
 	});
 }
 
+function initDeleteConfirm()
+{
+	$('a.deletePoolAction').click(function() {
+		var poolname = $('#poolName').val();
+		return confirm("Are you sure you want to delete the pool \"" + poolname + "\"?\r\nThis pool and all its bets will be permanently removed.");
+	});
+}
+
 $(document).ready(function() {
 	initEditPool();
 	initEditPoolTips();
+	initDeleteConfirm();
 });

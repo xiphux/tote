@@ -8,7 +8,7 @@
 </div>
 <div class="right">
 <form action="{$SCRIPT_NAME}?a=setpoolname" method="post">
-<label for="poolname">Pool name:</label> <input type="text" name="poolname" value="{$pool.name}" /><input type="submit" value="Set" />
+<label for="poolname">Pool name:</label> <input type="text" name="poolname" id="poolName" value="{$pool.name}" /><input type="submit" value="Set" />
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
@@ -67,6 +67,10 @@ Users in pool:
 </div>
 
 <div class="clear">
+</div>
+
+<div class="poolActionsDiv">
+<a href="{$SCRIPT_NAME}?a=deletepool&p={$pool._id}&csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
 </div>
 
 {include file='footer.tpl'}

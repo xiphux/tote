@@ -128,6 +128,16 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	// deletepool - deletes the entire pool
+	case 'deletepool':
+		require_once(TOTE_CONTROLLERDIR . 'deletepool.inc.php');
+		display_deletepool(
+			(empty($_GET['p']) ? null : $_GET['p']),
+			(empty($_GET['csrftoken']) ? null : $_GET['csrftoken'])
+		);
+		break;
+
+
 	// atom - get the pool event history in atom feed format
 	case 'atom':
 		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
