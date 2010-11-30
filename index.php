@@ -81,6 +81,24 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 	
+	// newpool - form to enter a new pool
+	case 'newpool':
+		require_once(TOTE_CONTROLLERDIR . 'newpool.inc.php');
+		display_newpool();
+		break;
+
+	
+	// addpool - validates and adds the new pool to the database
+	case 'addpool':
+		require_once(TOTE_CONTROLLERDIR . 'addpool.inc.php');
+		display_addpool(
+			(empty($_POST['name']) ? null : $_POST['name']),
+			(empty($_POST['season']) ? null : $_POST['season']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
+		break;
+
+	
 	// editpool - edit settings for pool such as entrants and name
 	case 'editpool':
 		require_once(TOTE_CONTROLLERDIR . 'editpool.inc.php');
