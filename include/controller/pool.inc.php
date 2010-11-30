@@ -8,14 +8,32 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 /**
- * sort_pool
+ * sort_pools
+ *
+ * sort pools
+ *
+ * @param array $a first sort pool
+ * @param array $b second sort pool
+ */
+function sort_pool($a, $b)
+{
+	// first sort by year descending
+	if ($a['season'] != $b['season'])
+		return ($a['season'] > $b['season'] ? -1 : 1);
+
+	// then fall back on alphabetical name
+	return strcasecmp($a['name'], $b['name']);
+}
+
+/**
+ * sort_poolentrant
  *
  * sort pool entrants
  *
  * @param array $a first sort entrant
  * @param array $b second sort entrant
  */
-function sort_pool($a, $b)
+function sort_poolentrant($a, $b)
 {
 	// first sort by wins descending
 	if ($a['wins'] != $b['wins'])
@@ -208,9 +226,20 @@ function display_pool($poolID = null)
 	}
 
 	// sort pool according to status
-	usort($poolrecord, 'sort_pool');
+	usort($poolrecord, 'sort_poolentrant');
+
+	// get list of all pools
+	$allpoolcollect = $pools->find(array(), array('season', 'name'));
+	$allpools = array();
+	foreach ($allpoolcollect as $p) {
+		$allpools[] = $p;
+	}
+	// and sort them
+	usort($allpools, 'sort_pool');
 
 	// set data and display
+	if (count($allpools) > 1)
+		$tpl->assign('allpools', $allpools);
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
 	$tpl->assign('pool', $poolobj);
