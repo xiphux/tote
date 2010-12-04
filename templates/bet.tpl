@@ -1,4 +1,4 @@
-{include file='header.tpl'}
+{include file='header.tpl' source='bet'}
 
 {if $bets}
 <p>
@@ -30,7 +30,11 @@ Games for week {$week}:
   <tbody>
     {foreach from=$games item=game}
       <tr class="{cycle values=light,dark} {if $game.start->sec < $smarty.now}gamestarted{/if}">
+	{if $game.start->sec < $smarty.now}
         <td>{$game.away_team.abbreviation} {$game.away_score} @ {$game.home_team.abbreviation} {$game.home_score}</td>
+	{else}
+        <td><span id="{$game.away_team._id}" class="teamName">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" class="teamName">{$game.home_team.abbreviation}</span></td>
+	{/if}
 	<td>{$game.localstart->format('D M j, Y g:i a T')}</td>
       </tr>
     {/foreach}
@@ -41,7 +45,7 @@ Games for week {$week}:
 <p>
 <form action="index.php?a=addbet" method="post">
 <label for="t">Bet on week {$week}:</label>
-<select name="t">
+<select name="t" id="betSelect">
 <option value="">Choose a team...</option>
 {foreach from=$teams item=team}
 <option value="{$team._id}">{$team.home} {$team.team}</option>

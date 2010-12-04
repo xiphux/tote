@@ -6,6 +6,10 @@
 	color: red;
 }
 
+a {
+	color: blue;
+}
+
 table.displayTable {
 	border: 1px solid #d9d8d1;
 	border-collapse: collapse;
@@ -46,6 +50,14 @@ table.displayTable td {
 	font-size: 12px;
 }
 
+.scoreTable td {
+	white-space: nowrap;
+}
+
+.scoreTable td.entrantName {
+	font-weight: bold;
+}
+
 .win {
 	color: blue;
 }
@@ -82,7 +94,7 @@ div.userOpts table td {
 }
 
 .gamestarted {
-	color: red;
+	color: darkgray;
 }
 
 .betTable tbody {
