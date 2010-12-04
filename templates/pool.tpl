@@ -67,7 +67,7 @@
 <th title="Losses">L</th>
 <th title="Point Spread">PS</th>
 {foreach from=$weeks key=wknum item=open}
-<th title="Week {$wknum}">W{$wknum}</th>
+<th title="Week {$wknum}"{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}>W{$wknum}</th>
 {/foreach}
 </thead>
 
@@ -90,7 +90,7 @@
 <td>{$entrant.losses}</td>
 <td>{$entrant.spread}</td>
 
-{foreach from=$entrant.bets item=bet}
+{foreach from=$entrant.bets key=betweek item=bet}
 <td>
 <span 
 {if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{/if}
@@ -100,6 +100,8 @@
 {$bet.team.abbreviation}
 {elseif $bet.nopick}
 No Pick
+{elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
+<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Bet</a>
 {/if}
  {if $bet.spread}({$bet.spread}){/if}
 </span>
