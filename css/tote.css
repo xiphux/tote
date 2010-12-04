@@ -6,6 +6,10 @@
 	color: red;
 }
 
+a {
+	color: blue;
+}
+
 table.displayTable {
 	border: 1px solid #d9d8d1;
 	border-collapse: collapse;
