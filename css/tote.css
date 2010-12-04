@@ -46,6 +46,14 @@ table.displayTable td {
 	font-size: 12px;
 }
 
+.scoreTable td {
+	white-space: nowrap;
+}
+
+.scoreTable td.entrantName {
+	font-weight: bold;
+}
+
 .win {
 	color: blue;
 }
