@@ -76,7 +76,7 @@
 {foreach from=$record item=entrant}
 
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
-<td>
+<td class="entrantName">
 {if $user.admin}
 <a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s bets">
 {/if}
