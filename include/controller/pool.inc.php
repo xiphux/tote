@@ -91,11 +91,14 @@ function display_pool($poolID = null)
 	$poolopen = false;
 	$openweeks = array();
 	$currentdate = new MongoDate(time());
+	$currentweek = 0;
 	for ($i = 1; $i <= $weeks; $i++) {
 		$opengame = $games->findOne(array('season' => $poolobj['season'], 'week' => $i, 'start' => array('$gt' => $currentdate)), array('week'));
 		if ($opengame) {
 			$openweeks[$i] = true;
 			$poolopen = true;
+			if ($currentweek < 1)
+				$currentweek = $i;
 		} else {
 			$openweeks[$i] = false;
 		}
@@ -240,6 +243,8 @@ function display_pool($poolID = null)
 	// set data and display
 	if (count($allpools) > 1)
 		$tpl->assign('allpools', $allpools);
+	if ($currentweek > 0)
+		$tpl->assign('currentweek', $currentweek);
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
 	$tpl->assign('pool', $poolobj);

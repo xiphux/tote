@@ -45,6 +45,14 @@ table.displayTable td {
 	margin: 0px auto;
 }
 
+.scoreTable th.currentweek {
+	color: blue;
+}
+
+.scoreTable th.weekclosed {
+	color: darkgray;
+}
+
 .scoreTable tbody {
 	text-align: center;
 	font-size: 12px;
@@ -71,6 +79,10 @@ table.scoreTable tr.self {
 }
 
 table.scoreTable tr.self:hover {
+	background-color: #dcdbd5;
+}
+
+table.scoreTable td.current {
 	background-color: #dcdbd5;
 }
 

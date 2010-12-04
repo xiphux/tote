@@ -67,7 +67,7 @@
 <th title="Losses">L</th>
 <th title="Point Spread">PS</th>
 {foreach from=$weeks key=wknum item=open}
-<th title="Week {$wknum}">W{$wknum}</th>
+<th title="Week {$wknum}"{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}>W{$wknum}</th>
 {/foreach}
 </thead>
 
