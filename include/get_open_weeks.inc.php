@@ -17,21 +17,23 @@ function get_open_weeks($season)
 
 	$games = GET_COLLECTION(TOTE_COLLECTION_GAMES);
 
-	$currentdate = new MongoDate(time());
 	$weeks = get_season_weeks($season);
-	$openweeks = array();
-	for ($i = 1; $i <= $weeks; $i++) {
-		$opengame = $games->findOne(
-			array(
-				'season' => (int)$season,
-				'week' => $i,
-				'start' => array(
-					'$gt' => $currentdate
-				)
-			),
-			array('week')
-		);
-		$openweeks[$i] = ($opengame != null);
+	$openweeks = array_fill(1, $weeks, false);
+
+	$opengames = $games->find(
+		array(
+			'season' => (int)$season,
+			'start' => array(
+				'$gt' => new MongoDate(time())
+			)
+		),
+		array('week')
+	);
+
+	foreach ($opengames as $game) {
+		if ($game['week'] > 0) {
+			$openweeks[$game['week']] = true;
+		}
 	}
 
 	return $openweeks;
