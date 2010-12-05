@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 
 /**
  * sort_pools
@@ -107,7 +108,6 @@ function display_pool($poolID = null)
 	$user = user_logged_in();
 
 	// go through each pool entrant
-	$entered = false;
 	$poolrecord = array();
 	if (!empty($poolobj['entries'])) {
 		foreach ($poolobj['entries'] as $entrant) {
@@ -115,10 +115,6 @@ function display_pool($poolID = null)
 			// get the user record
 			$record = array();
 			$record['user'] = get_user($entrant['user']);
-
-			// make sure we note if the logged in user is an entrant in the pool
-			if ($user && ($record['user']['username'] == $user['username']))
-				$entered = true;
 
 			// map the user's bet indexed by week
 			$bets = array();
@@ -227,6 +223,11 @@ function display_pool($poolID = null)
 			$poolrecord[] = $record;
 		}
 	}
+
+	// check if logged in user is entered in this pool
+	$entered = false;
+	if ($user && user_in_pool($user['_id'], $poolobj['_id']))
+		$entered = true;
 
 	// sort pool according to status
 	usort($poolrecord, 'sort_poolentrant');
