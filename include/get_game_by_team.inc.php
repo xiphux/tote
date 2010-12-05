@@ -22,24 +22,34 @@ function get_game_by_team($season, $week, $team)
 {
 	global $gamecachebyteam;
 
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	if (empty($season) || empty($week) || empty($team))
+		return null;
 
-	$key = $season . ':' . $week . ':' . $team;
+	$season = (int)$season;
+	$week = (int)$week;
 
-	if (empty($gamecachebyteam[$key])) {
-		// load from database if not already fetched and cached
-		$gamecachebyteam[$key] = $games->findOne(
+	if (empty($gamecachebyteam[$season][$week])) {
+		
+		$games = get_collection(TOTE_COLLECTION_GAMES);
+
+		$weekgames = $games->find(
 			array(
-				'season' => (int)$season,	// season
-				'week' => (int)$week,		// week
-				'$or' => array(
-					array('home_team' => $team),	// home team
-					array('away_team' => $team)	// away team
-					)
-				)
+				'season' => $season,
+				'week' => $week
+			)
 		);
+
+		foreach ($weekgames as $game) {
+			if ($game['away_team']) {
+				$gamecachebyteam[$season][$week][(string)$game['away_team']] = $game;
+			}
+			if ($game['home_team']) {
+				$gamecachebyteam[$season][$week][(string)$game['home_team']] = $game;
+			}
+		}
+
 	}
 
-	return $gamecachebyteam[$key];
+	return $gamecachebyteam[$season][$week][(string)$team];
 }
 
