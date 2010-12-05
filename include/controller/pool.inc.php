@@ -7,6 +7,8 @@ require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 
 /**
  * sort_pools
@@ -80,30 +82,12 @@ function display_pool($poolID = null)
 	}
 
 	// Find number of weeks in season
-	$lastgame = $games->find(
-		array(
-			'season' => (int)$poolobj['season']
-		),
-		array('week')
-	)->sort(array('week' => -1))->getNext();
-	$weeks = $lastgame['week'];
+	$weeks = get_season_weeks($poolobj['season']);
 
 	// Find weeks that are open for betting
-	$poolopen = false;
-	$openweeks = array();
-	$currentdate = new MongoDate(time());
-	$currentweek = 0;
-	for ($i = 1; $i <= $weeks; $i++) {
-		$opengame = $games->findOne(array('season' => $poolobj['season'], 'week' => $i, 'start' => array('$gt' => $currentdate)), array('week'));
-		if ($opengame) {
-			$openweeks[$i] = true;
-			$poolopen = true;
-			if ($currentweek < 1)
-				$currentweek = $i;
-		} else {
-			$openweeks[$i] = false;
-		}
-	}
+	$openweeks = get_open_weeks($poolobj['season']);
+	$currentweek = array_search(true, $openweeks, true);
+	$poolopen = ($currentweek !== false);
 
 	$user = user_logged_in();
 
@@ -244,7 +228,7 @@ function display_pool($poolID = null)
 	// set data and display
 	if (count($allpools) > 1)
 		$tpl->assign('allpools', $allpools);
-	if ($currentweek > 0)
+	if ($currentweek != false)
 		$tpl->assign('currentweek', $currentweek);
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
