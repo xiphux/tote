@@ -6,6 +6,8 @@ define('TOTE_COLLECTION_USERS', 'users');
 define('TOTE_COLLECTION_GAMES', 'games');
 define('TOTE_COLLECTION_TEAMS', 'teams');
 
+$collections = array();
+
 /**
  * Gets a collection object for a given collection name
  *
@@ -14,13 +16,19 @@ define('TOTE_COLLECTION_TEAMS', 'teams');
  */
 function get_collection($collectionName)
 {
-	global $db, $tote_conf;
+	global $db, $tote_conf, $collections;
 
 	if (empty($collectionName))
 		return null;
 
-	if (!empty($tote_conf['namespace']))
-		$collectionName = $tote_conf['namespace'] . '.' . $collectionName;
+	if (empty($collections[$collectionName])) {
+		$fullName = $collectionName;
+		
+		if (!empty($tote_conf['namespace']))
+			$fullName = $tote_conf['namespace'] . '.' . $fullName;
 
-	return $db->selectCollection($collectionName);
+		$collections[$collectionName] = $db->selectCollection($fullName);
+	}
+
+	return $collections[$collectionName];
 }

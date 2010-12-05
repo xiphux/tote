@@ -5,7 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 /**
  * Caches team objects
  */
-$teamcache = array();
+$teamcache = null;
 
 /**
  * Gets a team object given the team ID
@@ -17,14 +17,19 @@ function get_team($id)
 {
 	global $teamcache;
 
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
+	if ($teamcache === null) {
+		$teams = get_collection(TOTE_COLLECTION_TEAMS);
 
-	if (empty($teamcache[(string)$id])) {
-		// load from database if not already fetched and cached
-		$teamcache[(string)$id] = $teams->findOne(
-			array('_id' => $id),		// match by id
-			array('team', 'home', 'abbreviation')	// load these fields
+		$allteams = $teams->find(
+			array(),
+			array('team', 'home', 'abbreviation')
 		);
+
+		$teamcache = array();
+
+		foreach ($allteams as $team) {
+			$teamcache[(string)$team['_id']] = $team;
+		}
 	}
 
 	return $teamcache[(string)$id];
