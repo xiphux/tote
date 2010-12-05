@@ -24,11 +24,12 @@ function get_game_by_team($season, $week, $team)
 
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 
-	$key = $season . ':' . $week . ':' . $team;
+	$subkey = $season . ':' . $week;
+	$key = $subkey . ':' . $team;
 
 	if (empty($gamecachebyteam[$key])) {
 		// load from database if not already fetched and cached
-		$gamecachebyteam[$key] = $games->findOne(
+		$game = $games->findOne(
 			array(
 				'season' => (int)$season,	// season
 				'week' => (int)$week,		// week
@@ -38,6 +39,16 @@ function get_game_by_team($season, $week, $team)
 					)
 				)
 		);
+
+		// cache for both teams
+		$awaykey = $subkey . ':' . $game['away_team'];
+		$homekey = $subkey . ':' . $game['home_team'];
+
+		if (empty($gamecachebyteam[$awaykey]))
+			$gamecachebyteam[$awaykey] = $game;
+
+		if (empty($gamecachebyteam[$homekey]))
+			$gamecachebyteam[$homekey] = $game;
 	}
 
 	return $gamecachebyteam[$key];
