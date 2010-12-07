@@ -16,6 +16,8 @@ define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 
 require_once(TOTE_CONFIGDIR . 'tote.conf.php');
 
+require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
+
 // only if reminders are turned on in the config
 if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 
@@ -59,8 +61,7 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 	}
 
 	// Find the number of weeks in the season
-	$lastgame = $games->find(array('season' => (int)$year), array('week'))->sort(array('week' => -1))->getNext();
-	$weeks = $lastgame['week'];
+	$weeks = get_season_weeks((int)$year);
 
 	// find the upcoming unstarted week
 	$currentdate = new MongoDate(time());

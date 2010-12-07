@@ -85,27 +85,7 @@ function team_to_abbr($team)
 }
 
 // cache team abbreviation to id mapping
-$teamids = array();
-
-/**
- * Given a team abbrevation, cache the team object ID
- *
- * @param string $team abbreviation
- */
-function lookup_team_id($team)
-{
-	global $teamids;
-
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
-
-	$teamobj = $teams->findOne(array('abbreviation' => $team));
-	if ($teamobj) {
-		$teamids[$team] = $teamobj['_id'];
-		return;
-	}
-
-	$teamids[$team] = '';
-}
+$teamids = null;
 
 /**
  * Given a team abbreviation, get the team object id
@@ -117,8 +97,17 @@ function get_team_id($team)
 {
 	global $teamids;
 
-	if (!isset($teamids[$team]))
-		lookup_team_id($team);
+	if ($teamids == null) {
+		$teams = get_collection(TOTE_COLLECTION_TEAMS);
+
+		$teamcol = $teams->find(array());
+
+		foreach ($teamcol as $teamobj) {
+			if (!empty($teamobj['abbreviation'])) {
+				$teamids[$teamobj['abbreviation']] = $teamobj['_id'];
+			}
+		}
+	}
 
 	return $teamids[$team];
 }
