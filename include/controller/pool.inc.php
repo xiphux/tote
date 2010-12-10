@@ -39,12 +39,53 @@ function display_pool($poolID = null)
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);;
 
-	// if pool is specified use that, otherwise find most recent pool
+	$user = user_logged_in();
+
 	$poolobj = null;
-	if (empty($poolID))
-		$poolobj = $pools->find(array(), array('name', 'season'))->sort(array('season' => -1))->getNext();
-	else
-		$poolobj = $pools->findOne(array('_id' => new MongoId($poolID)), array('name', 'season'));
+	if (empty($poolID)) {
+		// no pool specified - try to find the most sensible pool
+		$allpools = $pools->find(
+			array(),
+			array('name', 'season')
+		)->sort(
+			array('season' => -1, 'name' => 1)
+		);
+
+		if ($user) {
+			$newestseason = null;
+			foreach ($allpools as $eachpool) {
+
+				if ($newestseason == null) {
+					// because of the sort order the very first
+					// pool has the most recent available season
+					$newestseason = $eachpool['season'];
+				}
+				if ($newestseason != $eachpool['season']) {
+					// this is a pool older than the most recent
+					// season - stop searching
+					break;
+				}
+				if (user_in_pool($user['_id'], $eachpool['_id'])) {
+					// the user is in this pool
+					// default to showing this one
+					$poolobj = $eachpool;
+					break;
+				}
+			}
+		}
+
+		if ($poolobj == null) {
+			// didn't find anything - default to first pool in sort order
+			$allpools->reset();
+			$poolobj = $allpools->getNext();
+		}
+	} else {
+		// we specified a pool
+		$poolobj = $pools->findOne(
+			array('_id' => new MongoId($poolID)),
+			array('name', 'season')
+		);
+	}
 
 	if (!$poolobj) {
 		// we need some pool
@@ -56,8 +97,6 @@ function display_pool($poolID = null)
 	$openweeks = get_open_weeks($poolobj['season']);
 	$currentweek = array_search(true, $openweeks, true);
 	$poolopen = ($currentweek !== false);
-
-	$user = user_logged_in();
 
 	$poolrecord = get_pool_record($poolobj['_id']);
 
