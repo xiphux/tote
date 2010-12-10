@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * addbet controller
@@ -149,6 +150,7 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 			)
 		)
 	);
+	clear_cache('pool|' . (string)$pool['_id']);
 
 	// go back to the pool view
 	redirect(array('p' => $pool['_id']));
