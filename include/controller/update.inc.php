@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 // times are reported on websites in Eastern
 date_default_timezone_set('America/New_York');
@@ -299,7 +300,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 				'away_score' => (int)$awayscore
 			))
 		);
-
+		clear_cache('pool');
 	} else {
 		// we're up to date
 		echo "no update necessary, scores up to date<br />\n";
@@ -358,6 +359,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 				'start' => $start
 			);
 			//$games->insert($data);
+			clear_cache('pool');
 		} else {
 			// we got incomplete data
 			echo "error: couldn't locate game but don't have enough information to add it to database<br />\n";
@@ -382,6 +384,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 				'start' => new MongoDate($start)
 			))
 		);
+		clear_cache('pool');
 	} else {
 		// we're up to date
 		echo "no update necessary, scheduled start up to date<br />\n";

@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * deleteuser controller
@@ -87,6 +88,7 @@ function display_deleteuser($userid, $csrftoken)
 				)
 			)
 		);
+		clear_cache('pool|' . (string)$p['_id'])
 	}
 
 	// remove user from system

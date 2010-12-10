@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * deletepool controller
@@ -48,6 +49,7 @@ function display_deletepool($poolid, $csrftoken)
 			'_id' => new MongoId($poolid)
 		)
 	);
+	clear_cache('pool|' . $poolid);
 
 	redirect();
 }

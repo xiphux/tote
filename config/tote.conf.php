@@ -61,3 +61,10 @@ $tote_conf['bccemail'] = 'football@chris-han.net';
  * or more often
  */
 $tote_conf['reminders'] = true;
+
+/**
+ * cache
+ *
+ * set to true to turn on caching of dynamic data
+ */
+$tote_conf['cache'] = false;
