@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * Sort bets by week
@@ -203,6 +204,8 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 			'$pushAll' => array('actions' => $actions)
 		)
 	);
+
+	clear_cache('pool|' . (string)$pool['_id']);
 
 	// go home
 	redirect();

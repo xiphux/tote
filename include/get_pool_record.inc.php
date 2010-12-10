@@ -41,8 +41,22 @@ function sort_poolentrant($a, $b)
  */
 function get_pool_record($poolid)
 {
+	global $tote_conf;
+
 	if (empty($poolid))
 		return null;
+
+	$cachetpl = null;
+	$cachekey = 'pool|' . $poolid;
+	if (!empty($tote_conf['cache']) && ($tote_conf['cache'] === true)) {
+		// if caching is turned on, try deserializing the calculated
+		// record from the cache
+		$cachetpl = new Smarty;
+		$cachetpl->caching = 2;
+		if ($cachetpl->is_cached('data.tpl', $cachekey)) {
+			return unserialize($cachetpl->fetch('data.tpl', $cachekey));
+		}
+	}
 
 	if (is_string($poolid))
 		$poolid = new MongoId($poolid);
@@ -183,6 +197,29 @@ function get_pool_record($poolid)
 
 	// sort pool according to status
 	usort($poolrecord, 'sort_poolentrant');
+
+	if (!empty($tote_conf['cache']) && ($tote_conf['cache'] === true)) {
+		// if cache is enabled, store calculated record into the cache
+		// so we don't have to recalculate it
+	
+		$games = get_collection(TOTE_COLLECTION_GAMES);
+		$currentweek = array_search(true, $openweeks, true);
+		if ($currentweek === false) {
+			// season is over, no need to have cache expire
+			$cachetpl->cache_lifetime = -1;
+		} else {
+			// set cache to expire as soon as the last game of the
+			// week starts
+			// (so we can recalculate 'No Pick' players)
+			$lastgame = $games->find(array('week' => $currentweek), array('start'))->sort(array('start' => -1))->getNext();
+			$cachetpl->cache_lifetime = $lastgame['start']->sec - time();
+		}
+		$cachetpl->assign('data', serialize($poolrecord));
+		
+		// force into cache
+		$tmp = $cachetpl->fetch('data.tpl', $cachekey);
+		unset($tmp);
+	}
 
 	return $poolrecord;
 }

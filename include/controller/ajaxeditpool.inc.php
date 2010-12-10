@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * ajaxeditpool controller
@@ -106,6 +107,7 @@ function display_ajaxeditpool($poolID, $modification, $modusers, $csrftoken)
 				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => array('$in' => $moduserdata)))));
 			}
 			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
+			clear_cache('pool|' . (string)$pool['_id']);
 
 			break;
 

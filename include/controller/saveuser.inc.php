@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * saveuser controller
@@ -118,6 +119,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrft
 			$data['$unset'] = $unsetdata;
 		if (count($data) > 0) {
 			$users->update(array('_id' => $edituser['_id']), $data);
+			clear_cache('pool');
 		}
 
 		// go back to edit users page
