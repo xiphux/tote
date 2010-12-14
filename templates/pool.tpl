@@ -99,7 +99,7 @@
 {if $bet.team.abbreviation}
 {$bet.team.abbreviation}
 {elseif $bet.nopick}
-No Pick
+-NP-
 {elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
 <a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Bet</a>
 {/if}
