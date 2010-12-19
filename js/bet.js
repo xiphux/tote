@@ -18,6 +18,7 @@ function initTeamLinks()
 		link.text(teamName);
 		link.click(function() {
 			$('select#betSelect').val(teamId);
+			return false;
 		});
 		$(this).empty();
 		$(this).append(link);
