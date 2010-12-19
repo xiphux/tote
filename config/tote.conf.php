@@ -42,7 +42,7 @@ $tote_conf['sitename'] = 'Tote playground';
  * email address to use as from/reply-to in website
  * mailings
  */
-$tote_conf['fromemail'] = 'xiphux@gmail.com';
+$tote_conf['fromemail'] = 'football@chris-han.net';
 
 /**
  * bccemail
@@ -50,7 +50,7 @@ $tote_conf['fromemail'] = 'xiphux@gmail.com';
  * email address to BCC all outgoing emails to
  * (for debugging purposes)
  */
-//$tote_conf['bccemail'] = 'xiphux@gmail.com';
+$tote_conf['bccemail'] = 'football@chris-han.net';
 
 /**
  * reminders
