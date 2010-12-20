@@ -25,6 +25,19 @@ function initTeamLinks()
 	});
 };
 
+function initBetConfirm()
+{
+	$('#frmBet').submit(function() {
+		if (!$('select[name="t"]').val()) {
+			return false;
+		}
+		var week = $('input[name="w"]').val();
+		var team = $('select[name="t"] option:selected').text();
+		return confirm("Are you sure you want to bet on the " + team + " for week " + week + "? Once this bet is placed it cannot be changed.");
+	});
+};
+
 $(document).ready(function() {
 	initTeamLinks();
+	initBetConfirm();
 });
