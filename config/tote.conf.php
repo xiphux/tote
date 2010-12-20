@@ -67,4 +67,4 @@ $tote_conf['reminders'] = true;
  *
  * set to true to turn on caching of dynamic data
  */
-$tote_conf['cache'] = false;
+$tote_conf['cache'] = true;
