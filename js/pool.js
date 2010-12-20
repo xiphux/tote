@@ -23,7 +23,7 @@ function initFeedTips() {
 				delay: 150
 			},
 			style: {
-				classes: 'ui-tooltip-light ui-tooltip-shadow'
+				classes: 'ui-tooltip-light ui-tooltip-shadow ui-tooltip-rounded'
 			},
 			position: {
 				adjust: {
@@ -39,7 +39,7 @@ function initFeedTips() {
 function initPoolTips() {
 	$('*[title]').qtip({
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-shadow'
+			classes: 'ui-tooltip-light ui-tooltip-shadow ui-tooltip-rounded'
 		},
 		position: {
 			adjust: {
