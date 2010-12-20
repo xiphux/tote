@@ -6,14 +6,14 @@
  * connection string to use to connect to mongodb
  * empty uses default host/port (localhost:27017)
  */
-$tote_conf['connectionString'] = 'mongodb://toteplayground:sWU5r9gesweSpeke@localhost/toteplayground';
+$tote_conf['connectionString'] = 'mongodb://tote:taxA2t2GeneTrudR@localhost/tote';
 
 /**
  * database
  *
  * name of dataspace to use
  */
-$tote_conf['database'] = 'toteplayground';
+$tote_conf['database'] = 'tote';
 
 /**
  * namespace
@@ -34,7 +34,7 @@ $tote_conf['smarty'] = '/home/xiphux/smarty/';
  *
  * name of site to use in various displays/emails
  */
-$tote_conf['sitename'] = 'Tote playground';
+$tote_conf['sitename'] = 'football.chris-han.net';
 
 /**
  * fromemail
