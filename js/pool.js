@@ -56,8 +56,51 @@ function initPoolNav() {
 	$('#poolNameSubmit').remove();
 };
 
+function initRulesDisplay() {
+	var url = window.location.href.match(/^([^\?]+\/)/);
+        if (!url) {
+                return;
+        }
+	url = url[1];
+	$('a#lnkRules').qtip({
+		content: {
+			text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />',
+			ajax: {
+				url: 'index.php',
+				data: {
+					a: 'rules'
+				},
+				type: 'GET'
+			},
+			title: {
+				text: 'Pool Rules',
+				button: true
+			}
+		},
+		position: {
+			my: 'center',
+			at: 'center',
+			target: $(window)
+		},
+		show: {
+			event: 'click',
+			solo: true,
+			modal: true
+		},
+		hide: false,
+		style: {
+			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded'
+		}
+	});
+
+	$('a#lnkRules').click(function() {
+		return false;
+	});
+};
+
 $(document).ready(function() {
 	initPoolTips();
 	initFeedTips();
 	initPoolNav();
+	initRulesDisplay();
 });

@@ -307,6 +307,13 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		break;
 
 
+	// rules - display the pool rules page
+	case 'rules':
+		require_once(TOTE_CONTROLLERDIR . 'rules.inc.php');
+		display_rules((empty($_GET['o']) ? 'html' : $_GET['o']));
+		break;
+
+
 	// pool (default) - display a pool
 	default:
 		header("Cache-Control: no-cache, must-revalidate");

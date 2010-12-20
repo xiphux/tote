@@ -118,9 +118,19 @@ div.userOpts table td {
 	text-align: center;
 }
 
-.poolIcons {
-	text-align: right;
+div.poolFooter {
 	padding: 8px 0px;
+}
+
+div.poolRules {
+	float: left;
+	width: 40%;
+}
+
+div.poolHistory {
+	text-align: right;
+	width: 40%;
+	float: right;
 }
 
 .historyTable td {
