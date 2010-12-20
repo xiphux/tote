@@ -6,7 +6,7 @@
  * connection string to use to connect to mongodb
  * empty uses default host/port (localhost:27017)
  */
-$tote_conf['connectionString'] = 'mongodb://tote:taxA2t2GeneTrudR@localhost/tote';
+$tote_conf['connectionString'] = '';
 
 /**
  * database
@@ -27,14 +27,14 @@ $tote_conf['namespace'] = '';
  *
  * path to smarty library
  */
-$tote_conf['smarty'] = '/home/xiphux/smarty/';
+$tote_conf['smarty'] = 'smarty/';
 
 /**
  * sitename
  *
  * name of site to use in various displays/emails
  */
-$tote_conf['sitename'] = 'football.chris-han.net';
+$tote_conf['sitename'] = 'tote';
 
 /**
  * fromemail
@@ -42,7 +42,7 @@ $tote_conf['sitename'] = 'football.chris-han.net';
  * email address to use as from/reply-to in website
  * mailings
  */
-$tote_conf['fromemail'] = 'football@chris-han.net';
+$tote_conf['fromemail'] = 'xiphux@gmail.com';
 
 /**
  * bccemail
@@ -50,7 +50,7 @@ $tote_conf['fromemail'] = 'football@chris-han.net';
  * email address to BCC all outgoing emails to
  * (for debugging purposes)
  */
-$tote_conf['bccemail'] = 'football@chris-han.net';
+$tote_conf['bccemail'] = 'xiphux@gmail.com';
 
 /**
  * reminders
@@ -67,4 +67,4 @@ $tote_conf['reminders'] = true;
  *
  * set to true to turn on caching of dynamic data
  */
-$tote_conf['cache'] = true;
+$tote_conf['cache'] = false;
