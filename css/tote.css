@@ -217,3 +217,12 @@ div.poolBetDiv {
 div.poolActionsDiv {
 	margin-top: 20px;
 }
+
+.historyDialog {
+	max-width: 500px;
+}
+
+.historyDialog .ui-tooltip-content {
+	max-height: 400px;
+	overflow: auto;
+}

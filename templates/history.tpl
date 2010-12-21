@@ -1,8 +1,12 @@
+{if !$js}
 {include file='header.tpl' poolinfo=$pool}
+{/if}
 
+{if !$js}
 <div>
 {$pool.name} [{$pool.season}-{$pool.season+1}] History
 </div>
+{/if}
 
 <table class="historyTable displayTable">
 <thead>
@@ -43,4 +47,6 @@
 {/foreach}
 </table>
 
+{if !$js}
 {include file='footer.tpl'}
+{/if}

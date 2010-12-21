@@ -123,7 +123,7 @@
 </div>
 
 <div class="poolHistory">
-<a title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&p={$pool._id}">History</a>
+<a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&p={$pool._id}">History</a>
 <a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}"><img src="images/feed-icon-14x14.png" width="14" height="14" /></a>
 </div>
 

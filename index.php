@@ -155,7 +155,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// history - get the pool event history page
 	case 'history':
 		require_once(TOTE_CONTROLLERDIR . 'feed.inc.php');
-		display_feed('html', (empty($_GET['p']) ? null : $_GET['p']));
+		display_feed((empty($_GET['o']) ? 'html' : $_GET['o']), (empty($_GET['p']) ? null : $_GET['p']));
 		break;
 
 

@@ -22,12 +22,6 @@ function display_feed($format, $poolID)
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	$user = null;
-	if ($format == 'html') {
-		$user = user_logged_in();
-		//if (!$user) {
-		//	return redirect();
-		//}
-	}
 
 	// if we don't have a pool, try to find the most recent pool
 	$poolobj = null;
@@ -87,7 +81,7 @@ function display_feed($format, $poolID)
 			// format times with timezones
 			$sec = $action['time']->sec;
 			$action['time'] = new DateTime('@' . $sec);
-			if ($format == 'html') {
+			if (($format == 'html') || ($format == 'js')) {
 				if ($user && !empty($user['timezone'])) {
 					$action['time']->setTimezone(new DateTimeZone($user['timezone']));
 				} else {
@@ -125,6 +119,9 @@ function display_feed($format, $poolID)
 		// display rss feed
 		header('Content-type: text/xml; charset=UTF-8');
 		$tpl->display('rss.tpl');
+	} else if ($format == 'js') {
+		$tpl->assign('js', true);
+		$tpl->display('history.tpl');
 	} else if ($format == 'html') {
 		// display history html page
 		$tpl->display('history.tpl');

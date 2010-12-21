@@ -98,9 +98,63 @@ function initRulesDisplay() {
 	});
 };
 
+function initHistoryDisplay() {
+	var url = window.location.href.match(/^([^\?]+\/)/);
+        if (!url) {
+                return;
+        }
+	url = url[1];
+
+	var lnkHistory = $('a#lnkHistory');
+	var poolid = lnkHistory.attr('href').match(/p=([0-9a-fA-F]+)/);
+	if (!poolid) {
+		return;
+	}
+	poolid = poolid[1];
+
+	lnkHistory.qtip({
+		content: {
+			text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />',
+			ajax: {
+				url: 'index.php',
+				data: {
+					a: 'history',
+					p: poolid,
+					o: 'js'
+				},
+				type: 'GET',
+				once: false
+			},
+			title: {
+				text: 'Pool History',
+				button: true
+			}
+		},
+		position: {
+			my: 'center',
+			at: 'center',
+			target: $(window)
+		},
+		show: {
+			event: 'click',
+			solo: true,
+			modal: true
+		},
+		hide: false,
+		style: {
+			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded historyDialog'
+		}
+	});
+
+	lnkHistory.click(function() {
+		return false;
+	});
+};
+
 $(document).ready(function() {
 	initPoolTips();
 	initFeedTips();
 	initPoolNav();
 	initRulesDisplay();
+	initHistoryDisplay();
 });
