@@ -89,7 +89,7 @@ function initRulesDisplay() {
 		},
 		hide: false,
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded'
+			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded rulesDialog'
 		}
 	});
 

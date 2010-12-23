@@ -226,3 +226,12 @@ div.poolActionsDiv {
 	max-height: 400px;
 	overflow: auto;
 }
+
+.rulesDialog {
+	max-width: 500px;
+}
+
+.rulesDialog .ui-tooltip-content {
+	max-height: 400px;
+	overflow: auto;
+}
