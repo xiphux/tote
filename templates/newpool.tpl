@@ -19,6 +19,10 @@
     <td><input type="text" name="season" value="{if $season}{$season}{else}{$smarty.now|date_format:"%Y"}{/if}" /></td>
   </tr>
   <tr>
+    <td><label for="fee">Fee:</label></td>
+    <td>$<input type="text" name="fee" value="{if $fee}{$fee}{else}0.00{/if}" /></td>
+  </tr>
+  <tr>
     <td><input type="submit" value="Create" /></td>
   </tr>
 </table>

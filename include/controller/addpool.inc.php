@@ -13,9 +13,10 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  *
  * @param string $name pool name
  * @param string $season season year (start year)
+ * @param string $fee pool fee
  * @param string $csrftoken CSRF request token
  */
-function display_addpool($name, $season, $csrftoken)
+function display_addpool($name, $season, $fee, $csrftoken)
 {
 	global $tpl;
 
@@ -60,6 +61,13 @@ function display_addpool($name, $season, $csrftoken)
 			}
 		}
 	}
+	if (!empty($fee)) {
+		if (!is_numeric($fee)) {
+			$errors[] = "Fee must be a dollar amount";
+		} else if ((float)$fee < 0) {
+			$errors[] = "Fee cannot be negative";
+		}
+	}
 
 	if (count($errors) > 0) {
 		$tpl->assign('errors', $errors);
@@ -67,6 +75,8 @@ function display_addpool($name, $season, $csrftoken)
 			$tpl->assign('name', $name);
 		if (!empty($season))
 			$tpl->assign('season', $season);
+		if (!empty($fee))
+			$tpl->assign('fee', $fee);
 		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('newpool.tpl');
 	} else {
@@ -74,6 +84,9 @@ function display_addpool($name, $season, $csrftoken)
 			'name' => $name,
 			'season' => (int)$season
 		);
+		if ((!empty($fee)) && ((float)$fee > 0)) {
+			$data['fee'] = (float)$fee;
+		}
 		$pools->insert($data);
 
 		// go to the new pool

@@ -94,6 +94,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_addpool(
 			(empty($_POST['name']) ? null : $_POST['name']),
 			(empty($_POST['season']) ? null : $_POST['season']),
+			(empty($_POST['fee']) ? null : $_POST['fee']),
 			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;
