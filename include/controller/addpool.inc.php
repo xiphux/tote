@@ -84,8 +84,11 @@ function display_addpool($name, $season, $fee, $csrftoken)
 			'name' => $name,
 			'season' => (int)$season
 		);
-		if ((!empty($fee)) && ((float)$fee > 0)) {
-			$data['fee'] = (float)$fee;
+		if (!empty($fee)) {
+			$fee = round((float)$fee, 2);
+			if ($fee > 0) {
+				$data['fee'] = $fee;
+			}
 		}
 		$pools->insert($data);
 
