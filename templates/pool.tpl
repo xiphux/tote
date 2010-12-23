@@ -16,6 +16,11 @@
 {/if}
 {if $pool.fee}
 <br />Entry fee: ${$pool.fee}
+{if $payout}
+<br />1st place: ${$payout.1}
+<br />2nd place: ${$payout.2}
+<br />3rd place: ${$payout.3}
+{/if}
 {/if}
 </div>
 {if $user && $entered && $poolopen}

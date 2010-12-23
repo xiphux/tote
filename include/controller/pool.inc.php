@@ -129,6 +129,17 @@ function display_pool($poolID = null)
 	$tpl->assign('entered', $entered);
 	$tpl->assign('poolopen', $poolopen);
 
+	if ((!empty($poolobj['fee'])) && ($poolobj['fee'] > 0)) {
+		// calculate payout
+		$entrantcount = count($poolrecord);
+		$pot = $poolobj['fee'] * $entrantcount;
+		$payout = array();
+		$payout[1] = round(($pot * 0.75), 2);	// 1st
+		$payout[2] = round(($pot * 0.15), 2);	// 2nd
+		$payout[3] = round(($pot * 0.10), 2);	// 3rd
+		$tpl->assign('payout', $payout);
+	}
+
 	$tpl->display('pool.tpl');
 }
 
