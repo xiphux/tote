@@ -151,10 +151,33 @@ function initHistoryDisplay() {
 	});
 };
 
+function initLinksList() {
+	$('#linksList').hide();
+
+	var link = jQuery(document.createElement('a'));
+	link.attr('href', '#');
+	link.attr('id', 'lnkLinks');
+	link.text('Show links...');
+	link.click(function() {
+		if ($('#linksList').is(':visible')) {
+			$('#linksList').hide('fast');
+			$(this).text('Show links...');
+		} else {
+			$('#linksList').show('fast', function() {
+				$('html,body').animate({scrollTop: $('body').attr('scrollHeight')}, 500);
+			});
+			$(this).text('Hide links...');
+		}
+		return false;
+	});
+	$('#spanLinks').replaceWith(link);
+};
+
 $(document).ready(function() {
 	initPoolTips();
 	initFeedTips();
 	initPoolNav();
 	initRulesDisplay();
 	initHistoryDisplay();
+	initLinksList();
 });

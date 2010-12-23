@@ -140,4 +140,21 @@
 
 </div>
 
+{if $links}
+<div id="linksDiv">
+
+<span id="spanLinks">Useful links:</span><br />
+
+<div id="linksList">
+<ul>
+{foreach from=$links item=url key=name}
+<li><a href="{$url}" target="_blank">{$name}</a></li>
+{/foreach}
+</ul>
+</div>
+
+</div>
+{/if}
+
+
 {include file='footer.tpl'}

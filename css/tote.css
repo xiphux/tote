@@ -235,3 +235,11 @@ div.poolActionsDiv {
 	max-height: 400px;
 	overflow: auto;
 }
+
+#linksDiv {
+	padding-top: 5px;
+}
+
+#linksList {
+	padding-top: 5px;
+}

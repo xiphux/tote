@@ -34,7 +34,7 @@ function sort_pool($a, $b)
  */
 function display_pool($poolID = null)
 {
-	global $tpl;
+	global $tpl, $tote_conf;
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);;
@@ -138,6 +138,10 @@ function display_pool($poolID = null)
 		$payout[2] = round(($pot * 0.15), 2);	// 2nd
 		$payout[3] = round(($pot * 0.10), 2);	// 3rd
 		$tpl->assign('payout', $payout);
+	}
+
+	if (isset($tote_conf['links']) && is_array($tote_conf['links']) && (count($tote_conf['links']) > 0)) {
+		$tpl->assign('links', $tote_conf['links']);
 	}
 
 	$tpl->display('pool.tpl');
