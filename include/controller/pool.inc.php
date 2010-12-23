@@ -46,7 +46,7 @@ function display_pool($poolID = null)
 		// no pool specified - try to find the most sensible pool
 		$allpools = $pools->find(
 			array(),
-			array('name', 'season')
+			array('name', 'season', 'fee')
 		)->sort(
 			array('season' => -1, 'name' => 1)
 		);
@@ -83,7 +83,7 @@ function display_pool($poolID = null)
 		// we specified a pool
 		$poolobj = $pools->findOne(
 			array('_id' => new MongoId($poolID)),
-			array('name', 'season')
+			array('name', 'season', 'fee')
 		);
 	}
 

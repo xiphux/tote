@@ -14,6 +14,9 @@
 {else}
 {$pool.name} [{$pool.season}-{$pool.season+1}]
 {/if}
+{if $pool.fee}
+<br />Entry fee: ${$pool.fee}
+{/if}
 </div>
 {if $user && $entered && $poolopen}
 <div class="poolBetDiv">
