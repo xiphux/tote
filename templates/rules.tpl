@@ -24,7 +24,9 @@
 
 <li>At the end of the season, the person with the best record wins.  The point spread will be used as a tiebreaker.</li>
 
-<li>Payout: 1st place wins 75%, 2nd place wins 15%, 3rd place wins 10%.  In the event of a tie, the tied players will split the sum of their payouts.</li>
+{if $payout}
+<li>Payout: {foreach name=payout from=$payout key=place item=percent}{$place|place} place wins {$percent*100}%{if !$smarty.foreach.payout.last}, {/if}{/foreach}.  In the event of a tie, the tied players will split the sum of their payouts.</li>
+{/if}
 
 </ul>
 

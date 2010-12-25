@@ -62,13 +62,23 @@ function initRulesDisplay() {
                 return;
         }
 	url = url[1];
-	$('a#lnkRules').qtip({
+	
+	var lnkRules = $('a#lnkRules');
+	var poolid = lnkRules.attr('href').match(/p=([0-9a-fA-F]+)/);
+	if (!poolid) {
+		return;
+	}
+	poolid = poolid[1];
+
+	lnkRules.qtip({
 		content: {
 			text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />',
 			ajax: {
 				url: 'index.php',
 				data: {
-					a: 'rules'
+					a: 'rules',
+					p: poolid,
+					o: 'js'
 				},
 				type: 'GET'
 			},
@@ -93,7 +103,7 @@ function initRulesDisplay() {
 		}
 	});
 
-	$('a#lnkRules').click(function() {
+	lnkRules.click(function() {
 		return false;
 	});
 };

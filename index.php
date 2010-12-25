@@ -32,6 +32,7 @@ $db = $connection->selectDB($tote_conf['database']);
 // create Smarty
 require_once($tote_conf['smarty'] . 'Smarty.class.php');
 $tpl = new Smarty();
+$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 
 // work with UTC timestamps internally
 date_default_timezone_set('UTC');
@@ -311,7 +312,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// rules - display the pool rules page
 	case 'rules':
 		require_once(TOTE_CONTROLLERDIR . 'rules.inc.php');
-		display_rules((empty($_GET['o']) ? 'html' : $_GET['o']));
+		display_rules((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['o']) ? 'html' : $_GET['o']));
 		break;
 
 

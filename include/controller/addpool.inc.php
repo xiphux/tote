@@ -90,6 +90,18 @@ function display_addpool($name, $season, $fee, $csrftoken)
 				$data['fee'] = $fee;
 			}
 		}
+
+		// TODO: make payouts user entered rather than hardcoding
+		$data['payout'] = array(
+			array(
+				'percents' => array(
+					0.75,
+					0.15,
+					0.10
+				)
+			)
+		);
+
 		$pools->insert($data);
 
 		// go to the new pool

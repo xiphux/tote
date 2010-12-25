@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
 
 /**
  * sort_pools
@@ -129,16 +130,9 @@ function display_pool($poolID = null)
 	$tpl->assign('entered', $entered);
 	$tpl->assign('poolopen', $poolopen);
 
-	if ((!empty($poolobj['fee'])) && ($poolobj['fee'] > 0)) {
-		// calculate payout
-		$entrantcount = count($poolrecord);
-		$pot = $poolobj['fee'] * $entrantcount;
-		$payout = array();
-		$payout[1] = round(($pot * 0.75), 2);	// 1st
-		$payout[2] = round(($pot * 0.15), 2);	// 2nd
-		$payout[3] = round(($pot * 0.10), 2);	// 3rd
+	$payout = get_pool_payout_amounts($poolobj['_id']);
+	if (count($payout) > 0)
 		$tpl->assign('payout', $payout);
-	}
 
 	if (isset($tote_conf['links']) && is_array($tote_conf['links']) && (count($tote_conf['links']) > 0)) {
 		$tpl->assign('links', $tote_conf['links']);

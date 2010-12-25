@@ -15,12 +15,15 @@
 {$pool.name} [{$pool.season}-{$pool.season+1}]
 {/if}
 {if $pool.fee}
-<br />Entry fee: ${$pool.fee}
+
+<br />Entry fee: ${$pool.fee|string_format:"%.2f"}
+
 {if $payout}
-<br />1st place: ${$payout.1}
-<br />2nd place: ${$payout.2}
-<br />3rd place: ${$payout.3}
+{foreach from=$payout key=place item=amount}
+<br />{$place|place} place: ${$amount|string_format:"%.2f"}
+{/foreach}
 {/if}
+
 {/if}
 </div>
 {if $user && $entered && $poolopen}
@@ -127,7 +130,7 @@
 <div class="poolFooter">
 
 <div class="poolRules">
-	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules">Rules</a>
+	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&p={$pool._id}">Rules</a>
 </div>
 
 <div class="poolHistory">
