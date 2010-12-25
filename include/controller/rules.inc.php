@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_pool_administrators.inc.php');
 
 /**
  * rules controller
@@ -18,6 +19,10 @@ function display_rules($poolid, $output = 'html')
 	$payout = get_pool_payout_percents($poolid);
 	if (count($payout) > 0)
 		$tpl->assign('payout', $payout);
+
+	$admins = get_pool_administrators($poolid);
+	if (count($admins) > 0)
+		$tpl->assign('admins', $admins);
 
 	if ($output == 'js')
 		$tpl->assign('js', true);
