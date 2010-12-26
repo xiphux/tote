@@ -78,7 +78,7 @@
 <th title="Losses">L</th>
 <th title="Point Spread">PS</th>
 {foreach from=$weeks key=wknum item=open}
-<th title="Week {$wknum}"{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}>W{$wknum}</th>
+<th{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}><a class="scheduleLink" title="View week {$wknum} schedule" href="{$SCRIPT_NAME}?a=schedule&y={$pool.season}&w={$wknum}">W{$wknum}</a></th>
 {/foreach}
 </thead>
 

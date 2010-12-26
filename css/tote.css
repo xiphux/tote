@@ -45,12 +45,20 @@ table.displayTable td {
 	margin: 0px auto;
 }
 
-.scoreTable th.currentweek {
+.scoreTable th a {
+	color: black;
+}
+
+.scoreTable th.currentweek a {
 	color: blue;
 }
 
-.scoreTable th.weekclosed {
+.scoreTable th.weekclosed a {
 	color: darkgray;
+}
+
+.scoreTable th a {
+	text-decoration: none;
 }
 
 .scoreTable tbody {
@@ -242,4 +250,8 @@ div.poolActionsDiv {
 
 #linksList {
 	padding-top: 5px;
+}
+
+.divScheduleDay {
+	padding: 5px 0px;
 }

@@ -183,6 +183,70 @@ function initLinksList() {
 	$('#spanLinks').replaceWith(link);
 };
 
+function initScheduleLinks() {
+	var url = window.location.href.match(/^([^\?]+\/)/);
+        if (!url) {
+                return;
+        }
+	url = url[1];
+
+	$('.scheduleLink').each(function() {
+		var season = $(this).attr('href').match(/y=([0-9]+)/);
+		if (!season) {
+			return;
+		}
+		season = season[1];
+	
+		var week = $(this).attr('href').match(/w=([0-9]+)/);
+		if (!week) {
+			return;
+		}
+		week = week[1];
+		
+		$(this).removeData('qtip');
+
+		$(this).qtip({
+			content: {
+				text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />',
+				ajax: {
+					url: 'index.php',
+					data: {
+						a: 'schedule',
+						y: season,
+						w: week,
+						o: 'js'
+					},
+					type: 'GET',
+					once: false
+				},
+				title: {
+					text: season + '-' + (season*1+1) + ' week ' + week + ' schedule',
+					button: true
+				}
+			},
+			position: {
+				my: 'center',
+				at: 'center',
+				target: $(window)
+			},
+			show: {
+				event: 'click',
+				solo: true,
+				modal: true
+			},
+			hide: false,
+			style: {
+				classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded'
+			}
+		});
+
+		$(this).click(function() {
+			return false;
+		});
+	});
+
+};
+
 $(document).ready(function() {
 	initPoolTips();
 	initFeedTips();
@@ -190,4 +254,5 @@ $(document).ready(function() {
 	initRulesDisplay();
 	initHistoryDisplay();
 	initLinksList();
+	initScheduleLinks();
 });

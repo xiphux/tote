@@ -315,6 +315,17 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_rules((empty($_GET['p']) ? null : $_GET['p']), (empty($_GET['o']) ? 'html' : $_GET['o']));
 		break;
 
+	
+	// schedule - display the game schedule for a week
+	case 'schedule':
+		require_once(TOTE_CONTROLLERDIR . 'schedule.inc.php');
+		display_schedule(
+			(empty($_GET['y']) ? null : $_GET['y']),
+			(empty($_GET['w']) ? null : $_GET['w']),
+			(empty($_GET['o']) ? 'html' : $_GET['o'])
+		);
+		break;
+
 
 	// pool (default) - display a pool
 	default:
