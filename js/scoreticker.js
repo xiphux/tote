@@ -50,7 +50,7 @@ Tote.ScoreTicker.prototype = {
 		teamWinner: 'tickerTeamWinner'
 	},
 	_labels: {
-		showLink: 'Score ticker…',
+		showLink: 'Score ticker...',
 		hideLink: 'Score ticker'
 	},
 	_started: false,

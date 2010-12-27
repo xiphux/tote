@@ -167,7 +167,7 @@ function initLinksList() {
 	var link = jQuery(document.createElement('a'));
 	link.attr('href', '#');
 	link.attr('id', 'lnkLinks');
-	var showText = 'Useful links…';
+	var showText = 'Useful links...';
 	var hideText = 'Useful links';
 	link.text(showText);
 	link.addClass('linksClosed');
