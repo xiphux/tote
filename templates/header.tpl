@@ -5,6 +5,9 @@
   <title>Tote</title>
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
+  {if $source == 'pool'}
+  <link rel="stylesheet" href="css/scoreticker.css" />
+  {/if}
   {if $csrftoken && $jstoken}
   <script type="text/javascript">
     var TOTE_CSRF_TOKEN="{$csrftoken}"
@@ -14,6 +17,7 @@
   {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
+<script type="text/javascript" src="js/scoreticker.js"></script>
 {elseif $source == 'bet'}
 <script type="text/javascript" src="js/bet.js"></script>
 {elseif $source == 'editpool'}

@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_INCLUDEDIR . 'load_page.inc.php');
 
 // times are reported on websites in Eastern
 date_default_timezone_set('America/New_York');
@@ -389,26 +390,6 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 		// we're up to date
 		echo "no update necessary, scheduled start up to date<br />\n";
 	}
-}
-
-/**
- * load the HTML content of a url
- *
- * @param string $url url to load
- * @return string HTML content
- */
-function load_page($url)
-{
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	ob_start();
-	curl_exec($ch);
-	curl_close($ch);
-	$raw = ob_get_contents();
-	ob_end_clean();
-
-	return $raw;
 }
 
 // first check ESPN since it's easy to scrape the entire schedule

@@ -70,6 +70,8 @@
 
 <div class="clear">&nbsp;</div>
 
+<div id="scoreTicker"></div>
+
 <table class="scoreTable displayTable">
 
 <thead>

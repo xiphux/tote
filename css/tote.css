@@ -255,3 +255,7 @@ div.poolActionsDiv {
 .divScheduleDay {
 	padding: 5px 0px;
 }
+
+#scoreTicker {
+	margin-bottom: 10px;
+}

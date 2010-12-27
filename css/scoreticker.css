@@ -1,0 +1,110 @@
+.tickerContainerDiv {
+	overflow: hidden;
+}
+
+.tickerToggleDiv {
+	border-top: 1px solid LightGray;
+	border-left: 1px solid LightGray;
+	border-right: 1px solid LightGray;
+}
+
+.tickerToggleDiv .tickerToggleLink {
+	text-decoration: none;
+	padding-left: 12px;
+	display: block;
+	background-color: LightGray;
+}
+
+.tickerToggleDiv .tickerToggleLink:hover {
+	background-color: DarkGray;
+}
+
+.tickerToggleDiv .tickerToggleLink.tickerOpen {
+	background-image: url('../images/arrow_expand_down.gif');
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+.tickerToggleDiv .tickerToggleLink.tickerClosed {
+	background-image: url('../images/arrow_expand_right.gif');
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+.tickerContainerDiv {
+	border-left: 1px solid LightGray;
+	border-right: 1px solid LightGray;
+	border-bottom: 1px solid LightGray;
+}
+
+.tickerGameTable {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	border: 1px solid DarkGray;
+	border-collapse: collapse;
+}
+
+.tickerGameTable .tickerGameCell {
+	padding: 0px 0px;
+}
+
+.tickerGameTable .tickerGameTile {
+	width: 56px;
+}
+
+.tickerGameTable .tickerGameTile .tickerGameTeam {
+	font-weight: bold;
+}
+
+.tickerGameTable .tickerGameTile .tickerGameScore {
+	font-weight: bold;
+	text-align: right;
+}
+
+.tickerGameTable .tickerGameTile .tickerPossession {
+	color: red;
+}
+
+.tickerGameTable .tickerGameRedZone .tickerPossession {
+	color: white;
+}
+
+.tickerGameTable .tickerGameRedZone:hover .tickerPossession {
+	color: red;
+}
+
+.tickerGameTable .tickerPlaying {
+	border-left: 1px solid LightGray;
+	border-right: 1px solid LightGray;
+}
+
+.tickerGameTable .tickerGameRedZone {
+	color: white !important;
+	background-color: red !important;
+}
+
+.tickerGameTable .tickerGamePending {
+	color: Gray;
+	background-color: WhiteSmoke;
+	border: 1px solid white;
+}
+
+.tickerGameTable .tickerGameFinished {
+	color: Gray;
+	background-color: LightGray;
+	border: 1px solid white;
+}
+
+.tickerGameTable .tickerTeamWinner {
+	color: #555;
+}
+
+.tickerGameTable .tickerGameTile:hover .tickerTeamWinner {
+	color: DarkBlue;
+}
+
+.tickerGameTable .tickerGameTile:hover {
+	color: DarkBlue !important;
+	background-color: PowderBlue !important;
+}
+
