@@ -151,20 +151,11 @@ div.poolActionsDiv {
 	margin-top: 20px;
 }
 
-.historyDialog {
+.totePopup {
 	max-width: 500px;
 }
 
-.historyDialog .ui-tooltip-content {
-	max-height: 400px;
-	overflow: auto;
-}
-
-.rulesDialog {
-	max-width: 500px;
-}
-
-.rulesDialog .ui-tooltip-content {
+.totePopup .ui-tooltip-content {
 	max-height: 400px;
 	overflow: auto;
 }

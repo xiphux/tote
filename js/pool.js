@@ -99,7 +99,7 @@ function initRulesDisplay() {
 		},
 		hide: false,
 		style: {
-			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded rulesDialog'
+			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
 		}
 	});
 
@@ -152,7 +152,7 @@ function initHistoryDisplay() {
 		},
 		hide: false,
 		style: {
-			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded historyDialog'
+			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
 		}
 	});
 
@@ -243,7 +243,7 @@ function initScheduleLinks() {
 			},
 			hide: false,
 			style: {
-				classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded'
+				classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
 			}
 		});
 
