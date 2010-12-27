@@ -1,5 +1,8 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
+<div id="poolMain">
+<div id="poolMain2">
+
 <div class="poolInfoDiv">
 <div class="poolNavDiv">
 {if $allpools && (count($allpools) > 1)}
@@ -162,6 +165,9 @@
 
 </div>
 {/if}
+
+</div>
+</div>
 
 
 {include file='footer.tpl'}

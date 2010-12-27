@@ -1,16 +1,18 @@
 .tickerContainerDiv {
 	overflow: hidden;
+	text-align: left;
 }
 
 .tickerToggleDiv {
 	border-top: 1px solid LightGray;
 	border-left: 1px solid LightGray;
 	border-right: 1px solid LightGray;
+	text-align: left;
 }
 
 .tickerToggleDiv .tickerToggleLink {
 	text-decoration: none;
-	padding-left: 12px;
+	padding: 3px 0px 3px 12px;
 	display: block;
 	background-color: LightGray;
 }
