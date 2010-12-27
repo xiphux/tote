@@ -148,7 +148,9 @@
 {if $links}
 <div id="linksDiv">
 
-<span id="spanLinks">Useful links:</span><br />
+<div id="linksToggle">
+<span id="spanLinks">Useful links:</span>
+</div>
 
 <div id="linksList">
 <ul>

@@ -245,11 +245,35 @@ div.poolActionsDiv {
 }
 
 #linksDiv {
-	padding-top: 5px;
+	margin-top: 5px;
+	border: 1px solid LightGray;
 }
 
-#linksList {
-	padding-top: 5px;
+#linksToggle {
+	background-color: LightGray;
+}
+
+#lnkLinks {
+	display: block;
+	background-color: LightGray;
+	padding-left: 12px;
+	text-decoration: none;
+}
+
+#lnkLinks:hover {
+	background-color: DarkGray;
+}
+
+#lnkLinks.linksOpen {
+	background-image: url('../images/arrow_expand_down.gif');
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+#lnkLinks.linksClosed {
+	background-image: url('../images/arrow_expand_right.gif');
+	background-repeat: no-repeat;
+	background-position: left center;
 }
 
 .divScheduleDay {

@@ -167,16 +167,23 @@ function initLinksList() {
 	var link = jQuery(document.createElement('a'));
 	link.attr('href', '#');
 	link.attr('id', 'lnkLinks');
-	link.text('Show links...');
+	var showText = 'Useful links…';
+	var hideText = 'Useful links';
+	link.text(showText);
+	link.addClass('linksClosed');
 	link.click(function() {
 		if ($('#linksList').is(':visible')) {
 			$('#linksList').hide('fast');
-			$(this).text('Show links...');
+			$(this).text(showText);
+			$(this).removeClass('linksOpen');
+			$(this).addClass('linksClosed');
 		} else {
 			$('#linksList').show('fast', function() {
 				$('html,body').animate({scrollTop: $('body').attr('scrollHeight')}, 500);
 			});
-			$(this).text('Hide links...');
+			$(this).text(hideText);
+			$(this).removeClass('linksClosed');
+			$(this).addClass('linksOpen');
 		}
 		return false;
 	});
