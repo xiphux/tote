@@ -39,6 +39,10 @@
 	border-bottom: 1px solid #54abe4;
 }
 
+.tickerContainerDiv a {
+	text-decoration: none;
+}
+
 .tickerGameTable {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 10px;
