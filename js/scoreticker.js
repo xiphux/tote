@@ -84,6 +84,7 @@ Tote.ScoreTicker.prototype = {
 		var ticker = this;
 		var showCallback = function(event) {
 			ticker.start();
+			ticker._elements.bound.removeClass('rounded-bottom');
 			ticker._elements.containerDiv.show('fast', function() {
 				ticker._elements.gameTable.animate({marginLeft: 0}, 'fast');
 				ticker._elements.toggleLink.text(ticker._labels.hideLink);
@@ -96,6 +97,7 @@ Tote.ScoreTicker.prototype = {
 			ticker.stop();
 			ticker._elements.gameTable.animate({marginLeft: -ticker._elements.gameTable.outerWidth()}, 'fast', function() {
 				ticker._elements.containerDiv.hide('fast');
+				ticker._elements.bound.addClass('rounded-bottom');
 				ticker._elements.toggleLink.text(ticker._labels.showLink);
 				ticker._elements.toggleLink.removeClass(ticker._classes.open);
 				ticker._elements.toggleLink.addClass(ticker._classes.closed);
@@ -114,6 +116,7 @@ Tote.ScoreTicker.prototype = {
 
 		var containerDiv = jQuery(document.createElement('div'));
 		containerDiv.addClass(this._classes.containerDiv);
+		containerDiv.addClass('subSection');
 		if (hidden) {
 			containerDiv.css('display', 'none');
 		}
@@ -138,6 +141,7 @@ Tote.ScoreTicker.prototype = {
 
 		if (hidden) {
 			gameTable.css('margin-left', -this._elements.bound.outerWidth());
+			this._elements.bound.addClass('rounded-bottom');
 		}
 	},
 

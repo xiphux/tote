@@ -1,5 +1,14 @@
 {include file='header.tpl' source='bet'}
 
+<div id="main">
+<div id="main2">
+
+<div class="header">
+Place A Bet
+</div>
+
+<div id="main3">
+
 {if $bets}
 <p>
 Your other bets:
@@ -57,5 +66,9 @@ Games for week {$week}:
 <input type="submit" value="Bet" />
 </form>
 </p>
+
+</div>
+</div>
+</div>
 
 {include file='footer.tpl'}

@@ -1,5 +1,14 @@
 {include file='header.tpl' source='newuser'}
 
+<div id="main">
+<div id="main2">
+
+<div class="header" class="smallContent">
+Add A New User
+</div>
+
+<div id="main3">
+
 {if $errors}
 <ul>
 {foreach from=$errors item=error}
@@ -42,5 +51,9 @@
 </table>
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
+
+</div>
+</div>
+</div>
 
 {include file='footer.tpl'}

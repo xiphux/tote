@@ -1,5 +1,14 @@
 {include file='header.tpl'}
 
+<div id="main">
+<div id="main2" class="smallContent">
+
+<div class="header">
+Reset Your Password
+</div>
+
+<div id="main3">
+
 {if $errors}
 <ul>
 {foreach from=$errors item=error}
@@ -20,5 +29,9 @@
 </table>
 <input type="hidden" value="{$key}" name="key" />
 </form>
+
+</div>
+</div>
+</div>
 
 {include file='footer.tpl'}

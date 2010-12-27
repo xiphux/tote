@@ -1,5 +1,14 @@
 {include file='header.tpl'}
 
+<div id="main">
+<div id="main2" class="smallContent">
+
+<div class="header">
+Edit Your Preferences
+</div>
+
+<div id="main3">
+
 {if $errors}
 <ul>
 {foreach from=$errors item=error}
@@ -39,5 +48,9 @@
 </div>
 
 </form>
+
+</div>
+</div>
+</div>
 
 {include file='footer.tpl'}

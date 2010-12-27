@@ -5,6 +5,7 @@
   <title>Tote</title>
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
+  <link rel="stylesheet" href="css/toteskin.css" />
   {if $source == 'pool'}
   <link rel="stylesheet" href="css/scoreticker.css" />
   {/if}

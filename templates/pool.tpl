@@ -1,10 +1,14 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
-<div id="poolMain">
-<div id="poolMain2">
+<div id="main">
+<div id="main2">
+<div id="main3">
 
 <div class="poolInfoDiv">
-<div class="poolNavDiv">
+
+<table class="displayTable infoTable subSection rounded-top rounded-bottom">
+<tr>
+<th colspan="2">
 {if $allpools && (count($allpools) > 1)}
 <form action="index.php" method="get">
 <select id="poolNameSelect" name="p">
@@ -17,18 +21,35 @@
 {else}
 {$pool.name} [{$pool.season}-{$pool.season+1}]
 {/if}
-{if $pool.fee}
+</th>
+</tr>
 
-<br />Entry fee: ${$pool.fee|string_format:"%.2f"}
+{if $pool.fee}
+<tr>
+<td>
+Entry fee:
+</td>
+<td>
+${$pool.fee|string_format:"%.2f"}
+</td>
+</tr>
 
 {if $payout}
 {foreach from=$payout key=place item=amount}
-<br />{$place|place} place: ${$amount|string_format:"%.2f"}
+<tr>
+<td>
+{$place|place} place:
+</td>
+<td>
+${$amount|string_format:"%.2f"}
+</td>
+</tr>
 {/foreach}
 {/if}
 
 {/if}
-</div>
+</table>
+
 {if $user && $entered && $poolopen}
 <div class="poolBetDiv">
 <form action="index.php" method="get">
@@ -46,10 +67,11 @@
 </form>
 </div>
 {/if}
+
 </div>
 
 <div class="userOpts">
-<table class="displayTable">
+<table class="displayTable subSection rounded-top rounded-bottom">
 {if $user}
 <thead>
   <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
@@ -73,7 +95,9 @@
 
 <div class="clear">&nbsp;</div>
 
-<div id="scoreTicker"></div>
+<div id="scoreTicker" class="rounded-top"></div>
+
+<div id="poolMain" class="rounded-bottom rounded-top">
 
 <table class="scoreTable displayTable">
 
@@ -148,8 +172,10 @@
 
 </div>
 
+</div>
+
 {if $links}
-<div id="linksDiv">
+<div id="linksDiv" class="subSection rounded-top rounded-bottom">
 
 <div id="linksToggle">
 <span id="spanLinks">Useful links:</span>
@@ -166,6 +192,7 @@
 </div>
 {/if}
 
+</div>
 </div>
 </div>
 

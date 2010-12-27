@@ -45,7 +45,7 @@ function display_bet($poolID, $week)
 
 	$pool = $pools->findOne(
 		array('_id' => new MongoId($poolID)),
-		array('season', 'entries')
+		array('season', 'entries', 'name')
 	);
 	if (!$pool) {
 		// pool must exist

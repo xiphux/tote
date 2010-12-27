@@ -4,9 +4,9 @@
 }
 
 .tickerToggleDiv {
-	border-top: 1px solid LightGray;
-	border-left: 1px solid LightGray;
-	border-right: 1px solid LightGray;
+	border-top: 1px solid #54abe4;
+	border-left: 1px solid #54abe4;
+	border-right: 1px solid #54abe4;
 	text-align: left;
 }
 
@@ -14,11 +14,11 @@
 	text-decoration: none;
 	padding: 3px 0px 3px 12px;
 	display: block;
-	background-color: LightGray;
+	background-color: #54abe4;
 }
 
 .tickerToggleDiv .tickerToggleLink:hover {
-	background-color: DarkGray;
+	background-color: #547be4;
 }
 
 .tickerToggleDiv .tickerToggleLink.tickerOpen {
@@ -34,9 +34,9 @@
 }
 
 .tickerContainerDiv {
-	border-left: 1px solid LightGray;
-	border-right: 1px solid LightGray;
-	border-bottom: 1px solid LightGray;
+	border-left: 1px solid #54abe4;
+	border-right: 1px solid #54abe4;
+	border-bottom: 1px solid #54abe4;
 }
 
 .tickerGameTable {
@@ -78,6 +78,7 @@
 .tickerGameTable .tickerPlaying {
 	border-left: 1px solid LightGray;
 	border-right: 1px solid LightGray;
+	background-color: white;
 }
 
 .tickerGameTable .tickerGameRedZone {

@@ -126,7 +126,7 @@ function initEditPoolTips()
 {
 	$('*[title]').qtip({
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-shadow ui-tooltip-rounded'
+			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
 		},
 		position: {
 			adjust: {

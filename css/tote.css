@@ -2,46 +2,31 @@
 	text-align: center;
 }
 
-.alert {
-	color: red;
+.header {
+	padding: 3px 10px;
 }
 
-a {
-	color: blue;
+.smallContent {
+	margin-top: 175px;
 }
 
-table.displayTable {
-	border: 1px solid #d9d8d1;
-	border-collapse: collapse;
-}
-
-table.displayTable .dark {
-	background-color: #f6f6f0;
-}
-
-table.displayTable .dark:hover {
-	background-color: #edece6;
-}
-
-table.displayTable .light:hover {
-	background-color: #edece6;
-}
-
-table.displayTable th {
-	border: 1px solid #d9d8d1;
-	background-color: #d9d8d1;
-}
-
-table.displayTable td {
-	border: 1px solid #d9d8d1;
-}
-
-div#poolMain {
+div#main {
 	text-align: center;
 }
 
-div#poolMain2 {
+div#main2 {
 	overflow: hidden;
+	display: inline-block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+div#main3 {
+	padding: 15px;
+}
+
+div#poolMain {
 	display: inline-block;
 	margin: 0px auto;
 }
@@ -50,62 +35,8 @@ div#poolMain2 {
 	clear: both;
 }
 
-.scoreTable {
-	font-family: Helvetica, Arial, sans-serif;
-}
-
-.scoreTable th a {
-	color: black;
-}
-
-.scoreTable th.currentweek a {
-	color: blue;
-}
-
-.scoreTable th.weekclosed a {
-	color: darkgray;
-}
-
-.scoreTable th a {
-	text-decoration: none;
-}
-
-.scoreTable tbody {
-	text-align: center;
-	font-size: 12px;
-}
-
 .scoreTable td {
 	white-space: nowrap;
-}
-
-.scoreTable td.entrantName {
-	font-weight: bold;
-}
-
-.scoreTable a.betLink {
-	font-style: italic;
-	color: darkgray;
-}
-
-.win {
-	color: blue;
-}
-
-.loss {
-	color: red;
-}
-
-table.scoreTable tr.self {
-	background-color: #dcdbd5;
-}
-
-table.scoreTable tr.self:hover {
-	background-color: #dcdbd5;
-}
-
-table.scoreTable td.current {
-	background-color: #dcdbd5;
 }
 
 div.poolInfoDiv {
@@ -124,21 +55,8 @@ div.userOpts table {
 	float: right;
 }
 
-div.userOpts table td {
-	border: 0px;
-}
-
-.gamestarted {
-	color: darkgray;
-}
-
-.betTable tbody {
-	text-align: center;
-}
-
 div.poolFooter {
 	padding: 3px 0px;
-	background-color: LightGray;
 }
 
 div.poolRules {
@@ -152,7 +70,7 @@ div.poolHistory {
 	text-align: right;
 	width: 40%;
 	float: right;
-	padding-right: 15px;
+	padding-right: 5px;
 }
 
 .historyTable td {
@@ -195,17 +113,11 @@ div.movementDiv div {
 div.availableUsers {
 	height: 500px;
 	overflow: auto;
-	border: 1px solid black;
 }
 
 div.poolUsers {
 	height: 500px;
 	overflow: auto;
-	border: 1px solid black;
-}
-
-div.userListItem {
-	border: 1px solid #d9d8d1;
 }
 
 div.userListItem table {
@@ -218,10 +130,6 @@ div.userListItem table td.checkbox {
 
 div.userListItem table td.alert {
 	text-align: right;
-}
-
-div.selected {
-	background-color: yellow;
 }
 
 table.userTable td {
@@ -260,23 +168,12 @@ div.poolActionsDiv {
 
 #linksDiv {
 	margin-top: 10px;
-	border: 1px solid LightGray;
 	text-align: left;
-}
-
-#linksToggle {
-	background-color: LightGray;
 }
 
 #lnkLinks {
 	display: block;
-	background-color: LightGray;
 	padding: 3px 0px 3px 12px;
-	text-decoration: none;
-}
-
-#lnkLinks:hover {
-	background-color: DarkGray;
 }
 
 #lnkLinks.linksOpen {

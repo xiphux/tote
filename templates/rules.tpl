@@ -2,6 +2,17 @@
 {include file='header.tpl'}
 {/if}
 
+{if !$js}
+<div id="main">
+<div id="main2">
+
+<div class="header">
+Rules
+</div>
+
+<div id="main3">
+{/if}
+
 <div>
 
 <ul>
@@ -38,6 +49,12 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 </ul>
 
 </div>
+
+{if !$js}
+</div>
+</div>
+</div>
+{/if}
 
 {if !$js}
 {include file='footer.tpl'}

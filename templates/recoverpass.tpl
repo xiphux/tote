@@ -1,5 +1,14 @@
 {include file='header.tpl'}
 
+<div id="main">
+<div id="main2" class="smallContent">
+
+<div class="header">
+Recover Your Password
+</div>
+
+<div id="main3">
+
 <p>Enter the email address used for the account, and we'll email instructions for setting a new password.</p>
 
 {if $errors}
@@ -14,5 +23,9 @@
 <label for="email">Email:</label> <input type="email" name="email"><br />
 <input type="submit" value="Recover" name="login" />
 </form>
+
+</div>
+</div>
+</div>
 
 {include file='footer.tpl'}

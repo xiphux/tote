@@ -1,0 +1,222 @@
+.alert {
+	color: red;
+}
+
+.rounded-top {
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	overflow: hidden;
+	border-collapse: separate !important;
+	border-spacing: 0;
+	behavior: url('css/ext/PIE.php');
+}
+
+.rounded-bottom {
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	overflow: hidden;
+	border-collapse: separate !important;
+	border-spacing: 0;
+	behavior: url('css/ext/PIE.php');
+}
+
+.shadow {
+	-moz-box-shadow: 5px 5px 5px #9c9c9c;
+	-webkit-box-shadow: 5px 5px 5px #9c9c9c;
+	box-shadow: 5px 5px 5px #9c9c9c;
+	behavior: url('css/ext/PIE.php');
+}
+
+a {
+	color: #155b89;
+}
+
+body {
+	background-color: #155b89;
+}
+
+div#main2 {
+	border: 3px solid #54abe4;
+	background-color: #d8ebf8;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	behavior: url('css/ext/PIE.php');
+}
+
+.subSection {
+	background-color: #d1ecfe;
+}
+
+.header {
+	background-color: #54abe4;
+	color: #fff;
+	text-align: left;
+	font-weight: bold;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: larger;
+	text-shadow: -1px -1px 0px #9c9c9c;
+}
+
+
+table.displayTable {
+	border: 1px solid #54abe4;
+	border-collapse: collapse;
+}
+
+table.displayTable .light {
+	background-color: white;
+}
+
+table.displayTable .dark {
+	background-color: #f6f6f0;
+}
+
+table.displayTable .dark:hover {
+	background-color: #edece6;
+}
+
+table.displayTable .light:hover {
+	background-color: #edece6;
+}
+
+table.displayTable th {
+	border: 1px solid #54abe4;
+	background-color: #54abe4;
+	text-align: center;
+}
+
+table.displayTable td {
+	border: 1px solid #54abe4;
+}
+
+
+.scoreTable {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0px auto;
+}
+
+.scoreTable th a {
+	color: black;
+}
+
+.scoreTable th.currentweek a {
+	color: blue;
+}
+
+.scoreTable th.weekclosed a {
+	color: #9c9c9c;
+}
+
+.scoreTable th a {
+	text-decoration: none;
+}
+
+.scoreTable tbody {
+	text-align: center;
+	font-size: 12px;
+}
+
+.scoreTable td.entrantName {
+	font-weight: bold;
+}
+
+.scoreTable a.betLink {
+	font-style: italic;
+	color: darkgray;
+}
+
+.win {
+	color: blue;
+}
+
+.loss {
+	color: red;
+}
+
+table.scoreTable tr.self {
+	background-color: lightgray;
+}
+
+table.scoreTable tr.self:hover {
+	background-color: lightgray;
+}
+
+table.scoreTable td.current {
+	background-color: #dcdbd5;
+}
+
+table.infoTable td {
+	border: 0px;
+}
+
+div.userOpts table td {
+	border: 0px;
+}
+
+.gamestarted {
+	color: darkgray;
+}
+
+.betTable {
+	margin: 0px auto;
+}
+
+.betTable tbody {
+	text-align: center;
+}
+
+div.poolFooter {
+	background-color: #54abe4;
+}
+
+div.availableUsers {
+	border: 1px solid black;
+}
+
+div.poolUsers {
+	border: 1px solid black;
+}
+
+div.userListItem {
+	border: 1px solid #d9d8d1;
+}
+
+div.selected {
+	background-color: yellow;
+}
+
+#linksDiv {
+	border: 1px solid #54abe4;
+}
+
+#linksToggle {
+	background-color: #54abe4;
+}
+
+#lnkLinks {
+	background-color: #54abe4;
+	text-decoration: none;
+}
+
+#lnkLinks:hover {
+	background-color: #547be4;
+}
+
+.ui-tooltip-tote .ui-tooltip-wrapper{
+	border-color: #54abe4;
+	background-color: #d8ebf8;
+	color: #454545;
+}
+
+.ui-tooltip-tote .ui-tooltip-titlebar{
+	background-color: #54abe4;
+}
+
+.ui-tooltip-tote .ui-tooltip-icon{
+	background: #9c9c9c url('../images/close-light.png') no-repeat 50% 50%;
+}
+

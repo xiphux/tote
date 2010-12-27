@@ -23,7 +23,7 @@ function initFeedTips() {
 				delay: 150
 			},
 			style: {
-				classes: 'ui-tooltip-light ui-tooltip-shadow ui-tooltip-rounded'
+				classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
 			},
 			position: {
 				adjust: {
@@ -39,7 +39,7 @@ function initFeedTips() {
 function initPoolTips() {
 	$('*[title]').qtip({
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-shadow ui-tooltip-rounded'
+			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
 		},
 		position: {
 			adjust: {
@@ -99,7 +99,7 @@ function initRulesDisplay() {
 		},
 		hide: false,
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded rulesDialog'
+			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded rulesDialog'
 		}
 	});
 
@@ -152,7 +152,7 @@ function initHistoryDisplay() {
 		},
 		hide: false,
 		style: {
-			classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded historyDialog'
+			classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded historyDialog'
 		}
 	});
 
@@ -243,7 +243,7 @@ function initScheduleLinks() {
 			},
 			hide: false,
 			style: {
-				classes: 'ui-tooltip-light ui-tooltip-modal ui-tooltip-rounded'
+				classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded'
 			}
 		});
 
