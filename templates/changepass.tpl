@@ -16,7 +16,7 @@
 {/if}
 
 <form method="post" action="index.php?a=finishchangepass">
-<table>
+<table class="formTable">
 <tr>
 <td><label for="oldpassword">Old password:</label></td><td><input type="password" name="oldpassword" /></td>
 </tr>

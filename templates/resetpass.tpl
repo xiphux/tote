@@ -18,7 +18,7 @@ Reset Your Password
 {/if}
 
 <form method="post" action="index.php?a=finishresetpass">
-<table>
+<table class="formTable">
 <tr>
 <td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword"></td>
 </tr>

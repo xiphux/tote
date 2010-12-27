@@ -18,7 +18,7 @@ Add A New User
 {/if}
 
 <form method="post" action="index.php?a=adduser">
-<table>
+<table class="formTable">
   <tr>
     <td><label for="username">Username:</label></td>
     <td><input type="text" name="username" {if $username}value="{$username}"{/if} /></td>

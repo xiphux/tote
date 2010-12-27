@@ -19,7 +19,6 @@ div#main2 {
 	display: inline-block;
 	margin-left: auto;
 	margin-right: auto;
-	text-align: left;
 }
 
 div#main3 {
@@ -138,6 +137,10 @@ table.userTable td {
 
 table.userTable td.action a {
 	margin: 0px 5px;
+}
+
+table.formTable {
+	text-align: left;
 }
 
 div.poolBetDiv {

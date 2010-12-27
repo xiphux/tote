@@ -10,7 +10,7 @@ Edit A User's Bets
 <p>Editing bets for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 
 <form action="index.php?a=savebets" method="post" />
-<table>
+<table class="formTable">
 {foreach from=$bets key=week item=bet}
 <tr>
 <td><label for="week[{$week}]">Week {$week}:</label></td>

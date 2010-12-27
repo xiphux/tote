@@ -19,7 +19,7 @@ Login
 
 <div>
 <form method="post" action="index.php?a=finishlogin">
-<table>
+<table class="formTable">
 <tr>
 <td>
 <label for="username">Username:</label>

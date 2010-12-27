@@ -18,7 +18,7 @@ Edit A User
 {/if}
 
 <form method="post" action="index.php?a=saveuser">
-<table>
+<table class="formTable">
   <tr>
     <td><label for="username">Username:</label></td>
     <td>{$username}</td>

@@ -18,7 +18,7 @@ Add A New Pool
 {/if}
 
 <form method="post" action="index.php?a=addpool">
-<table>
+<table class="formTable">
   <tr>
     <td><label for="name">Pool name:</label></td>
     <td><input type="text" name="name" {if $name}value="{$name}"{/if} /></td>
