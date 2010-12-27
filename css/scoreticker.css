@@ -91,19 +91,19 @@
 }
 
 .tickerGameTable .tickerGamePending {
-	color: Gray;
+	color: #7a7a7a;
 	background-color: WhiteSmoke;
 	border: 1px solid white;
 }
 
 .tickerGameTable .tickerGameFinished {
-	color: Gray;
+	color: #6a6a6a;
 	background-color: LightGray;
 	border: 1px solid white;
 }
 
 .tickerGameTable .tickerTeamWinner {
-	color: #555;
+	color: #333;
 }
 
 .tickerGameTable .tickerGameTile:hover .tickerTeamWinner {
