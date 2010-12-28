@@ -467,6 +467,8 @@ Tote.ScoreTicker.Game.prototype = {
 				if ((this._data.quarter == 'F') || (this._data.quarter == 'FO')) {
 					this._updateWinner();
 				}
+			} else {
+				this._elements.homeScoreCell.text('');
 			}
 		}
 	},
@@ -490,6 +492,8 @@ Tote.ScoreTicker.Game.prototype = {
 				if ((this._data.quarter == 'F') || (this._data.quarter == 'FO')) {
 					this._updateWinner();
 				}
+			} else {
+				this._elements.visitorScoreCell.text('');
 			}
 		}
 	},
@@ -579,6 +583,68 @@ Tote.ScoreTicker.Game.prototype = {
 			return true;
 		}
 		return false;
+	},
+
+	is_active: function()
+	{
+		return (this.is_playing() || (this._data.quarter == 'H'));
+	},
+
+	set_data: function(data)
+	{
+		for (var prop in data) {
+			switch (prop) {
+				case 'year':
+					this.set_year(data.year);
+					break;
+				case 'seasonType':
+					this.set_seasonType(data.seasonType);
+					break;
+				case 'week':
+					this.set_week(data.week);
+					break;
+				case 'gsis':
+					this.set_gsis(data.gsis);
+					break;
+				case 'eid':
+					this.set_eid(data.eid);
+					break;
+				case 'start':
+					if (('day' in data.start) && ('time' in data.start)) {
+						this.set_start(data.start.day, data.start.time);
+					}
+					break;
+				case 'visitor':
+					this.set_visitor(data.visitor);
+					break;
+				case 'visitorNickname':
+					this.set_visitorNickname(data.visitorNickname);
+					break;
+				case 'home':
+					this.set_home(data.home);
+					break;
+				case 'homeNickname':
+					this.set_homeNickname(data.homeNickname);
+					break;
+				case 'homeScore':
+					this.set_homeScore(data.homeScore);
+					break;
+				case 'visitorScore':
+					this.set_visitorScore(data.visitorScore);
+					break;
+				case 'redZone':
+					this.set_redZone(data.redZone);
+					break;
+				case 'status':
+					if (('quarter' in data.status) && ('clock' in data.status)) {
+						this.set_status(data.status.quarter, data.status.clock);
+					}
+					break;
+				case 'possession':
+					this.set_possession(data.possession);
+					break;
+			}
+		}
 	}
 
 };
@@ -756,23 +822,33 @@ Tote.ScoreTicker.Ticker.prototype = {
 				gameObj = new Tote.ScoreTicker.Game();
 				created = true;
 
-				gameObj.set_year(gameslist.attr('y'));
-				gameObj.set_seasonType(gameslist.attr('t'));
-				gameObj.set_week(gameslist.attr('w'));
-
-				gameObj.set_gsis(gsis);
+				gameObj.set_data({
+					year: gameslist.attr('y'),
+					seasonType: gameslist.attr('t'),
+					week: gameslist.attr('w'),
+					gsis: gsis
+				});
 			}
-			gameObj.set_eid(g.attr('eid'));
-			gameObj.set_start(g.attr('d'), g.attr('t'));
-			gameObj.set_visitor(g.attr('v'));
-			gameObj.set_visitorNickname(g.attr('vnn'));
-			gameObj.set_home(g.attr('h'));
-			gameObj.set_homeNickname(g.attr('hnn'));
-			gameObj.set_status(g.attr('q'), g.attr('k'));
-			gameObj.set_redZone((g.attr('rz') == "1" ? true : false));
-			gameObj.set_possession(g.attr('p'));
-			gameObj.set_homeScore(g.attr('hs'));
-			gameObj.set_visitorScore(g.attr('vs'));
+
+			gameObj.set_data({
+				eid: g.attr('eid'),
+				start: {
+					day: g.attr('d'),
+					time: g.attr('t')
+				},
+				visitor: g.attr('v'),
+				visitorNickname: g.attr('vnn'),
+				home: g.attr('h'),
+				homeNickname: g.attr('hnn'),
+				status: {
+					quarter: g.attr('q'),
+					clock: g.attr('k')
+				},
+				redZone: (g.attr('rz') == '1' ? true : false),
+				possession: g.attr('p'),
+				homeScore: g.attr('hs'),
+				visitorScore: g.attr('vs')
+			});
 
 			if (created) {
 				gameObj.initialize();
