@@ -795,6 +795,12 @@ Tote.ScoreTicker.Ticker.prototype = {
 		this._updateGameTiles(gms);
 
 		this._elements.bound.width(this._elements.gameTable.width() + 4);
+
+		if ((gms.attr('gd') == '1') && (this._hasActiveGames())) {
+			this.set_delay(15);
+		} else {
+			this.set_delay(300);
+		}
 	},
 
 	_updateTitle: function(year, week)
@@ -870,11 +876,25 @@ Tote.ScoreTicker.Ticker.prototype = {
 		});
 	},
 
+	_hasActiveGames: function()
+	{
+		for (var gsis in this._gameObjects) {
+			if (this._gameObjects[gsis] && (this._gameObjects[gsis].is_active())) {
+				return true;
+			}
+		}
+		return false;
+	},
+
 	get_delay: function() {
 		return this._delay;
 	},
 
 	set_delay: function(value) {
+		if (this._delay == value) {
+			return;
+		}
+
 		this._delay = value;
 		if (this._started) {
 			this.stop();
