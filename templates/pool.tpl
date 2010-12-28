@@ -1,7 +1,7 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
 <div id="main">
-<div id="main2">
+<div id="main2" class="mainShadow">
 <div id="main3">
 
 <div class="poolInfoDiv">

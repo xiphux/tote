@@ -1,9 +1,9 @@
 {include file='header.tpl' source='newuser'}
 
 <div id="main">
-<div id="main2">
+<div id="main2" class="smallContent mainShadow">
 
-<div class="header" class="smallContent">
+<div class="header">
 Add A New User
 </div>
 

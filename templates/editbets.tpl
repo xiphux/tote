@@ -1,7 +1,7 @@
 {include file='header.tpl'}
 
 <div id="main">
-<div id="main2">
+<div id="main2" class="mainShadow">
 <div class="header">
 Edit A User's Bets
 </div>

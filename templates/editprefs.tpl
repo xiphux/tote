@@ -1,7 +1,7 @@
 {include file='header.tpl'}
 
 <div id="main">
-<div id="main2" class="smallContent">
+<div id="main2" class="smallContent mainShadow">
 
 <div class="header">
 Edit Your Preferences

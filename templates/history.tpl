@@ -5,7 +5,7 @@
 {if !$js}
 
 <div id="main">
-<div id="main2">
+<div id="main2" class="mainShadow">
 
 <div class="header">
 Pool History
