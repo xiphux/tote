@@ -39,11 +39,11 @@ Add A New User
     <td><label for="password">Password:</label></td>
     <td><input type="password" name="password" id="password" /></td>
     <td><input type="button" id="generateButton" value="Generate random password" /></td>
-    <td id="randomPasswordDisplay"></td>
   </tr>
   <tr>
     <td><label for="password2">Confirm password:</label></td>
     <td><input type="password" name="password2" id="password2" /></td>
+    <td id="randomPasswordDisplay"></td>
   </tr>
   <tr>
     <td><input type="submit" value="Create" /></td>

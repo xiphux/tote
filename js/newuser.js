@@ -18,7 +18,7 @@ function initGeneratePassword()
 
 		$('#password').val(pass);
 		$('#password2').val(pass);
-		$('#randomPasswordDisplay').text('Generated password: ' + pass);
+		$('#randomPasswordDisplay').text('Generated: ' + pass);
 		oldPassword = pass;
 	});
 
