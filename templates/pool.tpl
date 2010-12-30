@@ -6,7 +6,7 @@
 
 <div class="poolInfoDiv">
 
-<table class="displayTable infoTable subSection rounded-top rounded-bottom">
+<table class="displayTable infoTable subSection rounded-top rounded-bottom subShadow">
 <tr>
 <th colspan="2">
 {if $allpools && (count($allpools) > 1)}
@@ -71,7 +71,7 @@ ${$amount|string_format:"%.2f"}
 </div>
 
 <div class="userOpts">
-<table class="displayTable subSection rounded-top rounded-bottom">
+<table class="displayTable subSection rounded-top rounded-bottom subShadow">
 {if $user}
 <thead>
   <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
@@ -95,9 +95,9 @@ ${$amount|string_format:"%.2f"}
 
 <div class="clear">&nbsp;</div>
 
-<div id="scoreTicker" class="rounded-top"></div>
+<div id="scoreTicker" class="rounded-top subShadow"></div>
 
-<div id="poolMain" class="rounded-bottom rounded-top">
+<div id="poolMain" class="rounded-bottom rounded-top subShadow">
 
 <table class="scoreTable displayTable">
 
@@ -175,7 +175,7 @@ ${$amount|string_format:"%.2f"}
 </div>
 
 {if $links}
-<div id="linksDiv" class="subSection rounded-top rounded-bottom">
+<div id="linksDiv" class="subSection rounded-top rounded-bottom subShadow">
 
 <div id="linksToggle">
 <span id="spanLinks">Useful links:</span>
