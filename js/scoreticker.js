@@ -870,7 +870,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		});
 
 		this._elements.gameRow.find('td.' + Tote.ScoreTicker.Ticker.CSSClasses.gameCell + ' > a').each(function() {
-			if (!jQuery.inArray($(this).attr('id'), updated)) {
+			if (jQuery.inArray($(this).attr('id'), updated) == -1) {
 				$(this).parent().remove();
 			}
 		});
