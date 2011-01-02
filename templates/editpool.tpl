@@ -1,13 +1,4 @@
-{include file='header.tpl' source='editpool' jstoken=true}
-
-<div id="main">
-<div id="main2" class="mainShadow">
-
-<div class="header">
-Manage Your Pool
-</div>
-
-<div id="main3">
+{include file='header.tpl' source='editpool' jstoken=true header='Manage Your Pool'}
 
 <span style="display: none" id="poolID">{$pool._id}</span>
 
@@ -79,10 +70,6 @@ Users in pool:
 
 <div class="poolActionsDiv">
 <a href="{$SCRIPT_NAME}?a=deletepool&p={$pool._id}&csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
-</div>
-
-</div>
-</div>
 </div>
 
 {include file='footer.tpl'}

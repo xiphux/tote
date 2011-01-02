@@ -1,16 +1,5 @@
 {if !$js}
-{include file='header.tpl'}
-{/if}
-
-{if !$js}
-<div id="main">
-<div id="main2" class="mainShadow">
-
-<div class="header">
-View Game Schedule
-</div>
-
-<div id="main3">
+{include file='header.tpl' header='View Game Schedule'}
 
 Games for {$year}-{$year+1} week {$week}:
 {/if}
@@ -26,12 +15,6 @@ Games for {$year}-{$year+1} week {$week}:
 {/foreach}
 </div>
 </div>
-
-{if !$js}
-</div>
-</div>
-</div>
-{/if}
 
 {if !$js}
 {include file='footer.tpl'}

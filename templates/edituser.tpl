@@ -1,13 +1,4 @@
-{include file='header.tpl'}
-
-<div id="main">
-<div id="main2" class="smallContent mainShadow">
-
-<div class="header">
-Edit A User
-</div>
-
-<div id="main3">
+{include file='header.tpl' small=true header='Edit A User'}
 
 {if $errors}
 <ul>
@@ -47,9 +38,5 @@ Edit A User
 <input type="hidden" name="u" value="{$userid}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
-
-</div>
-</div>
-</div>
 
 {include file='footer.tpl'}

@@ -1,16 +1,5 @@
 {if !$js}
-{include file='header.tpl'}
-{/if}
-
-{if !$js}
-<div id="main">
-<div id="main2" class="mainShadow">
-
-<div class="header">
-Rules
-</div>
-
-<div id="main3">
+{include file='header.tpl' header='Rules'}
 {/if}
 
 <div>
@@ -49,12 +38,6 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 </ul>
 
 </div>
-
-{if !$js}
-</div>
-</div>
-</div>
-{/if}
 
 {if !$js}
 {include file='footer.tpl'}

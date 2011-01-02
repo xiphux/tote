@@ -1,13 +1,4 @@
-{include file='header.tpl' source='newuser'}
-
-<div id="main">
-<div id="main2" class="smallContent mainShadow">
-
-<div class="header">
-Add A New User
-</div>
-
-<div id="main3">
+{include file='header.tpl' source='newuser' small=true header='Add A New User'}
 
 {if $errors}
 <ul>
@@ -52,9 +43,5 @@ Add A New User
 </table>
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
-
-</div>
-</div>
-</div>
 
 {include file='footer.tpl'}

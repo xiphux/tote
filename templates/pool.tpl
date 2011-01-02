@@ -1,9 +1,5 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
-<div id="main">
-<div id="main2" class="mainShadow">
-<div id="main3">
-
 <div class="poolInfoDiv">
 
 <table class="displayTable infoTable subSection rounded-top rounded-bottom subShadow">
@@ -191,10 +187,5 @@ ${$amount|string_format:"%.2f"}
 
 </div>
 {/if}
-
-</div>
-</div>
-</div>
-
 
 {include file='footer.tpl'}

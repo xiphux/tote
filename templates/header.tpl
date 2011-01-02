@@ -37,3 +37,14 @@
 
 <body>
 
+<div id="main">
+<div id="main2" class="mainShadow{if $small} smallContent{/if}">
+
+{if $header}
+<div class="header">
+{$header}
+</div>
+{/if}
+
+<div id="main3">
+

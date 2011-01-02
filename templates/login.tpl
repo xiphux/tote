@@ -1,13 +1,4 @@
-{include file='header.tpl'}
-
-<div id="main">
-<div id="main2" class="smallContent mainShadow">
-
-<div class="header">
-Login
-</div>
-
-<div id="main3">
+{include file='header.tpl' small=true header='Login'}
 
 {if $errors}
 <ul>
@@ -49,10 +40,6 @@ Login
 
 <div>
 <a href="index.php?a=recoverpass">Forgot password?</a>
-</div>
-
-</div>
-</div>
 </div>
 
 {include file='footer.tpl'}

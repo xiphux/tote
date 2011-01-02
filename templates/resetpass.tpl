@@ -1,13 +1,4 @@
-{include file='header.tpl'}
-
-<div id="main">
-<div id="main2" class="smallContent mainShadow">
-
-<div class="header">
-Reset Your Password
-</div>
-
-<div id="main3">
+{include file='header.tpl' small=true header='Reset Your Password'}
 
 {if $errors}
 <ul>
@@ -29,9 +20,5 @@ Reset Your Password
 </table>
 <input type="hidden" value="{$key}" name="key" />
 </form>
-
-</div>
-</div>
-</div>
 
 {include file='footer.tpl'}

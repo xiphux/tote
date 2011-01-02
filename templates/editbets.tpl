@@ -1,12 +1,5 @@
-{include file='header.tpl'}
+{include file='header.tpl' header="Edit A User's Bets"}
 
-<div id="main">
-<div id="main2" class="mainShadow">
-<div class="header">
-Edit A User's Bets
-</div>
-
-<div id="main3">
 <p>Editing bets for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 
 <form action="index.php?a=savebets" method="post" />
@@ -36,9 +29,5 @@ Edit A User's Bets
 <input type="hidden" name="u" value="{$entrant._id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
-
-</div>
-</div>
-</div>
 
 {include file='footer.tpl'}

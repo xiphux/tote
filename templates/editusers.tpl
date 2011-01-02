@@ -1,13 +1,4 @@
-{include file='header.tpl' source='editusers'}
-
-<div id="main">
-<div id="main2" class="mainShadow">
-
-<div class="header">
-Manage Your Users
-</div>
-
-<div id="main3">
+{include file='header.tpl' source='editusers' header='Manage Your Users'}
 
 <div><a href="{$SCRIPT_NAME}?a=newuser">Add a new user</a></div>
 
@@ -34,10 +25,6 @@ Manage Your Users
 {/foreach}
 </tbody>
 </table>
-</div>
-
-</div>
-</div>
 </div>
 
 {include file='footer.tpl'}

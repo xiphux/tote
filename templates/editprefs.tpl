@@ -1,13 +1,4 @@
-{include file='header.tpl'}
-
-<div id="main">
-<div id="main2" class="smallContent mainShadow">
-
-<div class="header">
-Edit Your Preferences
-</div>
-
-<div id="main3">
+{include file='header.tpl' small=true header='Edit Your Preferences'}
 
 {if $errors}
 <ul>
@@ -48,9 +39,5 @@ Edit Your Preferences
 </div>
 
 </form>
-
-</div>
-</div>
-</div>
 
 {include file='footer.tpl'}
