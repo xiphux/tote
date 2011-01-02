@@ -24,7 +24,7 @@ Available users:
     <table>
       <tr>
         <td class="checkbox"><input type="checkbox" /></td>
-	<td>
+	<td class="userinfo">
     <span class="username">{if $availableuser.first_name}{$availableuser.first_name}{if $availableuser.last_name} {$availableuser.last_name}{/if}{else}{$availableuser.username}{/if}</span><br />
     {if $availableuser.email}{$availableuser.email}{/if}
     </td>
@@ -51,7 +51,7 @@ Users in pool:
     <table>
       <tr>
         <td class="checkbox"><input type="checkbox" /></td>
-	<td>
+	<td class="userinfo">
     <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span><br />
     {if $pooluser.email}{$pooluser.email}{/if}
     </td>

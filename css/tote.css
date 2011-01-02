@@ -123,6 +123,10 @@ div.userListItem table {
 	width: 100%;
 }
 
+div.userListItem table td.userinfo {
+	text-align: left;
+}
+
 div.userListItem table td.checkbox {
 	width: 1%;
 }
