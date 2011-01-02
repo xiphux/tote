@@ -23,7 +23,7 @@ function display_schedule($season, $week, $output = 'html')
 		// default to this year
 		$season = date('Y');
 		if ((int)date('n') < 3)
-			$season += 1;
+			$season -= 1;
 	}
 
 	if (empty($week)) {
