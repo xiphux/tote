@@ -44,7 +44,9 @@ function initPoolTips() {
 		position: {
 			adjust: {
 				screen: true
-			}
+			},
+			my: 'bottom left',
+			at: 'top center'
 		}
 	});
 };
