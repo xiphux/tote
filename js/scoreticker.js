@@ -253,6 +253,12 @@ Tote.ScoreTicker.Game.prototype = {
 				table.removeClass(Tote.ScoreTicker.Game.CSSClasses.finished);
 				table.removeClass(Tote.ScoreTicker.Game.CSSClasses.pending);
 				table.addClass(Tote.ScoreTicker.Game.CSSClasses.playing);
+				if (!this._elements.homeScoreCell.text()) {
+					this._elements.homeScoreCell.text(this._data.homeScore);
+				}
+				if (!this._elements.visitorScoreCell.text()) {
+					this._elements.visitorScoreCell.text(this._data.visitorScore);
+				}
 				break;
 		}
 		this._updateWinner();
