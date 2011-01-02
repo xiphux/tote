@@ -46,6 +46,7 @@ Add A New User
     <td id="randomPasswordDisplay"></td>
   </tr>
   <tr>
+    <td></td>
     <td><input type="submit" value="Create" /></td>
   </tr>
 </table>

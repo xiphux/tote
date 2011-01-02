@@ -40,6 +40,7 @@ Edit A User
     <td><input type="checkbox" name="admin" {if $admin}checked="checked"{/if} /> <label for="admin">Admin</label></td>
   </tr>
   <tr>
+    <td></td>
     <td><input type="submit" value="Save" /></td>
   </tr>
 </table>

@@ -25,7 +25,7 @@ Reset Your Password
 <tr>
 <td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>
 </tr>
-<tr><td><input type="submit" value="Change" name="login" /></td></tr>
+<tr><td></td><td><input type="submit" value="Change" name="login" /></td></tr>
 </table>
 <input type="hidden" value="{$key}" name="key" />
 </form>

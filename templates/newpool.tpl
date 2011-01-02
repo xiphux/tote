@@ -32,6 +32,7 @@ Add A New Pool
     <td>$<input type="text" name="fee" value="{if $fee}{$fee}{else}0.00{/if}" /></td>
   </tr>
   <tr>
+    <td></td>
     <td><input type="submit" value="Create" /></td>
   </tr>
 </table>

@@ -22,7 +22,7 @@
 </tr>
 <tr><td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword"></td>
 <tr><td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>
-<tr><td><input type="submit" value="Change" name="login" /></td></tr>
+<tr><td></td><td><input type="submit" value="Change" /></td></tr>
 </table>
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
