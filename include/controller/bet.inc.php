@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
  * sort teams according to full team name (home & team)
@@ -15,6 +16,8 @@ function sort_teams($a, $b)
 {
 	return strcmp(($a['home'] . ' ' . $a['team']), ($b['home'] . ' ' . $b['team']));
 }
+
+define('BET_HEADER', 'Place A Bet');
 
 /**
  * bet controller
@@ -36,7 +39,7 @@ function display_bet($poolID, $week)
 
 	if (empty($poolID)) {
 		// need to know the pool
-		echo "Pool is required";
+		display_message("Pool is required", BET_HEADER);
 		return;
 	}
 
@@ -49,13 +52,13 @@ function display_bet($poolID, $week)
 	);
 	if (!$pool) {
 		// pool must exist
-		echo "Unknown pool";
+		display_message("Unknown pool", BET_HEADER);
 		return;
 	}
 
 	if (empty($week)) {
 		// week is required
-		echo "Week is required";
+		display_message("Week is required", BET_HEADER);
 		return;
 	}
 
@@ -70,7 +73,7 @@ function display_bet($poolID, $week)
 
 	if (!$userentry) {
 		// can't bet if you aren't in the pool
-		echo "You are not entered in this pool";
+		display_message("You are not entered in this pool", BET_HEADER);
 		return;
 	}
 
@@ -79,7 +82,7 @@ function display_bet($poolID, $week)
 		foreach ($userentry['bets'] as $bet) {
 			if (($bet['week'] == $week) && (!empty($bet['team']))) {
 				$prevbet = get_team($bet['team']);
-				echo 'You already bet on the ' . $prevbet['home'] . ' ' . $prevbet['team'] . ' for week ' . $week;
+				display_message('You already bet on the ' . $prevbet['home'] . ' ' . $prevbet['team'] . ' for week ' . $week, BET_HEADER);
 				return;
 			}
 		}

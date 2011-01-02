@@ -5,6 +5,9 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('EDITUSER_HEADER', 'Edit A User');
 
 /**
  * edituser
@@ -30,14 +33,14 @@ function display_edituser($userid)
 
 	if (empty($userid)) {
 		// need to know the user to edit
-		echo "User required";
+		display_message("User required", EDITUSER_HEADER);
 		return;
 	}
 
 	$edituser = get_user($userid);
 	if (!$edituser) {
 		// needs to be a valid user
-		echo "User not found";
+		display_message("User not found", EDITUSER_HEADER);
 		return;
 	}
 

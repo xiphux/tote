@@ -6,6 +6,9 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('DELETEPOOL_HEADER', 'Manage Your Pool');
 
 /**
  * deletepool controller
@@ -31,13 +34,13 @@ function display_deletepool($poolid, $csrftoken)
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", DELETEPOOL_HEADER);
 		return;
 	}
 
 	if (empty($poolid)) {
 		// need to know which pool to delete
-		echo "Pool to delete is required";
+		display_message("Pool to delete is required", DELETEPOOL_HEADER);
 		return;
 	}
 

@@ -5,6 +5,9 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('SETPOOLNAME_HEADER', 'Manage Your Pool');
 
 /**
  * setpoolname controller
@@ -29,13 +32,13 @@ function display_setpoolname($poolID, $poolname, $csrftoken)
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", SETPOOLNAME_HEADER);
 		return;
 	}
 
 	if (empty($poolID)) {
 		// need to know the pool
-		echo "Pool is required";
+		display_message("Pool is required", SETPOOLNAME_HEADER);
 		return;
 	}
 
@@ -44,13 +47,13 @@ function display_setpoolname($poolID, $poolname, $csrftoken)
 	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
 	if (!$pool) {
 		// pool must exist
-		echo "Unknown pool";
+		display_message("Unknown pool", SETPOOLNAME_HEADER);
 		return;
 	}
 
 	if (empty($poolname)) {
 		// we need a name
-		echo "Pool must have a name";
+		display_message("Pool must have a name", SETPOOLNAME_HEADER);
 		return;
 	}
 
@@ -67,7 +70,7 @@ function display_setpoolname($poolID, $poolname, $csrftoken)
 	if (!empty($duplicate)) {
 		// don't allow duplicate pool names - not for technical reasons,
 		// just because it makes no sense since you can't differentiate
-		echo "There is already a pool with the name \"" . $poolname . "\" for this season";
+		display_message("There is already a pool with the name \"" . $poolname . "\" for this season", SETPOOLNAME_HEADER);
 		return;
 	}
 

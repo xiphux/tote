@@ -5,6 +5,9 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('EDITBETS_HEADER', "Edit A User's Bets");
 
 /**
  * editbets controller
@@ -31,7 +34,7 @@ function display_editbets($poolID, $entrant)
 
 	if (empty($poolID)) {
 		// need to know the pool
-		echo "Pool is required";
+		display_message("Pool is required", EDITBETS_HEADER);
 		return;
 	}
 
@@ -47,14 +50,14 @@ function display_editbets($poolID, $entrant)
 	);
 	if (!$pool) {
 		// pool must exist
-		echo "Unknown pool";
+		display_message("Unknown pool", EDITBETS_HEADER);
 		return;
 	}
 
 	$entrantobj = get_user($entrant);
 	if (!$entrantobj) {
 		// entrant being edited needs to exist
-		echo "Entrant not found";
+		display_message("Entrant not found", EDITBETS_HEADER);
 		return;
 	}
 
@@ -67,7 +70,7 @@ function display_editbets($poolID, $entrant)
 
 	if (!$poolentry) {
 		// entrant being edited needs to be in the pool
-		echo "Entrant not in pool";
+		display_message("Entrant not in pool", EDITBETS_HEADER);
 		return;
 	}
 

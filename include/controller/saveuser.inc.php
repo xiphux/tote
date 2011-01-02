@@ -7,6 +7,9 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('SAVEUSER_HEADER', 'Edit A User');
 
 /**
  * saveuser controller
@@ -36,13 +39,13 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrft
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", SAVEUSER_HEADER);
 		return;
 	}
 
 	if (empty($userid)) {
 		// need to know what user to edit
-		echo "User required";
+		display_message("User required", SAVEUSER_HEADER);
 		return;
 	}
 
@@ -51,7 +54,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrft
 	$edituser = get_user($userid);
 	if (!$edituser) {
 		// needs to be a valid user
-		echo "User not found";
+		display_message("User not found", SAVEUSER_HEADER);
 		return;
 	}
 

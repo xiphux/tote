@@ -8,6 +8,9 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('DELETEUSER_HEADER', 'Manage Your Users');
 
 /**
  * deleteuser controller
@@ -33,13 +36,13 @@ function display_deleteuser($userid, $csrftoken)
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", DELETEUSER_HEADER);
 		return;
 	}
 
 	if (empty($userid)) {
 		// need to know which user to delete
-		echo "User to delete is required";
+		display_message("User to delete is required", DELETEUSER_HEADER);
 		return;
 	}
 
@@ -49,7 +52,7 @@ function display_deleteuser($userid, $csrftoken)
 	$deleteuser = get_user($userid);
 	if (!$deleteuser) {
 		// must be a valid user to delete
-		echo "Could not find user to delete";
+		display_message("Could not find user to delete", DELETEUSER_HEADER);
 		return;
 	}
 

@@ -5,8 +5,11 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');  // TODO remove this
+
+define('ADDPOOL_HEADER', 'Add A New Pool');
 
 /**
  * addpool controller
@@ -34,7 +37,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 	}
 	
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", ADDPOOL_HEADER);
 		return;
 	}
 

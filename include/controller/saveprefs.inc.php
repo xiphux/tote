@@ -4,6 +4,9 @@ require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('SAVEPREFS_HEADER', 'Edit Your Preferences');
 
 /**
  * saveprefs controller
@@ -27,7 +30,7 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", SAVEPREFS_HEADER);
 		return;
 	}
 

@@ -5,6 +5,9 @@ require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('SCHEDULE_HEADER', 'View Game Schedule');
 
 /**
  * schedule controller
@@ -36,12 +39,12 @@ function display_schedule($season, $week, $output = 'html')
 	}
 
 	if (!is_numeric($season)) {
-		echo "Invalid season";
+		display_message("Invalid season", SCHEDULE_HEADER);
 		return;
 	}
 
 	if (!is_numeric($week)) {
-		echo "Invalid week";
+		display_message("Invalid week", SCHEDULE_HEADER);
 		return;
 	}
 

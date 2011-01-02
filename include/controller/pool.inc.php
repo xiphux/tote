@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
  * sort_pools
@@ -90,7 +91,7 @@ function display_pool($poolID = null)
 
 	if (!$poolobj) {
 		// we need some pool
-		echo "Pool not found";
+		display_message("Pool not found");
 		return;
 	}
 

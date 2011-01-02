@@ -6,6 +6,9 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('ADDUSER_HEADER', 'Add A New User');
 
 /**
  * adduser controller
@@ -36,7 +39,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	}
 	
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", ADDUSER_HEADER);
 		return;
 	}
 

@@ -6,6 +6,9 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('FINISHCHANGEPASS_HEADER', 'Change Your Password');
 
 /**
  * finishchangepass
@@ -28,7 +31,7 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", FINISHCHANGEPASS_HEADER);
 		return;
 	}
 

@@ -8,6 +8,7 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
  * Sort bets by week
@@ -19,6 +20,8 @@ function sort_bets($a, $b)
 {
 	return ($a['week'] > $b['week'] ? 1 : -1);
 }
+
+define('SAVEBETS_HEADER', "Edit A User's Bets");
 
 /**
  * savebets controller
@@ -46,13 +49,13 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", SAVEBETS_HEADER);
 		return;
 	}
 
 	if (empty($poolID)) {
 		// need the pool
-		echo "Pool is required";
+		display_message("Pool is required", SAVEBETS_HEADER);
 		return;
 	}
 
@@ -66,14 +69,14 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 	);
 	if (!$pool) {
 		// must be a valid pool
-		echo "Unknown pool";
+		display_message("Unknown pool", SAVEBETS_HEADER);
 		return;
 	}
 
 	$entrantobj = get_user($entrant);
 	if (!$entrantobj) {
 		// user must exist
-		echo "Entrant not found";
+		display_message("Entrant not found", SAVEBETS_HEADER);
 		return;
 	}
 
@@ -94,7 +97,7 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 
 	if (!$userentry) {
 		// user needs to be in the pool
-		echo "Entrant not in pool";
+		display_message("Entrant not in pool", SAVEBETS_HEADER);
 		return;
 	}
 

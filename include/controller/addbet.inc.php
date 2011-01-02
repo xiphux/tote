@@ -7,6 +7,9 @@ require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('ADDBET_HEADER', 'Place A Bet');
 
 /**
  * addbet controller
@@ -29,13 +32,13 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 	}
 
 	if (!validate_csrftoken($csrftoken)) {
-		echo "Invalid request token";
+		display_message("Invalid request token", ADDBET_HEADER);
 		return;
 	}
 
 	if (empty($poolID)) {
 		// need to know the pool
-		echo "Pool is required";
+		display_message("Pool is required", ADDBET_HEADER);
 		return;
 	}
 
@@ -48,19 +51,19 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 	);
 	if (!$pool) {
 		// pool must exist
-		echo "Unknown pool";
+		display_message("Unknown pool", ADDBET_HEADER);
 		return;
 	}
 
 	if (empty($week)) {
 		// week is required
-		echo "Week is required";
+		display_message("Week is required", ADDBET_HEADER);
 		return;
 	}
 
 	if (empty($team)) {
 		// bet is required
-		echo "A bet is required";
+		display_message("A bet is required", ADDBET_HEADER);
 		return;
 	}
 
@@ -77,14 +80,14 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 
 	if (!$userentry) {
 		// can't bet if you aren't in the pool
-		echo "You are not entered in this pool";
+		display_message("You are not entered in this pool", ADDBET_HEADER);
 		return;
 	}
 
 	$betteam = $teams->findOne(array('_id' => new MongoId($team)));
 	if (!$betteam) {
 		// need to bet on a valid team
-		echo "Invalid team";
+		display_message("Invalid team", ADDBET_HEADER);
 		return;
 	}
 
@@ -104,13 +107,13 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 
 	if ($weekbet) {
 		// user already bet on this week
-		echo "You've already bet on " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week;
+		display_message("You've already bet on " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week, ADDBET_HEADER);
 		return;
 	}
 
 	if ($teambet) {
 		// user already bet on this team
-		echo "You've already bet on " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet;
+		display_message("You've already bet on " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet, ADDBET_HEADER);
 		return;
 	}
 
@@ -118,13 +121,13 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 	$betgame = get_game_by_team((int)$pool['season'], (int)$week, $betteam['_id']);
 	if (!$betgame) {
 		// user bet on a bye team
-		echo $betteam['home'] . ' ' . $betteam['team'] . " aren't playing this week";
+		display_message($betteam['home'] . ' ' . $betteam['team'] . " aren't playing this week", ADDBET_HEADER);
 		return;
 	}
 
 	if ($betgame['start']->sec < time()) {
 		// can't bet after the game has started
-		echo "This game has already started";
+		display_message("This game has already started", ADDBET_HEADER);
 		return;
 	}
 

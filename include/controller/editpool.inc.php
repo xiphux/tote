@@ -6,6 +6,9 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+
+define('EDITPOOL_HEADER', 'Manage Your Pool');
 
 /**
  * editpool controller
@@ -31,7 +34,7 @@ function display_editpool($poolID)
 
 	if (empty($poolID)) {
 		// need to know the pool
-		echo "Pool is required";
+		display_message("Pool is required", EDITPOOL_HEADER);
 		return;
 	}
 
@@ -46,7 +49,7 @@ function display_editpool($poolID)
 	);
 	if (!$pool) {
 		// pool must exist
-		echo "Unknown pool";
+		display_message("Unknown pool", EDITPOOL_HEADER);
 		return;
 	}
 
