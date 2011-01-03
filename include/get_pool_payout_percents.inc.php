@@ -25,7 +25,7 @@ function get_pool_payout_percents($poolid)
 		array('payout', 'entries')
 	);
 
-	if (!pool)
+	if (!$pool)
 		return null;
 
 	if (empty($pool['payout']))

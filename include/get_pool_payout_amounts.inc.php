@@ -25,7 +25,7 @@ function get_pool_payout_amounts($poolid)
 		array('fee', 'entries')
 	);
 
-	if (!pool)
+	if (!$pool)
 		return null;
 
 	if (empty($pool['fee']) || ($pool['fee'] <= 0))
