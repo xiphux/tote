@@ -26,7 +26,7 @@ function get_pool_administrators($poolid)
 		array('administrators')
 	);
 
-	if (!pool)
+	if (!$pool)
 		return null;
 
 	if (empty($pool['administrators']))
