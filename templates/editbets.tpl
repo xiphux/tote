@@ -18,6 +18,15 @@
 </tr>
 {/foreach}
 <tr>
+<td>
+<label for="comment">Comment:</label>
+</td>
+<td>
+<textarea name="comment" rows="3" cols="20">
+</textarea>
+</td>
+</tr>
+<tr>
 <td></td>
 <td>
 <input type="submit" value="Save" />

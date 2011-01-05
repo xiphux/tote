@@ -13,6 +13,7 @@
 <th>Admin</th>
 <th>Week</th>
 <th>Event</th>
+<th>Comment</th>
 </thead>
 {foreach from=$actions key=time item=timeactions}
 
@@ -39,6 +40,7 @@
     Admin removed user from pool
   {/if}
   </td>
+  <td>{if $action.comment}{$action.comment}{/if}</td>
 </tr>
 {/foreach}
 

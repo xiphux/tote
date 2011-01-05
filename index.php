@@ -71,6 +71,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['p']) ? null : $_POST['p']),
 			(empty($_POST['u']) ? null : $_POST['u']),
 			(empty($_POST['week']) ? null : $_POST['week']),
+			(empty($_POST['comment']) ? null : $_POST['comment']),
 			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;

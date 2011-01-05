@@ -31,9 +31,10 @@ define('SAVEBETS_HEADER', "Edit A User's Bets");
  * @param string $poolID pool id
  * @param string $entrant entrant user id
  * @param string $weekbets array of bets for the week
+ * @param string $comment edit comment
  * @param string $csrftoken CSRF request token
  */
-function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
+function display_savebets($poolID, $entrant, $weekbets, $comment, $csrftoken)
 {
 	global $tpl;
 
@@ -107,6 +108,8 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 
 	$actions = array();
 
+	$comment = trim($comment);
+
 	// go through all the weeks sent down
 	for ($i = 1; $i <= $weeks; $i++) {
 
@@ -116,7 +119,7 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 			for ($j = 0; $j < count($userentry['bets']); $j++) {
 				if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
 					// user had a bet in the database but now doesn't meaning we're deleting their bet - delete and audit it
-					$actions[] = array(
+					$action = array(
 						'action' => 'edit',
 						'user' => $entrantobj['_id'],
 						'user_name' => $entrantname,
@@ -126,6 +129,10 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 						'from_team' => $userentry['bets'][$j]['team'],
 						'time' => new MongoDate(time())
 					);
+					if (!empty($comment)) {
+						$action['comment'] = $comment;
+					}
+					$actions[] = $action;
 					unset($userentry['bets'][$j]);
 					break;
 				}
@@ -145,7 +152,7 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 						if ($weekbets[$i] != (string)$userentry['bets'][$j]['team']) {
 							// user's old bet for that week doesn't match the new bet for that week,
 							// meaning we're changing the user's bet - audit and do it
-							$actions[] = array(
+							$action = array(
 								'action' => 'edit',
 								'user' => $entrantobj['_id'],
 								'user_name' => $entrantname,
@@ -156,6 +163,10 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 								'to_team' => new MongoId($weekbets[$i]),
 								'time' => new MongoDate(time())
 							);
+							if (!empty($comment)) {
+								$action['comment'] = $comment;
+							}
+							$actions[] = $action;
 							$userentry['bets'][$j]['team'] = new MongoId($weekbets[$i]);
 							$userentry['bets'][$j]['edited'] = new MongoDate(time());
 						}
@@ -169,7 +180,7 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 
 				// we didn't replace an old bet - meaning we're setting
 				// a new bet where there wasn't one, audit and add it
-				$actions[] = array(
+				$action = array(
 					'action' => 'edit',
 					'user' => $entrantobj['_id'],
 					'user_name' => $entrantname,
@@ -179,6 +190,10 @@ function display_savebets($poolID, $entrant, $weekbets, $csrftoken)
 					'to_team' => new MongoId($weekbets[$i]),
 					'time' => new MongoDate(time())
 				);
+				if (!empty($comment)) {
+					$action['comment'] = $comment;
+				}
+				$actions[] = $action;
 				$userentry['bets'][] = array(
 					'week' => $i,
 					'team' => new MongoId($weekbets[$i]),
