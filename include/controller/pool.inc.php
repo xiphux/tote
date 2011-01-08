@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
+require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
@@ -117,6 +118,11 @@ function display_pool($poolID = null)
 	usort($allpools, 'sort_pool');
 
 	// set data and display
+	$mobile = mobile_browser();
+	if ($mobile) {
+		$tpl->assign('mobile', true);
+	}
+
 	if (count($allpools) > 1)
 		$tpl->assign('allpools', $allpools);
 	if ($currentweek != false)

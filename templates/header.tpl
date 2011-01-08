@@ -18,7 +18,10 @@
   {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
+{if !$mobile}
+<script type="text/javascript" src="js/poolfull.js"></script>
 <script type="text/javascript" src="js/scoreticker.js"></script>
+{/if}
 {elseif $source == 'bet'}
 <script type="text/javascript" src="js/bet.js"></script>
 {elseif $source == 'editpool'}
