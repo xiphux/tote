@@ -121,6 +121,25 @@ function display_pool($poolID = null)
 	$mobile = mobile_browser();
 	if ($mobile) {
 		$tpl->assign('mobile', true);
+
+		$mobileweeks = array();
+		$totalweeks = count($openweeks);
+		if (($currentweek === false) || ($currentweek == $totalweeks)) {
+			$mobileweeks[] = $totalweeks - 2;
+			$mobileweeks[] = $totalweeks - 1;
+			$mobileweeks[] = $totalweeks;
+		} else if ($currentweek === 1) {
+			$mobileweeks[] = 1;
+			$mobileweeks[] = 2;
+			$mobileweeks[] = 3;
+		} else {
+			$mobileweeks[] = $currentweek - 1;
+			$mobileweeks[] = $currentweek;
+			$mobileweeks[] = $currentweek + 1;
+		}
+
+		$tpl->assign('mobileweeks', $mobileweeks);
+
 	}
 
 	if (count($allpools) > 1)
