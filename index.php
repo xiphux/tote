@@ -37,6 +37,16 @@ $tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 // work with UTC timestamps internally
 date_default_timezone_set('UTC');
 
+define('TOTE_FULL_VERSION_COOKIE', 'ToteForceFullVersion');
+
+if (isset($_GET['full'])) {
+	if ($_GET['full'] == '1') {
+		setcookie(TOTE_FULL_VERSION_COOKIE, 1);
+	} else if ($_GET['full'] == '0') {
+		setcookie(TOTE_FULL_VERSION_COOKIE, 0);
+	}
+}
+
 // a= parameter specifies the action to perform
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 

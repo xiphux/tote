@@ -105,7 +105,7 @@ ${$amount|string_format:"%.2f"}
 
 {foreach from=$weeks key=wknum item=open}
 
-{if !$mobile || (array_search($wknum,$mobileweeks) !== false)}
+{if !$mobile || $forcefull || (array_search($wknum,$mobileweeks) !== false)}
 
 <th{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}><a class="scheduleLink" title="View week {$wknum} schedule" href="{$SCRIPT_NAME}?a=schedule&y={$pool.season}&w={$wknum}">W{$wknum}</a></th>
 
@@ -135,7 +135,7 @@ ${$amount|string_format:"%.2f"}
 
 {foreach from=$entrant.bets key=betweek item=bet}
 
-{if !$mobile || (array_search($betweek,$mobileweeks) !== false)}
+{if !$mobile || $forcefull || (array_search($betweek,$mobileweeks) !== false)}
 <td>
 <span 
 {if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{/if}
@@ -180,6 +180,16 @@ ${$amount|string_format:"%.2f"}
 </div>
 
 </div>
+
+{if $mobile}
+<div>
+{if $forcefull}
+<a href="{$SCRIPT_NAME}?p={$pool._id}&full=0">Switch to mobile version</a>
+{else}
+<a href="{$SCRIPT_NAME}?p={$pool._id}&full=1">Switch to full version</a>
+{/if}
+</div>
+{/if}
 
 {if $links}
 <div id="linksDiv" class="subSection rounded-top rounded-bottom subShadow">

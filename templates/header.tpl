@@ -18,7 +18,7 @@
   {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
-{if !$mobile}
+{if !$mobile || $forcefull}
 <script type="text/javascript" src="js/poolfull.js"></script>
 <script type="text/javascript" src="js/scoreticker.js"></script>
 {/if}

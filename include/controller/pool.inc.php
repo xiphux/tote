@@ -140,6 +140,13 @@ function display_pool($poolID = null)
 
 		$tpl->assign('mobileweeks', $mobileweeks);
 
+		if (isset($_GET['full'])) {
+			if ($_GET['full'] == '1') {
+				$tpl->assign('forcefull', true);
+			}
+		} else if (isset($_COOKIE[TOTE_FULL_VERSION_COOKIE]) && ($_COOKIE[TOTE_FULL_VERSION_COOKIE] == 1)) {
+			$tpl->assign('forcefull', true);
+		}
 	}
 
 	if (count($allpools) > 1)
