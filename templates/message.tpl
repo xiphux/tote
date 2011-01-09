@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true}
+{include file='header.tpl' small=true homelink=true}
 
 <p>{$message}</p>
 

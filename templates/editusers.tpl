@@ -1,4 +1,4 @@
-{include file='header.tpl' source='editusers' header='Manage Your Users'}
+{include file='header.tpl' source='editusers' header='Manage Your Users' homelink=true}
 
 <div><a href="{$SCRIPT_NAME}?a=newuser">Add a new user</a></div>
 

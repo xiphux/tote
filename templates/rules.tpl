@@ -1,5 +1,5 @@
 {if !$js}
-{include file='header.tpl' header='Rules'}
+{include file='header.tpl' header='Rules' homelink=true}
 {/if}
 
 <div>

@@ -48,7 +48,30 @@
 
 {if $header}
 <div class="header">
+
+<p class="headertext">
 {$header}
+</p>
+
+{if $homelink || $mainlink}
+<p class="links">
+
+{if $mainlink}
+{if ($source == 'newuser') || ($source == 'edituser')}
+<a href="{$SCRIPT_NAME}?a=editusers">Edit Users</a>
+{/if}
+{/if}
+
+{if $homelink}
+<a href="{$SCRIPT_NAME}{if $pool}?p={$pool._id}{/if}">Home</a>
+{/if}
+
+</p>
+{/if}
+
+<div class="clear">
+</div>
+
 </div>
 {/if}
 

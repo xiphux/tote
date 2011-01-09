@@ -1,4 +1,4 @@
-{include file='header.tpl' source='bet' header='Place A Bet'}
+{include file='header.tpl' source='bet' header='Place A Bet' homelink=true}
 
 {if $bets}
 <p>

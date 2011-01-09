@@ -1,7 +1,5 @@
-{include file='header.tpl' small=true header='Reset Your Password'}
+{include file='header.tpl' small=true header='Reset Your Password' homelink=true}
 
 <p>Password changed successfully</p>
-
-<p><a href="index.php">Home</a></p>
 
 {include file='footer.tpl'}

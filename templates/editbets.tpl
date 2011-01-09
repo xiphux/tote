@@ -1,4 +1,4 @@
-{include file='header.tpl' header="Edit A User's Bets"}
+{include file='header.tpl' header="Edit A User's Bets" homelink=true}
 
 <p>Editing bets for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 

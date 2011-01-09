@@ -1,5 +1,5 @@
 {if !$js}
-{include file='header.tpl' poolinfo=$pool header='Pool History'}
+{include file='header.tpl' poolinfo=$pool header='Pool History' homelink=true}
 
 <div>
 {$pool.name} [{$pool.season}-{$pool.season+1}] History

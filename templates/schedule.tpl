@@ -1,5 +1,5 @@
 {if !$js}
-{include file='header.tpl' header='View Game Schedule'}
+{include file='header.tpl' header='View Game Schedule' homelink=true}
 
 Games for {$year}-{$year+1} week {$week}:
 {/if}

@@ -6,6 +6,17 @@
 	padding: 3px 10px;
 }
 
+.header .headertext {
+	float: left;
+	margin: 0px 0px;
+}
+
+.header .links {
+	float: right;
+	margin: 0px 0px;
+	padding-left: 50px;
+}
+
 .smallContent {
 	margin-top: 175px;
 }

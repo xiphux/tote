@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Edit Your Preferences'}
+{include file='header.tpl' small=true header='Edit Your Preferences' homelink=true}
 
 {if $errors}
 <ul>

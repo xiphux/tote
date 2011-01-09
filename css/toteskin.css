@@ -56,12 +56,27 @@ div#main2 {
 
 .header {
 	background-color: #54abe4;
+}
+
+.header .headertext {
 	color: #fff;
 	text-align: left;
 	font-weight: bold;
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: larger;
 	text-shadow: -1px -1px 0px #9c9c9c;
+}
+
+.header .links a {
+	color: #fff;
+	padding: 6px 3px 6px 5px;
+	text-decoration: none;
+	border-left: 1px solid #d8ebf8;
+	margin: 0px 0px;
+}
+
+.header .links a:hover {
+	background-color: #155b89;
 }
 
 
