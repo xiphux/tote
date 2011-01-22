@@ -6,7 +6,6 @@ require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -49,7 +48,7 @@ function display_pool($poolID = null)
 		// no pool specified - try to find the most sensible pool
 		$allpools = $pools->find(
 			array(),
-			array('name', 'season', 'fee')
+			array('name', 'season')
 		)->sort(
 			array('season' => -1, 'name' => 1)
 		);
@@ -86,7 +85,7 @@ function display_pool($poolID = null)
 		// we specified a pool
 		$poolobj = $pools->findOne(
 			array('_id' => new MongoId($poolID)),
-			array('name', 'season', 'fee')
+			array('name', 'season')
 		);
 	}
 
@@ -162,10 +161,6 @@ function display_pool($poolID = null)
 	}
 	$tpl->assign('entered', $entered);
 	$tpl->assign('poolopen', $poolopen);
-
-	$payout = get_pool_payout_amounts($poolobj['_id']);
-	if (count($payout) > 0)
-		$tpl->assign('payout', $payout);
 
 	if (isset($tote_conf['links']) && is_array($tote_conf['links']) && (count($tote_conf['links']) > 0)) {
 		$tpl->assign('links', $tote_conf['links']);

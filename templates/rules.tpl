@@ -31,8 +31,25 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 
 <li>At the end of the season, the person with the best record wins.  The point spread will be used as a tiebreaker.</li>
 
-{if $payout}
-<li>Payout: {foreach name=payout from=$payout key=place item=percent}{$place|place} place wins {$percent*100}%{if !$smarty.foreach.payout.last}, {/if}{/foreach}.  In the event of a tie, the tied players will split the sum of their payouts.</li>
+{if $pool.fee}
+<li>Entry fee: ${$pool.fee|string_format:"%.2f"}</li>
+{/if}
+
+{if $payoutpercents}
+<li>Payout: {foreach name=payoutpercents from=$payoutpercents key=place item=percent}{$place|place} place wins {$percent*100}%{if !$smarty.foreach.payoutpercents.last}, {/if}{/foreach}.  In the event of a tie, the tied players will split the sum of their payouts.</li>
+{/if}
+
+{if $payoutamounts}
+<li>Current payout amounts:
+<table>
+{foreach from=$payoutamounts key=place item=amount}
+<tr>
+<td>{$place|place} place:</td>
+<td>${$amount|string_format:"%.2f"}</td>
+</tr>
+{/foreach}
+</table>
+</li>
 {/if}
 
 </ul>

@@ -19,31 +19,6 @@
 {/if}
 </th>
 </tr>
-
-{if $pool.fee}
-<tr>
-<td>
-Entry fee:
-</td>
-<td>
-${$pool.fee|string_format:"%.2f"}
-</td>
-</tr>
-
-{if $payout}
-{foreach from=$payout key=place item=amount}
-<tr>
-<td>
-{$place|place} place:
-</td>
-<td>
-${$amount|string_format:"%.2f"}
-</td>
-</tr>
-{/foreach}
-{/if}
-
-{/if}
 </table>
 
 {if $user && $entered && $poolopen}
