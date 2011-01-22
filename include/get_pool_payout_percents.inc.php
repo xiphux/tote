@@ -31,7 +31,11 @@ function get_pool_payout_percents($poolid)
 	if (empty($pool['payout']))
 		return null;
 
-	$entrantcount = count($pool['entries']);
+	$entrantcount = 0;
+
+	if (isset($pool['entries'])) {
+		$entrantcount = count($pool['entries']);
+	}
 
 	foreach ($pool['payout'] as $payoutrule) {
 		// match against payout rules based on number of entrants
