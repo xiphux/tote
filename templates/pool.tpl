@@ -1,6 +1,6 @@
 {include file='header.tpl' poolinfo=$pool source='pool'}
 
-<div class="poolInfoDiv">
+<div class="{if !$mobile || $forcefull}poolInfoDiv{else}poolInfoSingleDiv{/if}">
 
 <table class="displayTable infoTable subSection rounded-top rounded-bottom subShadow">
 <tr>
@@ -19,6 +19,9 @@
 {/if}
 </th>
 </tr>
+{if $mobile && !$forcefull}
+{include file='usermenu.tpl'}
+{/if}
 </table>
 
 {if $user && $entered && $poolopen}
@@ -41,28 +44,15 @@
 
 </div>
 
+{if !$mobile || $forcefull}
+
 <div class="userOpts">
 <table class="displayTable subSection rounded-top rounded-bottom subShadow">
-{if $user}
-<thead>
-  <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
-</thead>
-<tbody>
-{if $user.admin}
-<tr><td><a href="index.php?a=update">Update scores</a></td></tr>
-<tr><td><a href="index.php?a=editpool&p={$pool._id}">Manage pool</a></td></tr>
-<tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
-<tr><td><a href="index.php?a=newpool">New pool</a></td></tr>
-{/if}
-<tr><td><a href="index.php?a=editprefs">Edit preferences</a></td></tr>
-<tr><td><a href="index.php?a=changepass">Change password</a></td></tr>
-<tr><td><a href="index.php?a=logout">Logout</a></td></tr>
-{else}
-<tr><td><a href="index.php?a=login">Login</a></td></tr>
-{/if}
-</tbody>
+{include file='usermenu.tpl'}
 </table>
 </div>
+
+{/if}
 
 <div class="clear">&nbsp;</div>
 

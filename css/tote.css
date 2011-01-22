@@ -55,6 +55,15 @@ div.poolInfoDiv {
 	text-align: left;
 }
 
+div.poolInfoSingleDiv {
+	text-align: center;
+}
+
+div.poolInfoSingleDiv table {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 div.userOpts {
 	width: 30%;
 	float: right;
