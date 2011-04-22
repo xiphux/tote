@@ -357,7 +357,7 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 				'week' => (int)$week,
 				'home_team' => $homeid,
 				'away_team' => $awayid,
-				'start' => $start
+				'start' => new MongoDate($start)
 			);
 			//$games->insert($data);
 			clear_cache('pool');
