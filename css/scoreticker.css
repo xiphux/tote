@@ -67,6 +67,10 @@
 	text-align: right;
 }
 
+.tickerGameTable .tickerGameTile .tickerGameStatus {
+	white-space: nowrap;
+}
+
 .tickerGameTable .tickerGameTile .tickerPossession {
 	color: red;
 }
