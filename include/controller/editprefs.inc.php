@@ -35,7 +35,18 @@ function display_editprefs()
 		$tpl->assign('enablereminders', true);
 
 	// only makes sense to choose from US timezones at the moment
-	$tpl->assign('availabletimezones', DateTimeZone::listIdentifiers(2));
+	$timezones = array();
+	if (defined('DateTimeZone::AMERICA')) {
+		$timezones = DateTimeZone::listIdentifiers(DateTimeZone::AMERICA);
+	} else {
+		$alltimezones = DateTimeZone::listIdentifiers();
+		foreach ($alltimezones as $tz) {
+			if (strpos($tz, 'America/') === 0) {
+				$timezones[] = $tz;
+			}
+		}
+	}
+	$tpl->assign('availabletimezones', $timezones);
 
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 
