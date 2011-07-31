@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="css/tote.css" />
   {if $userstyle}
   <link rel="stylesheet" href="css/skin/{$userstyle}/toteskin.css" />
+  {elseif $defaultstyle}
+  <link rel="stylesheet" href="css/skin/{$defaultstyle}/toteskin.css" />
   {else}
   <link rel="stylesheet" href="css/skin/Blue/toteskin.css" />
   {/if}

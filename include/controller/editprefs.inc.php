@@ -28,7 +28,6 @@ function display_editprefs()
 
 	// set default values
 	$tpl->assign('defaulttimezone', 'America/New_York');
-	$tpl->assign('defaultstyle', 'Blue');
 	$tpl->assign('defaultremindertime', 1);
 
 	// display reminder settings if they're enabled in the config

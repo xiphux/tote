@@ -84,3 +84,12 @@ $tote_conf['links'] = array(
 	'ProFootballTalk' => 'http://profootballtalk.nbcsports.com',
 	'FootballLOCKS NFL Point Spreads' => 'http://www.footballlocks.com/nfl_point_spreads.shtml'
 );
+
+/**
+ * defaultstyle
+ *
+ * default style for the site if the user doesn't pick a preference
+ * (or isn't logged in)
+ */
+$tote_conf['defaultstyle'] = 'Blue';
+

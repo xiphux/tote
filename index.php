@@ -55,6 +55,9 @@ if ($user) {
 		$tpl->assign('userstyle', $user['style']);
 	}
 }
+if (!empty($tote_conf['defaultstyle'])) {
+	$tpl->assign('defaultstyle', $tote_conf['defaultstyle']);
+}
 
 // a= parameter specifies the action to perform
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
