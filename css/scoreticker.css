@@ -4,9 +4,6 @@
 }
 
 .tickerToggleDiv {
-	border-top: 1px solid #54abe4;
-	border-left: 1px solid #54abe4;
-	border-right: 1px solid #54abe4;
 	text-align: left;
 }
 
@@ -14,11 +11,6 @@
 	text-decoration: none;
 	padding: 3px 0px 3px 12px;
 	display: block;
-	background-color: #54abe4;
-}
-
-.tickerToggleDiv .tickerToggleLink:hover {
-	background-color: #547be4;
 }
 
 .tickerToggleDiv .tickerToggleLink.tickerOpen {
@@ -31,12 +23,6 @@
 	background-image: url('../images/arrow_expand_right.gif');
 	background-repeat: no-repeat;
 	background-position: left center;
-}
-
-.tickerContainerDiv {
-	border-left: 1px solid #54abe4;
-	border-right: 1px solid #54abe4;
-	border-bottom: 1px solid #54abe4;
 }
 
 .tickerContainerDiv a {

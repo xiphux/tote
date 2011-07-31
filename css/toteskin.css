@@ -238,3 +238,23 @@ div.selected {
 	background: #9c9c9c url('../images/close-light.png') no-repeat 50% 50%;
 }
 
+.tickerToggleDiv {
+	border-top: 1px solid #54abe4;
+	border-left: 1px solid #54abe4;
+	border-right: 1px solid #54abe4;
+}
+
+.tickerToggleDiv .tickerToggleLink {
+	background-color: #54abe4;
+}
+
+.tickerToggleDiv .tickerToggleLink:hover {
+	background-color: #547be4;
+}
+
+.tickerContainerDiv {
+	border-left: 1px solid #54abe4;
+	border-right: 1px solid #54abe4;
+	border-bottom: 1px solid #54abe4;
+}
+
