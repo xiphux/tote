@@ -10,6 +10,18 @@
 
 <form method="post" action="index.php?a=saveprefs">
 
+{if $availablestyles}
+<div>
+<label for="style">Style:</label>
+<select name="style">
+{foreach from=$availablestyles item=style}
+<option value="{$style}" {if ($style == $user.style) || (!$user.style && ($style == $defaultstyle))}selected="selected"{/if}>{$style}</option>
+{/foreach}
+</select>
+</div>
+<br />
+{/if}
+
 <div>
 <label for="timezone">Timezone:</label>
 <select name="timezone">

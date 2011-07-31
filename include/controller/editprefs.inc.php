@@ -28,6 +28,7 @@ function display_editprefs()
 
 	// set default values
 	$tpl->assign('defaulttimezone', 'America/New_York');
+	$tpl->assign('defaultstyle', 'Blue');
 	$tpl->assign('defaultremindertime', 1);
 
 	// display reminder settings if they're enabled in the config
@@ -47,6 +48,19 @@ function display_editprefs()
 		}
 	}
 	$tpl->assign('availabletimezones', $timezones);
+
+	$styles = array();
+	if ($dh = opendir(TOTE_SKINDIR)) {
+		while (($file = readdir($dh)) !== false) {
+			$fullPath = TOTE_SKINDIR . '/' . $file;
+			if ((strpos($file, '.') !== 0) && is_dir($fullPath) && is_file($fullPath . '/toteskin.css')) {
+				$styles[] = $file;
+			}
+		}
+	}
+	if (count($styles) > 0) {
+		$tpl->assign('availablestyles', $styles);
+	}
 
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 

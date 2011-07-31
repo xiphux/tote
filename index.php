@@ -17,6 +17,7 @@ define('TOTE_BASEDIR', dirname(__FILE__) . '/');
 define('TOTE_CONFIGFIR', TOTE_BASEDIR . 'config/');
 define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
+define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 
 // include config file
 require_once('config/tote.conf.php');
@@ -44,6 +45,14 @@ if (isset($_GET['full'])) {
 		setcookie(TOTE_FULL_VERSION_COOKIE, 1);
 	} else if ($_GET['full'] == '0') {
 		setcookie(TOTE_FULL_VERSION_COOKIE, 0);
+	}
+}
+
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+$user = user_logged_in();
+if ($user) {
+	if (!empty($user['style'])) {
+		$tpl->assign('userstyle', $user['style']);
 	}
 }
 
@@ -268,6 +277,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['reminder']) ? false : $_POST['reminder']),
 			(empty($_POST['remindertime']) ? null : $_POST['remindertime']),
 			(empty($_POST['resultnotification']) ? null : $_POST['resultnotification']),
+			(empty($_POST['style']) ? null : $_POST['style']),
 			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
 		);
 		break;

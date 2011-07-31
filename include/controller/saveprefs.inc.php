@@ -19,7 +19,7 @@ define('SAVEPREFS_HEADER', 'Edit Your Preferences');
  * @param string $resultnotification whether we want game result notifications
  * @param string $csrftoken CSRF request token
  */
-function display_saveprefs($timezone, $reminder, $remindertime, $resultnotification, $csrftoken)
+function display_saveprefs($timezone, $reminder, $remindertime, $resultnotification, $style, $csrftoken)
 {
 	global $tpl, $tote_conf;
 
@@ -67,6 +67,12 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 			$data['$set']['timezone'] = $timezone;
 		} else {
 			$data['$unset']['timezone'] = 1;
+		}
+
+		if (!empty($style)) {
+			$data['$set']['style'] = $style;
+		} else {
+			$data['$unset']['style'] = 1;
 		}
 
 		if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
