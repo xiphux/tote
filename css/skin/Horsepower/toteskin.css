@@ -1,0 +1,269 @@
+.alert {
+	color: red;
+}
+
+.rounded-top {
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	overflow: hidden;
+	border-collapse: separate !important;
+	border-spacing: 0;
+	behavior: url('css/ext/PIE.php');
+}
+
+.rounded-bottom {
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	overflow: hidden;
+	border-collapse: separate !important;
+	border-spacing: 0;
+	behavior: url('css/ext/PIE.php');
+}
+
+.mainShadow {
+	-moz-box-shadow: 5px 5px 5px #072030;
+	-webkit-box-shadow: 5px 5px 5px #072030;
+	box-shadow: 5px 5px 5px #072030;
+	behavior: url('css/ext/PIE.php');
+}
+
+.subShadow {
+	-moz-box-shadow: 0px 0px 5px #81bee8;
+	-webkit-box-shadow: 0px 0px 5px #81bee8;
+	box-shadow: 0px 0px 5px #81bee8;
+	behavior: url('css/ext/PIE.php');
+}
+
+a {
+	color: #0c318e;
+}
+
+body {
+	background-color: #c0161d;
+}
+
+div#main2 {
+	border: 3px solid #fe0000;
+	background-color: #e9e9e9;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	behavior: url('css/ext/PIE.php');
+}
+
+.subSection {
+	background-color: #ffd9da;
+}
+
+.header {
+	background-color: #fe0000;
+}
+
+.header .headertext {
+	color: #fff;
+	text-align: left;
+	font-weight: bold;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: larger;
+	text-shadow: -1px -1px 0px #9c9c9c;
+}
+
+.header .links a {
+	color: #fff;
+	padding: 6px 3px 6px 5px;
+	text-decoration: none;
+	border-left: 1px solid #d8ebf8;
+	margin: 0px 0px;
+}
+
+.header .links a:hover {
+	background-color: #a70000;
+}
+
+
+table.displayTable {
+	border: 1px solid #fe0000;
+	border-collapse: collapse;
+}
+
+table.displayTable .light {
+	background-color: white;
+}
+
+table.displayTable .dark {
+	background-color: #f6f6f0;
+}
+
+table.displayTable .dark:hover {
+	background-color: #edece6;
+}
+
+table.displayTable .light:hover {
+	background-color: #edece6;
+}
+
+table.displayTable th {
+	border: 1px solid #fe0000;
+	background-color: #fe0000;
+	text-align: center;
+	color: #fff;
+}
+
+table.displayTable td {
+	border: 1px solid #fe0000;
+}
+
+
+.scoreTable {
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 0px auto;
+}
+
+.scoreTable th a {
+	color: #fff;
+}
+
+.scoreTable th.currentweek a {
+	color: blue;
+}
+
+.scoreTable th.weekclosed a {
+	color: #9c9c9c;
+}
+
+.scoreTable th a {
+	text-decoration: none;
+}
+
+.scoreTable tbody {
+	text-align: center;
+	font-size: 12px;
+}
+
+.scoreTable td.entrantName {
+	font-weight: bold;
+}
+
+.scoreTable a.betLink {
+	font-style: italic;
+	color: darkgray;
+}
+
+.win {
+	color: blue;
+}
+
+.loss {
+	color: red;
+}
+
+table.scoreTable tr.self {
+	background-color: lightgray;
+}
+
+table.scoreTable tr.self:hover {
+	background-color: lightgray;
+}
+
+table.scoreTable td.current {
+	background-color: #dcdbd5;
+}
+
+table.infoTable td {
+	border: 0px;
+}
+
+div.userOpts table td {
+	border: 0px;
+}
+
+.gamestarted {
+	color: darkgray;
+}
+
+.betTable {
+	margin: 0px auto;
+}
+
+.betTable tbody {
+	text-align: center;
+}
+
+div.poolFooter {
+	background-color: #fe0000;
+	color: #fff;
+}
+
+div.poolFooter a {
+	color: #fff;
+}
+
+div.availableUsers {
+	border: 1px solid black;
+}
+
+div.poolUsers {
+	border: 1px solid black;
+}
+
+div.userListItem {
+	border: 1px solid #d9d8d1;
+}
+
+div.selected {
+	background-color: yellow;
+}
+
+#linksDiv {
+	border: 1px solid #fe0000;
+}
+
+#linksToggle {
+	background-color: #54abe4;
+}
+
+#lnkLinks {
+	background-color: #fe0000;
+	text-decoration: none;
+	color: #fff;
+}
+
+#lnkLinks:hover {
+	background-color: #a70000;
+}
+
+.ui-tooltip-tote .ui-tooltip-wrapper{
+	border-color: #fe0000;
+	background-color: #e9e9e9;
+	color: #454545;
+}
+
+.ui-tooltip-tote .ui-tooltip-titlebar{
+	background-color: #fe0000;
+	color: #fff;
+}
+
+.ui-tooltip-tote .ui-tooltip-icon{
+	background: #9c9c9c url('../images/close-light.png') no-repeat 50% 50%;
+}
+
+.tickerToggleDiv {
+	border-top: 1px solid #fe0000;
+	border-left: 1px solid #fe0000;
+	border-right: 1px solid #fe0000;
+}
+
+.tickerToggleDiv .tickerToggleLink {
+	background-color: #fe0000;
+	color: #fff;
+}
+
+.tickerToggleDiv .tickerToggleLink:hover {
+	background-color: #a70000;
+}
+
+.tickerContainerDiv {
+	border-left: 1px solid #fe0000;
+	border-right: 1px solid #fe0000;
+	border-bottom: 1px solid #fe0000;
+}
+
