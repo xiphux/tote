@@ -10,15 +10,19 @@
 
 <li>You can only pick each team once for the entire season.  Once a team has been picked, the website will not allow you to pick that team again.</li>
 
+<li>At the end of the season, the person with the best record wins.  The point spread will be used as a tiebreaker.</li>
+
 <li>A pick for a game must be submitted before the scheduled start of that game.  The website will not allow you to pick a game that has already started (according to the webserver's clock).</li>
 
 <li>Failing to make a pick will result in a loss for that week.  Failing to make a pick during the last four weeks of the season will result in a 10 point penalty in addition to the loss.</li>
+
+<li>The point spread is a running total of the point spread of each game you've bet on during the season.  If you win a game, the point spread is added to your total.  If you lose, the point spread is subtracted from your total.
 
 {if $email}
 <li>In the event of a technical difficulty, send an email to <a href="mailto:{$email}">{$email}</a> as soon as possible.</li>
 {/if}
 
-<li>You will be entered in the pool as soon as your entry fee is received.  If your payment is late, any weeks that have already passed at the time of entry will be counted as losses.</li>
+<li>You will be entered in the pool as soon as your entry fee is received.  If your payment is late, any weeks that have already passed at the time of entry will be counted as No Picks (losses).</li>
 
 {if $admins}
 <li>
@@ -28,8 +32,6 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 {/if}
 </li>
 {/if}
-
-<li>At the end of the season, the person with the best record wins.  The point spread will be used as a tiebreaker.</li>
 
 {if $pool.fee}
 <li>Entry fee: ${$pool.fee|string_format:"%.2f"}</li>
