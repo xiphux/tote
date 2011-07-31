@@ -215,3 +215,8 @@ div.poolActionsDiv {
 	margin-right: auto;
 	margin-bottom: 10px;
 }
+
+ul.ruleList li {
+	text-align: left;
+	padding: 3px 0px 3px 0px;
+}

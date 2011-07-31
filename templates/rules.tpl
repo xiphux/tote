@@ -4,7 +4,7 @@
 
 <div>
 
-<ul>
+<ul class="ruleList">
 
 <li>Pick one team each week.</li>
 
