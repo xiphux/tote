@@ -15,7 +15,7 @@
 <label for="style">Style:</label>
 <select name="style">
 {foreach from=$availablestyles item=style}
-<option value="{$style}" {if ($style == $user.style) || (!$user.style && ($style == $defaultstyle))}selected="selected"{/if}>{$style|replace:'_':' '}</option>
+<option value="{$style}" {if ($style == $user.style) || (!$user.style && (($defaultstyle && ($style == $defaultstyle)) || (!$defaultstyle && ($style == 'Blue'))))}selected="selected"{/if}>{$style|replace:'_':' '}</option>
 {/foreach}
 </select>
 </div>
