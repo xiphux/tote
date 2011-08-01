@@ -796,7 +796,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 	{
 		var gms = $(xml).find('gms');
 		
-		this._updateTitle(gms.attr('y'), gms.attr('w'));
+		this._updateTitle(gms.attr('y'), gms.attr('w'), gms.attr('t'));
 
 		this._updateGameTiles(gms);
 
@@ -809,9 +809,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		}
 	},
 
-	_updateTitle: function(year, week)
+	_updateTitle: function(year, week, type)
 	{
-		var title = year + '-' + (year * 1 + 1) + ' week ' + week + ':';
+		var title = year + '-' + (year * 1 + 1) + ' ' + (type == 'P' ? 'preseason ' : '') + 'week ' + week + ':';
 		this._elements.titleDiv.text(title);
 	},
 
