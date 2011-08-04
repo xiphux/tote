@@ -66,7 +66,7 @@
 <th>Name</th>
 <th title="Wins">W</th>
 <th title="Losses">L</th>
-<th title="Point Spread">PS</th>
+<th title="Point Differential">PD</th>
 
 {foreach from=$weeks key=wknum item=open}
 
