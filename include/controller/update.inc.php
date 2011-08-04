@@ -513,50 +513,56 @@ echo '<p><strong>Checking ' . $url . " for more up to date scores...</strong></p
 
 $gms = $dom->getElementsByTagName('gms');
 
-for ($i = 0; $i < $gms->length; $i++) {
-	// gms is a container for the week containing games inside it
-	$gmnode = $gms->item($i);
+if ($gms->item(0)->attributes->getNamedItem('t')->value == 'P') {
+	echo "<p>Preseason, skipping...</p>\n";
+} else {
 
-	$season = $gmnode->attributes->getNamedItem('y')->value;
-	$week = $gmnode->attributes->getNamedItem('w')->value;
+	for ($i = 0; $i < $gms->length; $i++) {
+		// gms is a container for the week containing games inside it
+		$gmnode = $gms->item($i);
 
-	echo "<p><strong>Updating " . $season . " week " . $week . " ...</strong></p>\n";
+		$season = $gmnode->attributes->getNamedItem('y')->value;
+		$week = $gmnode->attributes->getNamedItem('w')->value;
 
-	echo "<p>";
-	for ($j = 0; $j < $gmnode->childNodes->length; $j++) {
-		// child g nodes, one for each game
-		$g = $gmnode->childNodes->item($j);
+		echo "<p><strong>Updating " . $season . " week " . $week . " ...</strong></p>\n";
 
-		$home = $g->attributes->getNamedItem('h')->value;
-		$visitor = $g->attributes->getNamedItem('v')->value;
-		$quarter = $g->attributes->getNamedItem('q')->value;
-		$homescore = $g->attributes->getNamedItem('hs')->value;
-		$visitorscore = $g->attributes->getNamedItem('vs')->value;
+		echo "<p>";
+		for ($j = 0; $j < $gmnode->childNodes->length; $j++) {
+			// child g nodes, one for each game
+			$g = $gmnode->childNodes->item($j);
 
-		if (($quarter == 'F') || ($quarter == 'FO')) {
-			// final or final overtime - do the update
-			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . " ";
-			if ($quarter == 'F')
-				echo "final";
-			else if ($quarter == 'FO')
-				echo "final overtime";
-			echo "... ";
-			update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
-		} else if ($quarter == 'P') {
-			// pending (not started)
-			echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";
-		} else if ($quarter == 'H') {
-			// halftime
-			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently halftime<br />\n";
-		} else {
-			// some quarter
-			echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently quarter " . $quarter;
-			if ((int)$quarter > 4) {
-				// obviously quarter 5 and above is overtime
-				echo " (overtime)";
+			$home = $g->attributes->getNamedItem('h')->value;
+			$visitor = $g->attributes->getNamedItem('v')->value;
+			$quarter = $g->attributes->getNamedItem('q')->value;
+			$homescore = $g->attributes->getNamedItem('hs')->value;
+			$visitorscore = $g->attributes->getNamedItem('vs')->value;
+
+			if (($quarter == 'F') || ($quarter == 'FO')) {
+				// final or final overtime - do the update
+				echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . " ";
+				if ($quarter == 'F')
+					echo "final";
+				else if ($quarter == 'FO')
+					echo "final overtime";
+				echo "... ";
+				update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
+			} else if ($quarter == 'P') {
+				// pending (not started)
+				echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";
+			} else if ($quarter == 'H') {
+				// halftime
+				echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently halftime<br />\n";
+			} else {
+				// some quarter
+				echo "Updating " . $visitor . " " . $visitorscore . " @ " . $home . " " . $homescore . "... currently quarter " . $quarter;
+				if ((int)$quarter > 4) {
+					// obviously quarter 5 and above is overtime
+					echo " (overtime)";
+				}
+				echo "<br />\n";
 			}
-			echo "<br />\n";
 		}
+		echo "</p>";
 	}
-	echo "</p>";
+
 }
