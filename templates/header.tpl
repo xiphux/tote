@@ -2,7 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>Tote</title>
+  {if $pool}
+  <title>{$pool.name} [{$pool.season}-{$pool.season+1}]</title>
+  {else}
+  <title>Football Pool</title>
+  {/if}
 <link rel="stylesheet" href="css/ext/jquery.qtip.css" type="text/css" />
   <link rel="stylesheet" href="css/tote.css" />
   {if $userstyle}
