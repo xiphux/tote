@@ -91,7 +91,7 @@ function display_deleteuser($userid, $csrftoken)
 				)
 			)
 		);
-		clear_cache('pool|' . (string)$p['_id'])
+		clear_cache('pool|' . (string)$p['_id']);
 	}
 
 	// remove user from system
