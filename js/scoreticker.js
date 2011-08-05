@@ -705,14 +705,16 @@ Tote.ScoreTicker.Ticker.prototype = {
 			return;
 		}
 		this._elements.bound = element;
-		$.get(Tote.ScoreTicker.Ticker.URLs.ticker, {}, $.proxy(function (xml) {
-			var gms = $(xml).find('gms');
-			if (gms.attr('t') == 'P') {
-				return;		// don't show preseason ticker
-			}
-			this._initUI(hidden);
-			this._update();
-		}, this), 'xml');
+		//$.get(Tote.ScoreTicker.Ticker.URLs.ticker, {}, $.proxy(function (xml) {
+		//	var gms = $(xml).find('gms');
+		//	if (gms.attr('t') == 'P') {
+		//		return;		// don't show preseason ticker
+		//	}
+		//	this._initUI(hidden);
+		//	this._update();
+		//}, this), 'xml');
+		this._initUI(hidden);
+		this._update();
 	},
 
 	_initUI: function(hidden)
