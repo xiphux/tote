@@ -55,7 +55,7 @@ Users in pool:
     <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span><br />
     {if $pooluser.email}{$pooluser.email}{/if}
     </td>
-    {if $pooluser.hasbets}<td class="alert"><span title="Removing this user from the pool will discard all of his/her bets">User has active bets</span></td>{/if}
+    {if $pooluser.hasbets}<td class="alert"><span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span></td>{/if}
     </td>
     </tr>
     </table>
