@@ -16,7 +16,7 @@
 
 <li>Failing to make a pick will result in a loss for that week.  Failing to make a pick during the last four weeks of the season will result in a 10 point penalty in addition to the loss.</li>
 
-<li>The point differential is a running total of the point differential of each game you've bet on during the season.  If you win a game, the point differential is added to your total.  If you lose, the point differential is subtracted from your total.
+<li>The point differential is a running total of the point differential of each game you've picked during the season.  If you win a game, the point differential is added to your total.  If you lose, the point differential is subtracted from your total.
 
 {if $email}
 <li>In the event of a technical difficulty, send an email to <a href="mailto:{$email}">{$email}</a> as soon as possible.</li>
