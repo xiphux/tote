@@ -27,7 +27,7 @@
 {if $user && $entered && $poolopen}
 <div class="poolBetDiv">
 <form action="index.php" method="get">
-<label for="bet">Bet on week:</label> 
+<label for="bet">Pick for week:</label> 
 <select name="w">
 {foreach from=$weeks key=wknum item=open}
   {if $open}
@@ -37,7 +37,7 @@
 </select>
 <input type="hidden" name="a" value="bet" />
 <input type="hidden" name="p" value="{$pool._id}" />
-<input value="Bet" type="submit" />
+<input value="Pick" type="submit" />
 </form>
 </div>
 {/if}
@@ -86,7 +86,7 @@
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
 <td class="entrantName">
 {if $user.admin}
-<a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s bets">
+<a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
 {/if}
 {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}
 {if $user.admin}
@@ -111,7 +111,7 @@
 {elseif $bet.nopick}
 -NP-
 {elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
-<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Bet</a>
+<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Pick</a>
 {/if}
  {if $bet.spread}({$bet.spread}){/if}
 </span>
