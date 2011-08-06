@@ -34,6 +34,8 @@ function display_finishlogin($user, $pass)
 		$errors[] = 'Password is required';
 	}
 
+	$user = strtolower($user);
+
 	if (!(empty($user) || empty($pass))) {
 		if (user_password_valid($user, $pass)) {
 			// if username and password are valid,

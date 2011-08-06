@@ -51,7 +51,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		$errors[] = "Username is required";
 	} else {
 		$existinguser = $users->findOne(
-			array('username' => $username),
+			array('username' => strtolower($username)),
 			array('username', 'email')
 		);
 		if ($existinguser) {
@@ -112,13 +112,13 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	} else {
 		// insert user into database
 		$data = array();
-		$data['username'] = $username;
+		$data['username'] = strtolower($username);
 		$data['email'] = $email;
 		if (!empty($firstname))
 			$data['first_name'] = $firstname;
 		if (!empty($lastname))
 			$data['last_name'] = $lastname;
-		$hashdata = generate_password_hash($username, $password);
+		$hashdata = generate_password_hash($data['username'], $password);
 		$data['salt'] = $hashdata['salt'];
 		$data['password'] = $hashdata['passwordhash'];
 		$users->insert($data);
