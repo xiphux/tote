@@ -14,37 +14,37 @@
      <pubDate>{$action.time->format('r')}</pubDate>
      {if $action.action == 'bet'}
        <author>{$action.user.email} ({$action.user_name})</author>
-       <title>{$action.user_name}'s week {$action.week} bet: {$action.team.abbreviation}</title>
-       <description>{$action.user_name}'s week {$action.week} bet: {$action.team.abbreviation}</description>
+       <title>{$action.user_name}'s week {$action.week} pick: {$action.team.abbreviation}</title>
+       <description>{$action.user_name}'s week {$action.week} pick: {$action.team.abbreviation}</description>
        <content:encoded>
          <![CDATA[
-           <p>{$action.user_name} bet on the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
+           <p>{$action.user_name} picked the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
 	 ]]>
        </content:encoded>
      {elseif $action.action == 'edit'}
      	<author>{$action.admin.email} ({$action.admin_name})</author>
        {if $action.from_team && $action.to_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
-       <description>Edit: {$action.user_name}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} pick changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {$action.admin_name} changed {$action.user_name}'s week {$action.week} bet from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
+	   <p>Admin {$action.admin_name} changed {$action.user_name}'s week {$action.week} pick from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
 	 ]]>
        </content:encoded>
        {elseif $action.from_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.from_team.abbreviation} removed</title>
-       <description>Edit: {$action.user_name}'s week {$action.week} bet {$action.from_team.abbreviation} removed</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick {$action.from_team.abbreviation} removed</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} pick {$action.from_team.abbreviation} removed</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {$action.admin_name} removed {$action.user_name}'s week {$action.week} bet on the {$action.from_team.home} {$action.from_team.team}.</p>
+	   <p>Admin {$action.admin_name} removed {$action.user_name}'s week {$action.week} pick of the {$action.from_team.home} {$action.from_team.team}.</p>
 	 ]]>
        </content:encoded>
        {elseif $action.to_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.to_team.abbreviation} added</title>
-       <description>Edit: {$action.user_name}'s week {$action.week} bet {$action.to_team.abbreviation} added</description>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick {$action.to_team.abbreviation} added</title>
+       <description>Edit: {$action.user_name}'s week {$action.week} pick {$action.to_team.abbreviation} added</description>
        <content:encoded>
          <![CDATA[
-	   <p>Admin {$action.admin_name} added the {$action.to_team.home} {$action.to_team.team} as {$action.user_name}'s week {$action.week} bet.</p>
+	   <p>Admin {$action.admin_name} added the {$action.to_team.home} {$action.to_team.team} as {$action.user_name}'s week {$action.week} pick.</p>
 	 ]]>
        </content:encoded>
        {/if}

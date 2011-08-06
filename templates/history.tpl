@@ -25,14 +25,14 @@
   <td class="center">{if $action.week && ($action.week > 0)}{$action.week}{/if}</td>
   <td>
   {if $action.action == 'bet'}
-  Bet added: {$action.team.abbreviation}
+  Pick added: {$action.team.abbreviation}
   {elseif $action.action == 'edit'}
     {if $action.from_team && $action.to_team}
-    Admin changed bet from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}
+    Admin changed pick from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}
     {elseif $action.from_team}
-    Admin deleted bet on {$action.from_team.abbreviation}
+    Admin deleted pick of {$action.from_team.abbreviation}
     {elseif $action.to_team}
-    Admin added bet on {$action.to_team.abbreviation}
+    Admin added pick of {$action.to_team.abbreviation}
     {/if}
   {elseif $action.action == 'addentrant'}
     Admin added user to pool

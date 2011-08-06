@@ -21,10 +21,10 @@
          <name>{$action.user_name}</name>
 	 {if $action.user.email}<email>{$action.user.email}</email>{/if}
        </author>
-       <title>{$action.user_name}'s week {$action.week} bet: {$action.team.abbreviation}</title>
+       <title>{$action.user_name}'s week {$action.week} pick: {$action.team.abbreviation}</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
-           <p>{$action.user_name} bet on the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
+           <p>{$action.user_name} picked the {$action.team.home} {$action.team.team} in week {$action.week}.</p>
          </div>
        </content>
      {elseif $action.action == 'edit'}
@@ -33,24 +33,24 @@
 	  {if $action.admin.email}<email>{$action.admin.email}</email>{/if}
 	</author>
        {if $action.from_team && $action.to_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick changed from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
-	   <p>Admin {$action.admin_name} changed {$action.user_name}'s week {$action.week} bet from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
+	   <p>Admin {$action.admin_name} changed {$action.user_name}'s week {$action.week} pick from the {$action.from_team.home} {$action.from_team.team} to the {$action.to_team.home} {$action.to_team.team}.</p>
 	 </div>
        </content>
        {elseif $action.from_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.from_team.abbreviation} removed</title>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick {$action.from_team.abbreviation} removed</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
-	   <p>Admin {$action.admin_name} removed {$action.user_name}'s week {$action.week} bet on the {$action.from_team.home} {$action.from_team.team}.</p>
+	   <p>Admin {$action.admin_name} removed {$action.user_name}'s week {$action.week} pick of the {$action.from_team.home} {$action.from_team.team}.</p>
 	 </div>
        </content>
        {elseif $action.to_team}
-       <title>Edit: {$action.user_name}'s week {$action.week} bet {$action.to_team.abbreviation} added</title>
+       <title>Edit: {$action.user_name}'s week {$action.week} pick {$action.to_team.abbreviation} added</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
-	   <p>Admin {$action.admin_name} added the {$action.to_team.home} {$action.to_team.team} as {$action.user_name}'s week {$action.week} bet.</p>
+	   <p>Admin {$action.admin_name} added the {$action.to_team.home} {$action.to_team.team} as {$action.user_name}'s week {$action.week} pick.</p>
 	 </div>
        </content>
        {/if}
