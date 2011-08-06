@@ -185,11 +185,11 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 
 					$subject = '';
 					if ($win) {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet won';
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick won';
 					} else if ($loss) {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet lost';
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick lost';
 					} else {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' bet pushed';
+						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick pushed';
 					}
 
 					$tpl->assign('user', $entrantuser);
