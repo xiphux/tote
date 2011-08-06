@@ -33,7 +33,7 @@
 
 <br />
 <div>
-<input type="checkbox" name="resultnotification" value="1" {if $user.resultnotification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my bet when the game finishes</label>
+<input type="checkbox" name="resultnotification" value="1" {if $user.resultnotification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my pick when the game finishes</label>
 </div>
 
 {if $enablereminders}
