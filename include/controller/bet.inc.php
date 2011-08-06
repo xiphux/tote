@@ -17,7 +17,7 @@ function sort_teams($a, $b)
 	return strcmp(($a['home'] . ' ' . $a['team']), ($b['home'] . ' ' . $b['team']));
 }
 
-define('BET_HEADER', 'Place A Bet');
+define('BET_HEADER', 'Make A Pick');
 
 /**
  * bet controller
@@ -82,7 +82,7 @@ function display_bet($poolID, $week)
 		foreach ($userentry['bets'] as $bet) {
 			if (($bet['week'] == $week) && (!empty($bet['team']))) {
 				$prevbet = get_team($bet['team']);
-				display_message('You already bet on the ' . $prevbet['home'] . ' ' . $prevbet['team'] . ' for week ' . $week, BET_HEADER);
+				display_message('You already picked the ' . $prevbet['home'] . ' ' . $prevbet['team'] . ' for week ' . $week, BET_HEADER);
 				return;
 			}
 		}

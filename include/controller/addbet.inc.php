@@ -9,7 +9,7 @@ require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
-define('ADDBET_HEADER', 'Place A Bet');
+define('ADDBET_HEADER', 'Make A Pick');
 
 /**
  * addbet controller
@@ -63,7 +63,7 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 
 	if (empty($team)) {
 		// bet is required
-		display_message("A bet is required", ADDBET_HEADER);
+		display_message("A pick is required", ADDBET_HEADER);
 		return;
 	}
 
@@ -107,13 +107,13 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 
 	if ($weekbet) {
 		// user already bet on this week
-		display_message("You've already bet on " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week, ADDBET_HEADER);
+		display_message("You already picked the " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week, ADDBET_HEADER);
 		return;
 	}
 
 	if ($teambet) {
 		// user already bet on this team
-		display_message("You've already bet on " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet, ADDBET_HEADER);
+		display_message("You already picked the " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet, ADDBET_HEADER);
 		return;
 	}
 

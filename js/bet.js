@@ -33,7 +33,7 @@ function initBetConfirm()
 		}
 		var week = $('input[name="w"]').val();
 		var team = $('select[name="t"] option:selected').text();
-		return confirm("Are you sure you want to bet on the " + team + " for week " + week + "? Once this bet is placed it cannot be changed.");
+		return confirm("Are you sure you want to pick the " + team + " for week " + week + "?\nOnce this pick is made it cannot be changed.");
 	});
 };
 

@@ -1,8 +1,8 @@
-{include file='header.tpl' source='bet' header='Place A Bet' homelink=true}
+{include file='header.tpl' source='bet' header='Make A Pick' homelink=true}
 
 {if $bets}
 <p>
-Your other bets:
+Your other picks:
 <table class="betTable displayTable">
   <thead>
     <th>Week</th>
@@ -44,7 +44,7 @@ Games for week {$week}:
 
 <p>
 <form action="index.php?a=addbet" method="post" id="frmBet">
-<label for="t">Bet on week {$week}:</label>
+<label for="t">Pick for week {$week}:</label>
 <select name="t" id="betSelect">
 <option value="">Choose a team...</option>
 {foreach from=$teams item=team}
@@ -54,7 +54,7 @@ Games for week {$week}:
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="w" value="{$week}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
-<input type="submit" value="Bet" />
+<input type="submit" value="Pick" />
 </form>
 </p>
 
