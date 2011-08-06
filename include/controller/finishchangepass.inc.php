@@ -66,7 +66,8 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 					array('_id' => $user['_id']),
 					array('$set' => array(
 						'salt' => $hashdata['salt'],
-						'password' => $hashdata['passwordhash']
+						'password' => $hashdata['passwordhash'],
+						'lastpasswordchange' => new MongoDate()
 					))
 				);
 			} else {

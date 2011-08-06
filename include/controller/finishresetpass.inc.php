@@ -49,7 +49,8 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 					array('_id' => $userobj['_id']),
 					array('$set' => array(
 						'salt' => $hashdata['salt'],
-						'password' => $hashdata['passwordhash']),
+						'password' => $hashdata['passwordhash'],
+						'lastpasswordchange' => new MongoDate()),
 					      '$unset' => array(
 						'recoverykey' => 1
 						)
