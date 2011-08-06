@@ -1,6 +1,6 @@
-{include file='header.tpl' header="Edit A User's Bets" homelink=true}
+{include file='header.tpl' header="Edit A User's Picks" homelink=true}
 
-<p>Editing bets for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
+<p>Editing picks for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 
 <form action="index.php?a=savebets" method="post" />
 <table class="formTable">
@@ -9,7 +9,7 @@
 <td><label for="week[{$week}]">Week {$week}:</label></td>
 <td>
 <select name="week[{$week}]">
-<option value="">No bet</option>
+<option value="">No pick</option>
 {foreach from=$teams item=team}
 <option value="{$team._id}" {if $team._id == $bet}selected="selected"{/if}>{$team.home} {$team.team}</option>
 {/foreach}
