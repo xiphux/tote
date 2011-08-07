@@ -121,6 +121,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		$hashdata = generate_password_hash($data['username'], $password);
 		$data['salt'] = $hashdata['salt'];
 		$data['password'] = $hashdata['passwordhash'];
+		$data['created'] = new MongoDate();
 		$users->insert($data);
 
 		// go back to the edit users page
