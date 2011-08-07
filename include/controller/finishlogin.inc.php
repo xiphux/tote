@@ -44,6 +44,19 @@ function display_finishlogin($user, $pass)
 
 			// create CSRF token
 			$_SESSION['csrftoken'] = generate_salt();
+
+			// update last login
+			$users = get_collection(TOTE_COLLECTION_USERS);
+			$userObj = $users->findOne(array('username' => $user), array('username'));
+
+			if ($userObj) {
+				$users->update(
+					array('_id' => $userObj['_id']),
+					array('$set' => array(
+						'lastlogin' => new MongoDate()
+					))
+				);
+			}
 		} else {
 			$errors[] = 'Incorrect username or password';
 		}
