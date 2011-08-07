@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -48,8 +49,6 @@ function display_schedule($season, $week, $output = 'html')
 		return;
 	}
 
-	$user = user_logged_in();
-
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 
 	$gameobjs = $games->find(
@@ -64,16 +63,7 @@ function display_schedule($season, $week, $output = 'html')
 	foreach ($gameobjs as $i => $gameobj) {
 		$gameobj['home_team'] = get_team($gameobj['home_team']);
 		$gameobj['away_team'] = get_team($gameobj['away_team']);
-		$st = new DateTime('@' . $gameobj['start']->sec);
-		$st->setTimezone(new DateTimeZone('America/New_York'));
-		if (!empty($user['timezone'])) {
-			// user preference for time zone
-			try {
-				$st->setTimezone(new DateTimeZone($user['timezone']));
-			} catch (Exception $e) {
-			}
-		}
-		$gameobj['localstart'] = $st;
+		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
 		$weekgames[] = $gameobj;
 	}
 

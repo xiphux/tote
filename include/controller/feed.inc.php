@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 /**
  * feed controller
@@ -20,8 +21,6 @@ function display_feed($format, $poolID)
 	global $tpl;
 
 	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$user = null;
 
 	// if we don't have a pool, try to find the most recent pool
 	$poolobj = null;
@@ -80,13 +79,10 @@ function display_feed($format, $poolID)
 
 			// format times with timezones
 			$sec = $action['time']->sec;
-			$action['time'] = new DateTime('@' . $sec);
 			if (($format == 'html') || ($format == 'js')) {
-				if ($user && !empty($user['timezone'])) {
-					$action['time']->setTimezone(new DateTimeZone($user['timezone']));
-				} else {
-					$action['time']->setTimezone(new DateTimeZone('America/New_York'));
-				}
+				$action['time'] = get_local_datetime($action['time']);
+			} else {
+				$action['time'] = new DateTime('@' . $action['time']->sec);
 			}
 
 			// keep the most recent updated time

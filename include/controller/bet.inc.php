@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 /**
  * sort teams according to full team name (home & team)
@@ -110,16 +111,7 @@ function display_bet($poolID, $week)
 		$away = get_team($gameobj['away_team']);
 		$gameobj['home_team'] = $home;
 		$gameobj['away_team'] = $away;
-		$st = new DateTime('@' . $gameobj['start']->sec);
-		$st->setTimezone(new DateTimeZone('America/New_York'));
-		if (!empty($user['timezone'])) {
-			// user preference for time zone
-			try {
-				$st->setTimezone(new DateTimeZone($user['timezone']));
-			} catch (Exception $e) {
-			}
-		}
-		$gameobj['localstart'] = $st;
+		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
 		$weekgames[] = $gameobj;
 
 		// if game hasn't started yet, add teams to the list
