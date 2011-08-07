@@ -68,6 +68,60 @@
 	   <p>Admin {$action.admin_name} removed {$action.user_name} from the pool.</p>
 	 </div>
        </content>
+     {elseif $action.action == 'pooladminchange'}
+     	<author>
+	  <name>{$action.admin_name}</name>
+	  {if $action.admin.email}<email>{$action.admin.email}</email>{/if}
+	</author>
+       {if $action.newpooladmin == 2}
+         {if $action.oldpooladmin == 1}
+	       <title>Edit: {$action.user_name} changed from pool administrator to non-voting pool administrator</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} changed {$action.user_name} from pool administrator to non-voting pool administrator.</p>
+		 </div>
+	       </content>
+	 {elseif $action.oldpooladmin == 0}
+	       <title>Edit: {$action.user_name} set as non-voting pool administrator</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} set {$action.user_name} as a non-voting pool administrator.</p>
+		 </div>
+	       </content>
+	 {/if}
+       {elseif $action.newpooladmin == 1}
+         {if $action.oldpooladmin == 2}
+	       <title>Edit: {$action.user_name} changed from non-voting pool administrator to pool administrator</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} changed {$action.user_name} from non-voting pool administrator to pool administrator.</p>
+		 </div>
+	       </content>
+	 {elseif $action.oldpooladmin == 0}
+	       <title>Edit: {$action.user_name} set as pool administrator</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} set {$action.user_name} as a pool administrator.</p>
+		 </div>
+	       </content>
+	 {/if}
+       {elseif $action.newpooladmin == 0}
+         {if $action.oldpooladmin == 2}
+	       <title>Edit: {$action.user_name} removed from non-voting pool administrators</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} removed {$action.user_name} from the non-voting pool administrators.</p>
+		 </div>
+	       </content>
+	 {elseif $action.oldpooladmin == 1}
+	       <title>Edit: {$action.user_name} removed from pool administrators</title>
+	       <content type="xhtml">
+		 <div xmlns="http://www.w3.org/1999/xhtml">
+		   <p>Admin {$action.admin_name} removed {$action.user_name} from the pool administrators.</p>
+		 </div>
+	       </content>
+	 {/if}
+       {/if}
      {/if}
    </entry>
  {/foreach}

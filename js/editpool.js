@@ -21,27 +21,27 @@ function sortUsers(listID) {
 }
 
 function initEditPool() {
-	$('.availableUsers input:checkbox').live('click', function(e) {
+	$('.availableUsers .selectuser').live('click', function(e) {
 		e.stopPropagation();
 		if ($(this).is(':checked')) {
 			$(this).parent().parent().parent().parent().parent().addClass('selected');
 		} else {
 			$(this).parent().parent().parent().parent().parent().removeClass('selected');
 		}
-		if ($('.availableUsers input:checkbox:checked').size() > 0) {
+		if ($('.availableUsers .selectuser:checked').size() > 0) {
 			$('#addButton').removeAttr('disabled');
 		} else {
 			$('#addButton').attr('disabled','disabled');
 		}
 	});
-	$('.poolUsers input:checkbox').live('click', function(e) {
+	$('.poolUsers .selectuser').live('click', function(e) {
 		e.stopPropagation();
 		if ($(this).is(':checked')) {
 			$(this).parent().parent().parent().parent().parent().addClass('selected');
 		} else {
 			$(this).parent().parent().parent().parent().parent().removeClass('selected');
 		}
-		if ($('.poolUsers input:checkbox:checked').size() > 0) {
+		if ($('.poolUsers .selectuser:checked').size() > 0) {
 			$('#removeButton').removeAttr('disabled');
 		} else {
 			$('#removeButton').attr('disabled','disabled');
@@ -49,10 +49,10 @@ function initEditPool() {
 	});
 	$('#addButton').click(function() {
 		$(this).attr('disabled','disabled');
-		$('input:checkbox').attr('disabled','disabled');
+		$('.selectuser').attr('disabled','disabled');
 		$('#editSpinner').show();
 		var aUsers = [];
-		$('.availableUsers input:checkbox:checked').each(function() {
+		$('.availableUsers .selectuser:checked').each(function() {
 			aUsers.push($(this).parent().parent().parent().parent().parent().attr('id'));
 		});
 		$.ajax({
@@ -68,14 +68,15 @@ function initEditPool() {
 				if (msg && (msg.length > 0)) {
 					alert('An error occurred while updating the pool: ' + msg);
 				}
-				$('.availableUsers input:checkbox:checked').each(function() {
+				$('.availableUsers .selectuser:checked').each(function() {
 					$(this).removeAttr('checked');
 					var aDiv = $(this).parent().parent().parent().parent().parent();
 					aDiv.removeClass('selected');
+					aDiv.find('.poolAdmin').show();
 					$('.poolUsers').append(aDiv.detach());
 				});
 				sortUsers('.poolUsers');
-				$('input:checkbox').removeAttr('disabled');
+				$('.selectuser').removeAttr('disabled');
 				$('#editSpinner').hide();
 			},
 			error: function() {
@@ -88,7 +89,7 @@ function initEditPool() {
 		$('input:checkbox').attr('disabled','disabled');
 		$('#editSpinner').show();
 		var pUsers = [];
-		$('.poolUsers input:checkbox:checked').each(function() {
+		$('.poolUsers .selectuser:checked').each(function() {
 			pUsers.push($(this).parent().parent().parent().parent().parent().attr('id'));
 		});
 		$.ajax({
@@ -104,16 +105,58 @@ function initEditPool() {
 				if (msg && (msg.length > 0)) {
 					alert('An error occurred while updating the pool: ' + msg);
 				}
-				$('.poolUsers input:checkbox:checked').each(function() {
+				$('.poolUsers .selectuser:checked').each(function() {
 					$(this).removeAttr('checked');
 					var pDiv = $(this).parent().parent().parent().parent().parent();
 					pDiv.removeClass('selected');
 					pDiv.find('td.alert').remove();
+					pDiv.find('.poolAdmin').hide();
 					$('.availableUsers').append(pDiv.detach());
 				});
 				sortUsers('.availableUsers');
 				$('input:checkbox').removeAttr('disabled');
 				$('#editSpinner').hide();
+			},
+			error: function() {
+				alert("An error occurred while updating the pool");
+			}
+		});
+	});
+	$('.poolUsers .admincheckbox').live('click', function(e) {
+		e.stopPropagation();
+		var div = $(this).parent().parent().parent().parent().parent();
+		var primaryadmin = div.find('.primaryadmin');
+		var secondaryadmin = div.find('.secondaryadmin');
+		var primarychecked = primaryadmin.is(':checked');
+		var secondarychecked = secondaryadmin.is(':checked');
+		if ($(this)[0] == primaryadmin[0]) {
+			if (primarychecked) {
+				secondaryadmin.removeAttr('checked');
+				secondarychecked = false;
+			}
+		} else if ($(this)[0] == secondaryadmin[0]) {
+			if (secondarychecked) {
+				primaryadmin.removeAttr('checked');
+				primarychecked = false;
+			}
+		}
+		primaryadmin.attr('disabled','disabled');
+		secondaryadmin.attr('disabled','disabled');
+		$.ajax({
+			url: 'index.php?a=setpooladmin',
+			type: 'POST',
+			data: {
+				p: $('span#poolID').text(),
+				u: div.attr('id'),
+				type: secondarychecked ? 2 : (primarychecked ? 1 : 0),
+				csrftoken: TOTE_CSRF_TOKEN
+			},
+			success: function(msg) {
+				if (msg && (msg.length > 0)) {
+					alert('An error occurred while updating the pool: ' + msg);
+				}
+				secondaryadmin.removeAttr('disabled');
+				primaryadmin.removeAttr('disabled');
 			},
 			error: function() {
 				alert("An error occurred while updating the pool");

@@ -45,7 +45,7 @@ function display_editpool($poolID)
 		array(
 			'_id' => new MongoId($poolID)
 		),
-		array('season', 'name', 'entries')
+		array('season', 'name', 'entries', 'administrators')
 	);
 	if (!$pool) {
 		// pool must exist
@@ -76,6 +76,20 @@ function display_editpool($poolID)
 				// in the admin page
 				$poolusers[(string)$entrant['user']]['hasbets'] = true;
 			}
+
+			if (isset($pool['administrators'])) {
+				foreach ($pool['administrators'] as $admin) {
+					if ($admin['user'] == $entrant['user']) {
+						if (isset($admin['secondary']) && ($admin['secondary'] == true)) {
+							$poolusers[(string)$entrant['user']]['secondaryadmin'] = true;
+						} else {
+							$poolusers[(string)$entrant['user']]['primaryadmin'] = true;
+						}
+						break;
+					}
+				}
+			}
+
 			unset($availableusers[(string)$entrant['user']]);
 		}
 	}

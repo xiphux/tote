@@ -23,11 +23,18 @@ Available users:
   <div id="{$availableuser._id}" class="userListItem">
     <table>
       <tr>
-        <td class="checkbox"><input type="checkbox" /></td>
+        <td class="checkbox"><input type="checkbox" class="selectuser" /></td>
 	<td class="userinfo">
-    <span class="username">{if $availableuser.first_name}{$availableuser.first_name}{if $availableuser.last_name} {$availableuser.last_name}{/if}{else}{$availableuser.username}{/if}</span><br />
-    {if $availableuser.email}{$availableuser.email}{/if}
+    <span class="username">{if $availableuser.first_name}{$availableuser.first_name}{if $availableuser.last_name} {$availableuser.last_name}{/if}{else}{$availableuser.username}{/if}</span>
+    {if $availableuser.email}<br />{$availableuser.email}{/if}
     </td>
+    </tr>
+    <tr class="poolAdmin" style="display:none;">
+      <td>
+      </td>
+      <td><input type="checkbox" class="primaryadmin admincheckbox"><label>Pool administrator</label></td>
+      <td><input type="checkbox" class="secondaryadmin admincheckbox"><label>Non-voting administrator</label></td>
+      </td>
     </tr>
     </table>
   </div>
@@ -50,13 +57,20 @@ Users in pool:
   <div id="{$pooluser._id}" class="userListItem">
     <table>
       <tr>
-        <td class="checkbox"><input type="checkbox" /></td>
+        <td class="checkbox"><input type="checkbox" class="selectuser" /></td>
 	<td class="userinfo">
-    <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span><br />
-    {if $pooluser.email}{$pooluser.email}{/if}
+    <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span>
+    {if $pooluser.email}<br />{$pooluser.email}{/if}
     </td>
     {if $pooluser.hasbets}<td class="alert"><span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span></td>{/if}
     </td>
+    </tr>
+    <tr class="poolAdmin">
+      <td>
+      </td>
+      <td><input type="checkbox" class="primaryadmin admincheckbox" {if $pooluser.primaryadmin}checked="checked"{/if}><label>Pool administrator</label></td>
+      <td><input type="checkbox" class="secondaryadmin admincheckbox" {if $pooluser.secondaryadmin}checked="checked"{/if}><label>Non-voting administrator</label></td>
+      </td>
     </tr>
     </table>
   </div>

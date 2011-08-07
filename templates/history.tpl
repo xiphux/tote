@@ -38,6 +38,26 @@
     Admin added user to pool
   {elseif $action.action == 'removeentrant'}
     Admin removed user from pool
+  {elseif $action.action == 'pooladminchange'}
+    {if $action.newpooladmin == 2}
+      {if $action.oldpooladmin == 1}
+        Admin changed user from pool administrator to non-voting pool administrator
+      {elseif $action.oldpooladmin == 0}
+      	Admin set user as non-voting pool administrator
+      {/if}
+    {elseif $action.newpooladmin == 1}
+      {if $action.oldpooladmin == 2}
+      	Admin changed user from non-voting pool administrator to pool administrator
+      {elseif $action.oldpooladmin == 0}
+        Admin set user as pool administrator
+      {/if}
+    {elseif $action.newpooladmin == 0}
+      {if $action.oldpooladmin == 2}
+      	Admin removed user from non-voting pool administrators
+      {elseif $action.oldpooladmin == 1}
+        Admin removed user from pool administrators
+      {/if}
+    {/if}
   {/if}
   </td>
   <td>{if $action.comment}{$action.comment}{/if}</td>

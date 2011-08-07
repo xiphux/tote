@@ -64,6 +64,63 @@
 	   <p>Admin {$action.admin_name} removed {$action.user_name} from the pool.</p>
 	 ]]>
        </content:encoded>
+     {elseif $action.action == 'pooladminchange'}
+	<author>{$action.admin.email} ({$action.admin_name})</author>
+       {if $action.newpooladmin == 2}
+         {if $action.oldpooladmin == 1}
+	       <title>Edit: {$action.user_name} changed from pool administrator to non-voting pool administrator</title>
+	       <description>Edit: {$action.user_name} changed from pool administrator to non-voting pool administrator</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} changed {$action.user_name} from pool administrator to non-voting pool administrator.</p>
+		 ]]>
+	       </content:encoded>
+	 {elseif $action.oldpooladmin == 0}
+	       <title>Edit: {$action.user_name} set as non-voting pool administrator</title>
+	       <description>Edit: {$action.user_name} set as non-voting pool administrator</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} set {$action.user_name} as a non-voting pool administrator.</p>
+		 ]]>
+	       </content:encoded>
+	 {/if}
+       {elseif $action.newpooladmin == 1}
+         {if $action.oldpooladmin == 2}
+	       <title>Edit: {$action.user_name} changed from non-voting pool administrator to pool administrator</title>
+	       <description>Edit: {$action.user_name} changed from non-voting pool administrator to pool administrator</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} changed {$action.user_name} from non-voting pool administrator to pool administrator.</p>
+		 ]]>
+	       </content:encoded>
+	 {elseif $action.oldpooladmin == 0}
+	       <title>Edit: {$action.user_name} set as pool administrator</title>
+	       <description>Edit: {$action.user_name} set as pool administrator</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} set {$action.user_name} as a pool administrator.</p>
+		 ]]>
+	       </content:encoded>
+	 {/if}
+       {elseif $action.newpooladmin == 0}
+         {if $action.oldpooladmin == 2}
+	       <title>Edit: {$action.user_name} removed from non-voting pool administrators</title>
+	       <description>Edit: {$action.user_name} removed from non-voting pool administrators</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} removed {$action.user_name} from the non-voting pool administrators.</p>
+		 ]]>
+	       </content:encoded>
+	 {elseif $action.oldpooladmin == 1}
+	       <title>Edit: {$action.user_name} removed from pool administrators</title>
+	       <description>Edit: {$action.user_name} removed from pool administrators</description>
+	       <content:encoded>
+		 <![CDATA[
+		   <p>Admin {$action.admin_name} removed {$action.user_name} from the pool administrators.</p>
+		 ]]>
+	       </content:encoded>
+	 {/if}
+       {/if}
      {/if}
    </item>
  {/foreach}

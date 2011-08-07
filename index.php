@@ -152,6 +152,16 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		);
 		break;
 
+	// setpooladmin - used to change a user's admin status in a pool
+	case 'setpooladmin':
+		require_once(TOTE_CONTROLLERDIR . 'setpooladmin.inc.php');
+		display_setpooladmin(
+			(empty($_POST['p']) ? null : $_POST['p']),
+			(empty($_POST['u']) ? null : $_POST['u']),
+			(empty($_POST['type']) ? null : $_POST['type']),
+			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])
+		);
+		break;
 
 	// deletepool - deletes the entire pool
 	case 'deletepool':
