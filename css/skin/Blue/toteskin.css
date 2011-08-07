@@ -258,3 +258,7 @@ div.selected {
 	border-bottom: 1px solid #54abe4;
 }
 
+.nodata {
+	color: darkgray;
+	font-style: italic;
+}

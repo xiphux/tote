@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 /**
  * editusers
@@ -29,9 +30,18 @@ function display_editusers()
 
 	// get all users
 	$users = get_collection(TOTE_COLLECTION_USERS);
-	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'admin'));
+	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'admin', 'created', 'lastlogin', 'lastpasswordchange'));
 	$userarray = array();
 	foreach ($allusers as $u) {
+		if (isset($u['created'])) {
+			$u['createdlocal'] = get_local_datetime($u['created']);;
+		}
+		if (isset($u['lastlogin'])) {
+			$u['lastloginlocal'] = get_local_datetime($u['lastlogin']);
+		}
+		if (isset($u['lastpasswordchange'])) {
+			$u['lastpasswordchangelocal'] = get_local_datetime($u['lastpasswordchange']);
+		}
 		$userarray[] = $u;
 	}
 
