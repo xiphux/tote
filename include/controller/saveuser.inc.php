@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('SAVEUSER_HEADER', 'Edit A User');
@@ -23,7 +24,7 @@ define('SAVEUSER_HEADER', 'Edit A User');
  * @param string $admin admin flag
  * @param string $csrftoken CSRF request token
  */
-function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrftoken)
+function display_saveuser($userid, $firstname, $lastname, $email, $admin, $newpassword, $newpassword2, $csrftoken)
 {
 	global $tpl;
 
@@ -83,6 +84,12 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrft
 		}
 	}
 
+	if (!(empty($newpassword) && empty($newpassword2))) {
+		if ($newpassword != $newpassword2) {
+			$errors[] = 'Passwords don\'t match';
+		}
+	}
+
 	if (count($errors) > 0) {
 		// if we have errors, go back to the edit page and display them
 		$tpl->assign("errors", $errors);
@@ -115,6 +122,12 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $csrft
 		} else {
 			if (user_is_admin($edituser))
 				$unsetdata['admin'] = 1;
+		}
+		if (!(empty($newpassword) || empty($newpassword2))) {
+			$hashdata = generate_password_hash($edituser['username'], $newpassword);
+			$setdata['salt'] = $hashdata['salt'];
+			$setdata['password'] = $hashdata['passwordhash'];
+			$setdata['lastpasswordchange'] = new MongoDate();
 		}
 		if (count($setdata) > 0)
 			$data['$set'] = $setdata;
