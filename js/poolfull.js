@@ -187,7 +187,9 @@ function initLinksList() {
 			$(this).removeClass('linksOpen');
 			$(this).addClass('linksClosed');
 			if ($.cookies.test()) {
-				$.cookies.set('ToteLinksExpanded', false);
+				var exp = new Date();
+				exp.setDate(exp.getDate() + 365);
+				$.cookies.set('ToteLinksExpanded', false, {expiresAt: exp});
 			}
 		} else {
 			$('#linksList').show('fast', function() {
@@ -197,7 +199,9 @@ function initLinksList() {
 			$(this).removeClass('linksClosed');
 			$(this).addClass('linksOpen');
 			if ($.cookies.test()) {
-				$.cookies.set('ToteLinksExpanded', true);
+				var exp = new Date();
+				exp.setDate(exp.getDate() + 365);
+				$.cookies.set('ToteLinksExpanded', true, {expiresAt: exp});
 			}
 		}
 		return false;

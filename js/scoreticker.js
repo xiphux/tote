@@ -737,7 +737,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var showCallback = function(event) {
 			ticker.start();
 			if ($.cookies.test()) {
-				$.cookies.set('ToteScoretickerHidden', false);
+				var exp = new Date();
+				exp.setDate(exp.getDate() + 365);
+				$.cookies.set('ToteScoretickerHidden', false, {expiresAt: exp});
 			}
 			ticker._elements.bound.removeClass('rounded-bottom');
 			ticker._elements.containerDiv.show('fast', function() {
@@ -751,7 +753,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var hideCallback = function(event) {
 			ticker.stop();
 			if ($.cookies.test()) {
-				$.cookies.set('ToteScoretickerHidden', true);
+				var exp = new Date();
+				exp.setDate(exp.getDate() + 365);
+				$.cookies.set('ToteScoretickerHidden', true, {expiresAt: exp});
 			}
 			ticker._elements.gameTable.animate({marginLeft: -ticker._elements.gameTable.outerWidth()}, 'fast', function() {
 				ticker._elements.containerDiv.hide('fast');
