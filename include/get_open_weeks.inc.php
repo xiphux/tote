@@ -12,27 +12,32 @@ require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
  */
 function get_open_weeks($season)
 {
+	global $db;
+
 	if (empty($season))
 		return null;
-
-	$games = GET_COLLECTION(TOTE_COLLECTION_GAMES);
 
 	$weeks = get_season_weeks($season);
 	$openweeks = array_fill(1, $weeks, false);
 
-	$opengames = $games->find(
+	$weekdata = $db->command(
 		array(
-			'season' => (int)$season,
-			'start' => array(
-				'$gt' => new MongoDate(time())
+			'distinct' => TOTE_COLLECTION_GAMES,
+			'key' => 'week',
+			'query' => array(
+				'season' => (int)$season,
+				'start' => array(
+					'$gt' => new MongoDate(time())
+				)
 			)
-		),
-		array('week')
+		)
 	);
 
-	foreach ($opengames as $game) {
-		if ($game['week'] > 0) {
-			$openweeks[$game['week']] = true;
+	if (isset($weekdata['values'])) {
+		for ($i = 0; $i < count($weekdata['values']); $i++) {
+			if ($weekdata['values'][$i] > 0) {
+				$openweeks[$weekdata['values'][$i]] = true;
+			}
 		}
 	}
 
