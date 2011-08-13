@@ -38,8 +38,7 @@ function get_user($id)
 		if (!$objid)
 			$objid = new MongoId($stringid);
 		$usercache[$stringid] = $users->findOne(
-			array('_id' => $objid),		// match on id
-			array('username', 'admin', 'first_name', 'last_name', 'email')	// load these fields
+			array('_id' => $objid)		// match on id
 		);
 	}
 
