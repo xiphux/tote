@@ -24,7 +24,8 @@ function user_logged_in()
 	$users = get_collection(TOTE_COLLECTION_USERS);
 
 	$user = $users->findOne(
-		array('username' => $_SESSION['user'])  // match on stored username
+		array('username' => $_SESSION['user']),  // match on stored username
+		array('password' => 0, 'salt' => 0)
 	);
 	
 	$usercache[(string)$user['_id']] = $user;

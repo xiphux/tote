@@ -56,7 +56,7 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 
 		if ($newpassword == $newpassword2) {
 
-			if (user_password_valid($user['username'], $oldpassword, $user['salt'], $user['password'])) {
+			if (user_password_valid($user['username'], $oldpassword)) {
 				// hash the new password
 				$hashdata = generate_password_hash($user['username'], $newpassword);
 

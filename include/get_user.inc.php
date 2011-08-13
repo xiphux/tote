@@ -38,7 +38,8 @@ function get_user($id)
 		if (!$objid)
 			$objid = new MongoId($stringid);
 		$usercache[$stringid] = $users->findOne(
-			array('_id' => $objid)		// match on id
+			array('_id' => $objid),		// match on id
+			array('password' => 0, 'salt' => 0)
 		);
 	}
 
