@@ -714,7 +714,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		//	this._update();
 		//}, this), 'xml');
 		this._initUI(hidden);
-		this._update();
+		if (!hidden) {
+			this.start();
+		}
 	},
 
 	_initUI: function(hidden)
@@ -734,6 +736,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var ticker = this;
 		var showCallback = function(event) {
 			ticker.start();
+			if ($.cookies.test()) {
+				$.cookies.set('ToteScoretickerHidden', false);
+			}
 			ticker._elements.bound.removeClass('rounded-bottom');
 			ticker._elements.containerDiv.show('fast', function() {
 				ticker._elements.gameTable.animate({marginLeft: 0}, 'fast');
@@ -745,6 +750,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 		};
 		var hideCallback = function(event) {
 			ticker.stop();
+			if ($.cookies.test()) {
+				$.cookies.set('ToteScoretickerHidden', true);
+			}
 			ticker._elements.gameTable.animate({marginLeft: -ticker._elements.gameTable.outerWidth()}, 'fast', function() {
 				ticker._elements.containerDiv.hide('fast');
 				ticker._elements.bound.addClass('rounded-bottom');
@@ -768,7 +776,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		containerDiv.addClass(Tote.ScoreTicker.Ticker.CSSClasses.containerDiv);
 		containerDiv.addClass('subSection');
 		if (hidden) {
-			containerDiv.css('display', 'none');
+			containerDiv.hide();
 		}
 
 		var titleDiv = jQuery(document.createElement('div'));
@@ -790,6 +798,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		this._elements.containerDiv = containerDiv;
 
 		if (hidden) {
+			this._elements.bound.width(900);
 			gameTable.css('margin-left', -this._elements.bound.outerWidth());
 			this._elements.bound.addClass('rounded-bottom');
 		}
@@ -940,7 +949,13 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 var ticker = null;
 $(document).ready(function() {
+	var hidden = false;
+	if ($.cookies.test()) {
+		var ck = $.cookies.get('ToteScoretickerHidden');
+		if (ck !== null) {
+			hidden = ck;
+		}
+	}
 	ticker = new Tote.ScoreTicker.Ticker();
-	ticker.initialize($('#scoreTicker'));
-	ticker.start();
+	ticker.initialize($('#scoreTicker'), hidden);
 });

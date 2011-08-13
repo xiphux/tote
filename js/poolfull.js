@@ -164,14 +164,31 @@ function initLinksList() {
 	link.attr('id', 'lnkLinks');
 	var showText = 'Useful links...';
 	var hideText = 'Useful links';
-	link.text(showText);
-	link.addClass('linksClosed');
+	var visible = false;
+	if ($.cookies.test()) {
+		var ck = $.cookies.get('ToteLinksExpanded');
+		if (ck !== null) {
+			visible = ck;
+		}
+	}
+	if (visible) {
+		link.text(hideText);
+		link.addClass('linksOpen');
+		$('#linksList').show();
+	} else {
+		link.text(showText);
+		link.addClass('linksClosed');
+		$('#linksList').hide();
+	}
 	link.click(function() {
 		if ($('#linksList').is(':visible')) {
 			$('#linksList').hide('fast');
 			$(this).text(showText);
 			$(this).removeClass('linksOpen');
 			$(this).addClass('linksClosed');
+			if ($.cookies.test()) {
+				$.cookies.set('ToteLinksExpanded', false);
+			}
 		} else {
 			$('#linksList').show('fast', function() {
 				$('html,body').animate({scrollTop: $('body').attr('scrollHeight')}, 500);
@@ -179,6 +196,9 @@ function initLinksList() {
 			$(this).text(hideText);
 			$(this).removeClass('linksClosed');
 			$(this).addClass('linksOpen');
+			if ($.cookies.test()) {
+				$.cookies.set('ToteLinksExpanded', true);
+			}
 		}
 		return false;
 	});

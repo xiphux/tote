@@ -25,6 +25,7 @@
   </script>
   {/if}
   <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="js/ext/jquery.cookies.2.2.0.min.js"></script>
   {if $source == 'pool'}
 <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/pool.js"></script>
