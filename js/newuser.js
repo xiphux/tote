@@ -3,8 +3,8 @@ var oldPassword = "";
 function initGeneratePassword()
 {
 	$('#generateButton').click(function() {
-		var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		var numbers = '0123456789';
+		var letters = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+		var numbers = '23456789';
 
 		var pass = "";
 
