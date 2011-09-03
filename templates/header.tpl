@@ -51,7 +51,15 @@
   </script>
   {/if}
 
-  <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
+  {if $googlejs}
+    {if $smarty.server.HTTPS eq "1"}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    {else}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    {/if}
+  {else}
+    <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
+  {/if}
   <script type="text/javascript" src="js/ext/jquery.cookies.2.2.0.min.js"></script>
 
   {if $source == 'pool'}

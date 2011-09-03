@@ -93,3 +93,11 @@ $tote_conf['links'] = array(
  */
 $tote_conf['defaultstyle'] = 'Blue';
 
+/**
+ * googlejs
+ *
+ * use google libraries api to serve javascript libraries
+ * requires internet access
+ */
+$tote_conf['googlejs'] = false;
+
