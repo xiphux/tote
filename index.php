@@ -371,7 +371,6 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	default:
 		header("Cache-Control: no-cache, must-revalidate");
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-		header("Pragma: no-cache");
 		require_once(TOTE_CONTROLLERDIR . 'pool.inc.php');
 		display_pool(empty($_GET['p']) ? null : $_GET['p']);
 		break;
