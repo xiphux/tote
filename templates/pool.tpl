@@ -102,6 +102,8 @@
 
 {if !$mobile || $forcefull || (array_search($betweek,$mobileweeks) !== false)}
 <td>
+
+{if $bet}
 <span 
 {if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{/if}
 {if $bet.game}title="{$bet.game.away_team.abbreviation}{if $bet.game.away_score} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if $bet.game.home_score} {$bet.game.home_score}{/if}"{/if}
@@ -110,11 +112,15 @@
 {$bet.team.abbreviation}
 {elseif $bet.nopick}
 -NP-
-{elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
-<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Pick</a>
 {/if}
  {if $bet.spread}({$bet.spread}){/if}
 </span>
+{elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
+<span>
+<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Pick</a>
+</span>
+{/if}
+
 </td>
 {/if}
 
