@@ -194,10 +194,8 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 
 					$tpl->assign('user', $entrantuser);
 					$tpl->assign('bet', get_team($bet['team']));
-					if ($win)
-						$tpl->assign('win', true);
-					if ($loss)
-						$tpl->assign('loss', true);
+					$tpl->assign('win', $win);
+					$tpl->assign('loss', $loss);
 					$message = $tpl->fetch('notificationemail.tpl');
 					mail($entrantuser['email'], $subject, $message, $headers);
 				}
