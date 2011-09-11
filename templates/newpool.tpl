@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Add A New Pool' homelink=true}
+{include file='header.tpl' small=true header='Add A New Pool' homelink=true source='newpool'}
 
 {if $errors}
 <ul>

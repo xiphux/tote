@@ -102,6 +102,36 @@
     {else}
     <script type="text/javascript" src="js/editusers.js"></script>
     {/if}
+  {elseif $source == 'login'}
+    {if file_exists('js/login.min.js')}
+    <script type="text/javascript" src="js/login.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/login.js"></script>
+    {/if}
+  {elseif $source == 'recoverpass'}
+    {if file_exists('js/recoverpass.min.js')}
+    <script type="text/javascript" src="js/recoverpass.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/recoverpass.js"></script>
+    {/if}
+  {elseif $source == 'resetpass'}
+    {if file_exists('js/resetpass.min.js')}
+    <script type="text/javascript" src="js/resetpass.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/resetpass.js"></script>
+    {/if}
+  {elseif $source == 'newpool'}
+    {if file_exists('js/newpool.min.js')}
+    <script type="text/javascript" src="js/newpool.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/newpool.js"></script>
+    {/if}
+  {elseif $source == 'changepass'}
+    {if file_exists('js/changepass.min.js')}
+    <script type="text/javascript" src="js/changepass.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/changepass.js"></script>
+    {/if}
   {/if}
  {if $poolinfo}
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}" type="application/atom+xml" />

@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Recover Your Password' homelink=true}
+{include file='header.tpl' small=true header='Recover Your Password' homelink=true source='recoverpass'}
 
 <p>Enter the email address used for the account, and we'll email instructions for setting a new password.</p>
 
