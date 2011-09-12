@@ -37,7 +37,61 @@ function initBetConfirm()
 	});
 };
 
+function initTeamSchedules()
+{
+	var url = window.location.href.match(/^([^\?]+\/)/);
+        if (!url) {
+                return;
+        }
+	url = url[1];
+
+	var season = $('#poolSeason').text();
+	if (!season) {
+		return;
+	}
+
+	$('span.teamName').each(function()
+	{
+		var teamid = $(this).attr('id');
+		if (!teamid) {
+			return;
+		}
+
+		var teamName = $(this).attr('title');
+
+		$(this).qtip(
+		{
+			content: {
+				text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />',
+				ajax: {
+					url: 'index.php',
+					data: {
+						a: 'teamschedule',
+						t: teamid,
+						o: 'js'
+					},
+					type: 'GET'
+				},
+				title: {
+					text: teamName + ' Team Schedule',
+				}
+			},
+			style: {
+				classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
+			},
+			position: {
+				adjust: {
+					screen: true
+				},
+				my: 'left center',
+				at: 'right center'
+			}
+		});
+	});
+};
+
 $(document).ready(function() {
 	initTeamLinks();
 	initBetConfirm();
+	initTeamSchedules();
 });

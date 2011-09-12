@@ -366,6 +366,16 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		);
 		break;
 
+	// teamschedule - display the season schedule for a team
+	case 'teamschedule':
+		require_once(TOTE_CONTROLLERDIR . 'teamschedule.inc.php');
+		display_teamschedule(
+			(empty($_GET['y']) ? null : $_GET['y']),
+			(empty($_GET['t']) ? null : $_GET['t']),
+			(empty($_GET['o']) ? 'html' : $_GET['o'])
+		);
+		break;
+
 
 	// pool (default) - display a pool
 	default:

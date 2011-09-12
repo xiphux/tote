@@ -78,6 +78,7 @@
       {/if}
     {/if}
   {elseif $source == 'bet'}
+    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
     {if file_exists('js/bet.min.js')}
     <script type="text/javascript" src="js/bet.min.js"></script>
     {else}

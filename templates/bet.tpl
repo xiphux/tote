@@ -1,5 +1,7 @@
 {include file='header.tpl' source='bet' header='Make A Pick' homelink=true}
 
+<span id="poolSeason" style="display:none;">{$pool.season}</span>
+
 {if $bets}
 <p>
 Your other picks:
@@ -31,9 +33,9 @@ Games for week {$week}:
     {foreach from=$games item=game}
       <tr class="{cycle values=light,dark} {if $game.start->sec < $smarty.now}gamestarted{/if}">
 	{if $game.start->sec < $smarty.now}
-        <td>{$game.away_team.abbreviation} {$game.away_score} @ {$game.home_team.abbreviation} {$game.home_score}</td>
+        <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName">{$game.away_team.abbreviation}</span> {$game.away_score} @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName">{$game.home_team.abbreviation}</span> {$game.home_score}</td>
 	{else}
-        <td><span id="{$game.away_team._id}" class="teamName">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" class="teamName">{$game.home_team.abbreviation}</span></td>
+        <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName">{$game.home_team.abbreviation}</span></td>
 	{/if}
 	<td>{$game.localstart->format('D M j, Y g:i a T')}</td>
       </tr>
