@@ -106,7 +106,7 @@
 {if $bet}
 <span 
 {if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{/if}
-{if $bet.game}title="{$bet.game.away_team.abbreviation}{if $bet.game.away_score} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if $bet.game.home_score} {$bet.game.home_score}{/if}"{/if}
+{if $bet.game}title="{$bet.game.away_team.abbreviation}{if isset($bet.game.away_score)} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if isset($bet.game.home_score)} {$bet.game.home_score}{/if}"{/if}
 >
 {if $bet.team.abbreviation}
 {$bet.team.abbreviation}
