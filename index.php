@@ -372,7 +372,8 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		display_teamschedule(
 			(empty($_GET['y']) ? null : $_GET['y']),
 			(empty($_GET['t']) ? null : $_GET['t']),
-			(empty($_GET['o']) ? 'html' : $_GET['o'])
+			(empty($_GET['o']) ? 'html' : $_GET['o']),
+			(empty($_GET['w']) ? null : $_GET['w'])
 		);
 		break;
 

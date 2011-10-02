@@ -50,6 +50,8 @@ function initTeamSchedules()
 		return;
 	}
 
+	var week = $('input[name="w"]').val();
+
 	$('span.teamName').each(function()
 	{
 		var teamid = $(this).attr('id');
@@ -68,7 +70,8 @@ function initTeamSchedules()
 					data: {
 						a: 'teamschedule',
 						t: teamid,
-						o: 'js'
+						o: 'js',
+						w: week
 					},
 					type: 'GET'
 				},

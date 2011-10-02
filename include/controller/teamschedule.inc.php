@@ -18,7 +18,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  * @param string $team team id
  * @param string $output output format
  */
-function display_teamschedule($season, $team, $output = 'html')
+function display_teamschedule($season, $team, $output = 'html', $week = null)
 {
 	global $tpl;
 
@@ -71,6 +71,8 @@ function display_teamschedule($season, $team, $output = 'html')
 	$tpl->assign('team', get_team($team));
 	$tpl->assign('year', $season);
 	$tpl->assign('games', $teamgames);
+	if (!empty($week))
+		$tpl->assign('week', $week);
 
 	if ($output == 'js')
 		$tpl->assign('js', true);

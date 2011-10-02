@@ -180,6 +180,10 @@ div.userOpts table td {
 	color: darkgray;
 }
 
+.currentgame {
+	font-weight: bold;
+}
+
 .betTable {
 	margin: 0px auto;
 }
