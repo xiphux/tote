@@ -134,6 +134,15 @@
     <script type="text/javascript" src="js/changepass.js"></script>
     {/if}
   {/if}
+
+  {if $mobile}
+    {if file_exists('js/mobile.min.js')}
+    <script type="text/javascript" src="js/mobile.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/mobile.js"></script>
+    {/if}
+  {/if}
+
  {if $poolinfo}
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}" type="application/atom+xml" />
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (RSS)" href="{$SCRIPT_NAME}?a=rss&p={$pool._id}" type="application/rss+xml" />
