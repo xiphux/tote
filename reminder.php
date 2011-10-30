@@ -42,6 +42,7 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 
 	$users = get_collection(TOTE_COLLECTION_USERS);
 	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$pools = get_collection(TOTE_COLLECTION_POOLS);
 
 	// find all users...
 	$reminderusers = $users->find(
@@ -58,6 +59,26 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 	if ((int)date('n') < 2) {
 		// January is part of the previous year's season
 		$year--;
+	}
+
+	// find pools for this season
+	$seasonpools = $pools->find(
+		array(
+			'season' => $year
+		),
+		array('entries')
+	);
+
+	// find users active in this season's pools
+	$activeentrants = array();
+	foreach ($reminderusers as $user) {
+		foreach ($seasonpools as $pool) {
+			foreach ($pool['entries'] as $entrant) {
+				if (isset($entrant['user'])) {
+					$activeentrants[(string)$entrant['user']] = true;
+				}
+			}
+		}
 	}
 
 	// Find the number of weeks in the season
@@ -106,6 +127,12 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 
 		// now process all users that want reminders
 		foreach ($reminderusers as $user) {
+
+			$userid = (string)$user['_id'];
+			if (!(isset($activeentrants[$userid]) && ($activeentrants[$userid] == true))) {
+				// user not in a pool this season
+				continue;
+			}
 
 			if ((time() + (int)$user['remindertime']) < $firstgame['start']->sec) {
 				// too early - haven't reached user's reminder time yet
