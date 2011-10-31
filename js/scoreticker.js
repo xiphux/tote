@@ -890,6 +890,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 		var bpPanel = jQuery(document.createElement('div'));
 		bpPanel.width(0);
+		bpPanel.css('opacity', 0);
 		bpPanel.css('z-index', 5);
 		bpPanel.css('position', 'absolute');
 		bpPanel.addClass('tickerBigPlay');
@@ -1088,27 +1089,24 @@ Tote.ScoreTicker.Ticker.prototype = {
 					var gameElem = this._gameObjects[gsis].get_element();
 					var pos = gameElem.position();
 					var bpPos = pos.left;
-					var anim = null;
+					var anim = {
+						width: '100px',
+						opacity: 1
+					};
 					if (idx < half) {
-						anim = {
-							width: '100px'
-						};
 						bpPos += gameElem.width();
 					} else {
-						anim = {
-							width: '100px',
-							left: (bpPos - 100) + "px"
-						};
+						anim.left = (bpPos - 100) + "px";
 					}
 					this._elements.bigPlay.css('left', bpPos + "px");
 					this._elements.bigPlay.css('top', pos.top + "px");
 					this._elements.bigPlay.height(this._elements.gameTable.height());
-					this._elements.bigPlay.text(bpObj.get_team() + ": " + bpObj.get_message());
-					this._elements.bigPlay.animate(anim, 'fast');
+					this._elements.bigPlay.html(bpObj.get_team() + "<br />" + bpObj.get_message());
+					this._elements.bigPlay.animate(anim, 400);
 					if (idx < half) {
-						window.setTimeout($.proxy(function() { this._bigPlayFinished(false); }, this), 5000);
+						window.setTimeout($.proxy(function() { this._bigPlayFinished(false); }, this), 10000);
 					} else {
-						window.setTimeout($.proxy(function() { this._bigPlayFinished(true); }, this), 5000);
+						window.setTimeout($.proxy(function() { this._bigPlayFinished(true); }, this), 10000);
 					}
 					return;
 				}
@@ -1118,11 +1116,14 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 	_bigPlayFinished: function(left)
 	{
-		var anim = { width: '0px' };
+		var anim = {
+			width: '0px',
+			opacity: 0
+		};
 		if (left) {
 			anim.left = (this._elements.bigPlay.position().left + 100) + "px";
 		}
-		this._elements.bigPlay.animate(anim, 'fast');
+		this._elements.bigPlay.animate(anim, 400);
 		if (this._bigPlayQueue.length > 0) {
 			this._bigPlayQueue.shift();
 		}
