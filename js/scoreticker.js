@@ -890,10 +890,18 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 		var bpPanel = jQuery(document.createElement('div'));
 		bpPanel.width(0);
-		bpPanel.css('opacity', 0);
+		bpPanel.css('opacity', 0.25);
 		bpPanel.css('z-index', 5);
 		bpPanel.css('position', 'absolute');
+		bpPanel.css('overflow', 'hidden');
 		bpPanel.addClass('tickerBigPlay');
+
+		var bpContent = jQuery(document.createElement('div'));
+		bpContent.width(100);
+		bpContent.css('height', '100%');
+		bpContent.addClass('tickerBigPlayContent');
+		bpPanel.append(bpContent);
+
 		containerDiv.append(bpPanel);
 
 		this._elements.bigPlay = bpPanel;
@@ -1101,7 +1109,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 					this._elements.bigPlay.css('left', bpPos + "px");
 					this._elements.bigPlay.css('top', pos.top + "px");
 					this._elements.bigPlay.height(this._elements.gameTable.height());
-					this._elements.bigPlay.html(bpObj.get_team() + "<br />" + bpObj.get_message());
+					this._elements.bigPlay.find('.tickerBigPlayContent').html(bpObj.get_team() + "<br />" + bpObj.get_message());
 					this._elements.bigPlay.animate(anim, 400);
 					if (idx < half) {
 						window.setTimeout($.proxy(function() { this._bigPlayFinished(false); }, this), 10000);
@@ -1118,7 +1126,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 	{
 		var anim = {
 			width: '0px',
-			opacity: 0
+			opacity: 0.25
 		};
 		if (left) {
 			anim.left = (this._elements.bigPlay.position().left + 100) + "px";
