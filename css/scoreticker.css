@@ -105,3 +105,11 @@
 	background-color: PowderBlue !important;
 }
 
+.tickerBigPlay {
+	background-color: PowderBlue;
+	overflow: hidden;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	color: DarkBlue;
+	font-weight: bold;
+}

@@ -4,6 +4,94 @@ Tote = {
 Tote.ScoreTicker = {
 };
 
+Tote.ScoreTicker.BigPlay = function()
+{
+	this._data = {
+		eid: null,
+		gsis: null,
+		id: null,
+		team: null,
+		message: null
+	};
+};
+
+Tote.ScoreTicker.BigPlay.prototype = {
+
+	get_eid: function()
+	{
+		return this._data.eid;
+	},
+
+	set_eid: function(eid)
+	{
+		this._data.eid = eid;
+	},
+
+	get_gsis: function()
+	{
+		return this._data.gsis;
+	},
+
+	set_gsis: function(gsis)
+	{
+		this._data.gsis = gsis;
+	},
+
+	get_id: function()
+	{
+		return this._data.id;
+	},
+
+	set_id: function(id)
+	{
+		this._data.id = id;
+	},
+
+	get_team: function()
+	{
+		return this._data.team;
+	},
+
+	set_team: function(team)
+	{
+		this._data.team = team;
+	},
+
+	get_message: function()
+	{
+		return this._data.message;
+	},
+
+	set_message: function(msg)
+	{
+		this._data.message = msg;
+	},
+
+	set_data: function(data)
+	{
+		for (var prop in data) {
+			switch (prop) {
+				case 'eid':
+					this.set_eid(data.eid);
+					break;
+				case 'gsis':
+					this.set_gsis(data.gsis);
+					break;
+				case 'id':
+					this.set_id(data.id);
+					break;
+				case 'team':
+					this.set_team(data.team);
+					break;
+				case 'message':
+					this.set_message(data.message);
+					break;
+			}
+		}
+	}
+
+};
+
 Tote.ScoreTicker.Game = function()
 {
 	this._data = {
@@ -664,10 +752,14 @@ Tote.ScoreTicker.Ticker = function()
 		toggleLink: null,
 		titleDiv: null,
 		gameTable: null,
-		gameRow: null
+		gameRow: null,
+		bigPlay: null
 	};
 
 	this._gameObjects = {};
+
+	this._displayedBigPlays = [];
+	this._bigPlayQueue = [];
 };
 
 Tote.ScoreTicker.Ticker.CSSClasses = {
@@ -795,6 +887,15 @@ Tote.ScoreTicker.Ticker.prototype = {
 		gameTable.append(row);
 
 		containerDiv.append(gameTable);
+
+		var bpPanel = jQuery(document.createElement('div'));
+		bpPanel.width(0);
+		bpPanel.css('z-index', 5);
+		bpPanel.css('position', 'absolute');
+		bpPanel.addClass('tickerBigPlay');
+		containerDiv.append(bpPanel);
+
+		this._elements.bigPlay = bpPanel;
 		this._elements.gameTable = gameTable;
 		this._elements.gameRow = row;
 
@@ -820,6 +921,10 @@ Tote.ScoreTicker.Ticker.prototype = {
 		this._updateTitle(gms.attr('y'), gms.attr('w'), gms.attr('t'));
 
 		this._updateGameTiles(gms);
+
+		var bps = $(xml).find('bps');
+
+		this._updateBigPlays(bps);
 
 		this._elements.bound.width(this._elements.gameTable.width() + 4);
 
@@ -901,6 +1006,129 @@ Tote.ScoreTicker.Ticker.prototype = {
 				$(this).parent().remove();
 			}
 		});
+	},
+
+	_updateBigPlays: function(bigPlayList)
+	{
+		if (!bigPlayList) {
+			return;
+		}
+
+		var bps = bigPlayList.find('b');
+		if (bps.size() < 1) {
+			return;
+		}
+
+		var startBigPlays = false;
+
+		if (this._bigPlayQueue.length < 1) {
+			startBigPlays = true;
+		}
+
+		var added = false;
+		var ticker = this;
+
+		bps.each(function() {
+			var b = $(this);
+
+			var id = b.attr('id');
+			if (!id) {
+				return;
+			}
+
+			if (ticker._displayedBigPlays[id]) {
+				return;
+			}
+
+			ticker._displayedBigPlays[id] = true;
+
+			var bpObj = new Tote.ScoreTicker.BigPlay();
+			bpObj.set_data({
+				id: id,
+				gsis: b.attr('gsis'),
+				eid: b.attr('eid'),
+				team: b.attr('abbr'),
+				message: b.attr('x')
+			});
+
+			ticker._bigPlayQueue.push(bpObj);
+			added = true;
+
+		});
+
+		if (startBigPlays && added) {
+			this._showNextBigPlay();
+		}
+	},
+
+	_showNextBigPlay: function()
+	{
+		if (this._bigPlayQueue.length < 1) {
+			return;
+		}
+
+		var bpObj = this._bigPlayQueue[0];
+		if (!bpObj) {
+			return;
+		}
+
+		var count = 0;
+		for (var gsis in this._gameObjects) {
+			if (this._gameObjects.hasOwnProperty(gsis)) {
+				count++;
+			}
+		}
+		var half = Math.ceil(count/2);
+		var idx = 0;
+
+		for (var gsis in this._gameObjects) {
+			if (this._gameObjects[gsis]) {
+				idx++;
+				if (gsis == bpObj.get_gsis()) {
+					var gameElem = this._gameObjects[gsis].get_element();
+					var pos = gameElem.position();
+					var bpPos = pos.left;
+					var anim = null;
+					if (idx < half) {
+						anim = {
+							width: '100px'
+						};
+						bpPos += gameElem.width();
+					} else {
+						anim = {
+							width: '100px',
+							left: (bpPos - 100) + "px"
+						};
+					}
+					this._elements.bigPlay.css('left', bpPos + "px");
+					this._elements.bigPlay.css('top', pos.top + "px");
+					this._elements.bigPlay.height(this._elements.gameTable.height());
+					this._elements.bigPlay.text(bpObj.get_team() + ": " + bpObj.get_message());
+					this._elements.bigPlay.animate(anim, 'fast');
+					if (idx < half) {
+						window.setTimeout($.proxy(function() { this._bigPlayFinished(false); }, this), 5000);
+					} else {
+						window.setTimeout($.proxy(function() { this._bigPlayFinished(true); }, this), 5000);
+					}
+					return;
+				}
+			}
+		}
+	},
+
+	_bigPlayFinished: function(left)
+	{
+		var anim = { width: '0px' };
+		if (left) {
+			anim.left = (this._elements.bigPlay.position().left + 100) + "px";
+		}
+		this._elements.bigPlay.animate(anim, 'fast');
+		if (this._bigPlayQueue.length > 0) {
+			this._bigPlayQueue.shift();
+		}
+		if (this._bigPlayQueue.length > 0) {
+			this._showNextBigPlay();
+		}
 	},
 
 	_hasActiveGames: function()
