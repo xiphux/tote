@@ -791,7 +791,7 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 		this._elements.content = content;
 	},
 
-	show: function()
+	show: function(afterShow)
 	{
 		if (this._data.shown) {
 			return;
@@ -806,12 +806,16 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 			anim.left = (this.get_left() - 100) + 'px';
 		}
 
-		this._elements.tile.animate(anim, this._data.animationSpeed);
+		this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
+			if (afterShow) {
+				afterShow();
+			}
+		});
 
 		this._data.shown = true;
 	},
 
-	hide: function()
+	hide: function(afterHide)
 	{
 		if (!this._data.shown) {
 			return;
@@ -826,9 +830,18 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 			anim.left = (this.get_left() + 100) + 'px';
 		}
 
-		this._elements.tile.animate(anim, this._data.animationSpeed);
+		this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
+			if (afterHide) {
+				afterHide();
+			}
+		});
 
 		this._data.shown = false;
+	},
+
+	is_showing: function()
+	{
+		return this._data.shown;
 	},
 
 	get_team: function()
@@ -1056,13 +1069,20 @@ Tote.ScoreTicker.Ticker.prototype = {
 				exp.setDate(exp.getDate() + 365);
 				$.cookies.set('ToteScoretickerHidden', true, {expiresAt: exp});
 			}
-			ticker._elements.gameTable.animate({marginLeft: -ticker._elements.gameTable.outerWidth()}, 'fast', function() {
-				ticker._elements.containerDiv.hide('fast');
-				ticker._elements.bound.addClass('rounded-bottom');
-				ticker._elements.toggleLink.text(Tote.ScoreTicker.Ticker.Labels.showLink);
-				ticker._elements.toggleLink.removeClass(Tote.ScoreTicker.Ticker.CSSClasses.open);
-				ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
-			});
+			var animateHide = function() {
+				ticker._elements.gameTable.animate({marginLeft: -ticker._elements.gameTable.outerWidth()}, 'fast', function() {
+					ticker._elements.containerDiv.hide('fast');
+					ticker._elements.bound.addClass('rounded-bottom');
+					ticker._elements.toggleLink.text(Tote.ScoreTicker.Ticker.Labels.showLink);
+					ticker._elements.toggleLink.removeClass(Tote.ScoreTicker.Ticker.CSSClasses.open);
+					ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
+				});
+			}
+			if (ticker._bigPlayPopup.is_showing()) {
+				ticker._bigPlayPopup.hide(animateHide);
+			} else {
+				animateHide();
+			}
 			return false;
 		};
 		if (hidden) {
