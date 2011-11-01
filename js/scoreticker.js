@@ -1160,7 +1160,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var bps = $(xml).find('bps');
 
 		this._updateBigPlays(bps);
-		if (this._showBigPlays) {
+		if (this._showBigPlays && !this._bigPlayPopup.is_showing()) {
 			this._showNextBigPlay();
 		}
 
@@ -1310,6 +1310,8 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var half = Math.ceil(count/2);
 		var idx = 0;
 
+		var ticker = this;
+
 		for (var gsis in this._gameObjects) {
 			if (this._gameObjects[gsis]) {
 				idx++;
@@ -1325,8 +1327,9 @@ Tote.ScoreTicker.Ticker.prototype = {
 						top: pos.top,
 						left: (idx >= half) ? pos.left : (pos.left + gameElem.width())
 					});
-					this._bigPlayPopup.show();
-					window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, this), 10000);
+					this._bigPlayPopup.show(function() {
+						window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, ticker), 10000);
+					});
 					return;
 				}
 			}
@@ -1335,13 +1338,15 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 	_bigPlayFinished: function()
 	{
-		this._bigPlayPopup.hide();
-		if (this._bigPlayQueue.length > 0) {
-			this._bigPlayQueue.shift();
-		}
-		if ((this._bigPlayQueue.length > 0) && this._started) {
-			this._showNextBigPlay();
-		}
+		var ticker = this;
+		this._bigPlayPopup.hide(function() {
+			if (ticker._bigPlayQueue.length > 0) {
+				ticker._bigPlayQueue.shift();
+			}
+			if ((ticker._bigPlayQueue.length > 0) && ticker._started) {
+				ticker._showNextBigPlay();
+			}
+		});
 	},
 
 	_hasActiveGames: function()
