@@ -1137,6 +1137,10 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 	_updateSuccess: function(xml)
 	{
+		if (!this._started) {
+			return;
+		}
+
 		var gms = $(xml).find('gms');
 		
 		this._updateTitle(gms.attr('y'), gms.attr('w'), gms.attr('t'));
@@ -1153,6 +1157,10 @@ Tote.ScoreTicker.Ticker.prototype = {
 			this.set_delay(15);
 		} else {
 			this.set_delay(300);
+		}
+
+		if (this._started) {
+			this._timerId = window.setTimeout($.proxy(function() { this._update(); }, this), this._delay * 1000);
 		}
 	},
 
@@ -1277,7 +1285,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 		});
 
-		if (startBigPlays && added) {
+		if (startBigPlays && added && this._started) {
 			this._showNextBigPlay();
 		}
 	},
@@ -1331,7 +1339,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		if (this._bigPlayQueue.length > 0) {
 			this._bigPlayQueue.shift();
 		}
-		if (this._bigPlayQueue.length > 0) {
+		if ((this._bigPlayQueue.length > 0) && this._started) {
 			this._showNextBigPlay();
 		}
 	},
@@ -1363,17 +1371,18 @@ Tote.ScoreTicker.Ticker.prototype = {
 	},
 
 	start: function() {
-		this._started = true;
-		if (!this._timerId) {
-			this._update();
-			this._timerId = window.setInterval($.proxy(function() { this._update(); }, this), this._delay * 1000);
+		if (this._started) {
+			return;
 		}
+
+		this._started = true;
+		this._update();
 	},
 
 	stop: function() {
 		this._started = false;
 		if (this._timerId) {
-			window.clearInterval(this._timerId);
+			window.clearTimeout(this._timerId);
 			this._timerId = null;
 		}
 	},
