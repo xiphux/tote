@@ -743,6 +743,210 @@ Tote.ScoreTicker.Game.prototype = {
 
 };
 
+Tote.ScoreTicker.BigPlayPopup = function()
+{
+	this._data = {
+		team: null,
+		message: null,
+		animationSpeed: 400,
+		shown: false,
+		reverse: false
+	};
+	this._elements = {
+		tile: null,
+		content: null
+	};
+};
+
+Tote.ScoreTicker.BigPlayPopup.CSSClasses = {
+	bigPlay: 'tickerBigPlay',
+	bigPlayContent: 'tickerBigPlayContent'
+};
+
+Tote.ScoreTicker.BigPlayPopup.prototype = {
+
+	initialize: function()
+	{
+		this._buildElement();
+	},
+
+	_buildElement: function()
+	{
+		var tile = jQuery(document.createElement('div'));
+		tile.width(0);
+		tile.css('opacity', 0.25);
+		tile.css('z-index', 5);
+		tile.css('position', 'absolute');
+		tile.css('overflow', 'hidden');
+		tile.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlay);
+
+		var content = jQuery(document.createElement('div'));
+		content.width(100);
+		content.css('height', '100%');
+		content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayContent);
+
+		tile.append(content);
+
+		this._elements.tile = tile;
+		this._elements.content = content;
+	},
+
+	show: function()
+	{
+		if (this._data.shown) {
+			return;
+		}
+
+		var anim = {
+			width: '100px',
+			opacity: 1
+		};
+
+		if (this._data.reverse) {
+			anim.left = (this.get_left() - 100) + 'px';
+		}
+
+		this._elements.tile.animate(anim, this._data.animationSpeed);
+
+		this._data.shown = true;
+	},
+
+	hide: function()
+	{
+		if (!this._data.shown) {
+			return;
+		}
+
+		var anim = {
+			width: '0px',
+			opacity: 0.25
+		};
+
+		if (this._data.reverse) {
+			anim.left = (this.get_left() + 100) + 'px';
+		}
+
+		this._elements.tile.animate(anim, this._data.animationSpeed);
+
+		this._data.shown = false;
+	},
+
+	get_team: function()
+	{
+		return this._data.team;
+	},
+
+	set_team: function(team)
+	{
+		this._data.team = team;
+		this._updateContent();
+	},
+
+	get_message: function()
+	{
+		return this._data.message;
+	},
+
+	set_message: function(message)
+	{
+		this._data.message = message;
+		this._updateContent();
+	},
+
+	get_reverse: function()
+	{
+		return this._data.reverse;
+	},
+
+	set_reverse: function(reverse)
+	{
+		if (this._data.shown) {
+			return;
+		}
+		this._data.reverse = reverse;
+	},
+
+	get_height: function()
+	{
+		return this._elements.tile.height();
+	},
+
+	set_height: function(height)
+	{
+		this._elements.tile.height(height);
+	},
+
+	get_left: function()
+	{
+		return this._elements.tile.position().left;
+	},
+
+	set_left: function(left)
+	{
+		this._elements.tile.css('left', left + "px");
+	},
+
+	get_top: function()
+	{
+		return this._elements.tile.position().top;
+	},
+
+	set_top: function(t)
+	{
+		this._elements.tile.css('top', t + "px");
+	},
+
+	get_animationSpeed: function()
+	{
+		return this._data.animationSpeed;
+	},
+
+	set_animationSpeed: function(animationSpeed)
+	{
+		this._data.animationSpeed = animationSpeed;
+	},
+
+	set_data: function(data)
+	{
+		for (var prop in data) {
+			switch (prop) {
+				case 'team':
+					this.set_team(data.team);
+					break;
+				case 'message':
+					this.set_message(data.message);
+					break;
+				case 'reverse':
+					this.set_reverse(data.reverse);
+					break;
+				case 'height':
+					this.set_height(data.height);
+					break;
+				case 'left':
+					this.set_left(data.left);
+					break;
+				case 'top':
+					this.set_top(data.top);
+					break;
+				case 'animationSpeed':
+					this.set_animationSpeed(data.animationSpeed);
+					break;
+			}
+		}
+	},
+
+	get_element: function()
+	{
+		return this._elements.tile;
+	},
+
+	_updateContent: function()
+	{
+		this._elements.content.html(this._data.team + "<br />" + this._data.message);
+	}
+
+};
+
 Tote.ScoreTicker.Ticker = function()
 {
 	this._elements = {
@@ -752,11 +956,12 @@ Tote.ScoreTicker.Ticker = function()
 		toggleLink: null,
 		titleDiv: null,
 		gameTable: null,
-		gameRow: null,
-		bigPlay: null
+		gameRow: null
 	};
 
 	this._gameObjects = {};
+
+	this._bigPlayPopup = null;
 
 	this._displayedBigPlays = [];
 	this._bigPlayQueue = [];
@@ -805,6 +1010,8 @@ Tote.ScoreTicker.Ticker.prototype = {
 		//	this._initUI(hidden);
 		//	this._update();
 		//}, this), 'xml');
+		this._bigPlayPopup = new Tote.ScoreTicker.BigPlayPopup();
+		this._bigPlayPopup.initialize();
 		this._initUI(hidden);
 		if (!hidden) {
 			this.start();
@@ -888,23 +1095,8 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 		containerDiv.append(gameTable);
 
-		var bpPanel = jQuery(document.createElement('div'));
-		bpPanel.width(0);
-		bpPanel.css('opacity', 0.25);
-		bpPanel.css('z-index', 5);
-		bpPanel.css('position', 'absolute');
-		bpPanel.css('overflow', 'hidden');
-		bpPanel.addClass('tickerBigPlay');
+		containerDiv.append(this._bigPlayPopup.get_element());
 
-		var bpContent = jQuery(document.createElement('div'));
-		bpContent.width(100);
-		bpContent.css('height', '100%');
-		bpContent.addClass('tickerBigPlayContent');
-		bpPanel.append(bpContent);
-
-		containerDiv.append(bpPanel);
-
-		this._elements.bigPlay = bpPanel;
 		this._elements.gameTable = gameTable;
 		this._elements.gameRow = row;
 
@@ -1097,41 +1289,25 @@ Tote.ScoreTicker.Ticker.prototype = {
 					var gameElem = this._gameObjects[gsis].get_element();
 					var pos = gameElem.position();
 					var bpPos = pos.left;
-					var anim = {
-						width: '100px',
-						opacity: 1
-					};
-					if (idx < half) {
-						bpPos += gameElem.width();
-					} else {
-						anim.left = (bpPos - 100) + "px";
-					}
-					this._elements.bigPlay.css('left', bpPos + "px");
-					this._elements.bigPlay.css('top', pos.top + "px");
-					this._elements.bigPlay.height(this._elements.gameTable.height());
-					this._elements.bigPlay.find('.tickerBigPlayContent').html(bpObj.get_team() + "<br />" + bpObj.get_message());
-					this._elements.bigPlay.animate(anim, 400);
-					if (idx < half) {
-						window.setTimeout($.proxy(function() { this._bigPlayFinished(false); }, this), 10000);
-					} else {
-						window.setTimeout($.proxy(function() { this._bigPlayFinished(true); }, this), 10000);
-					}
+					this._bigPlayPopup.set_data({
+						team: bpObj.get_team(),
+						message: bpObj.get_message(),
+						reverse: (idx >= half),
+						height: this._elements.gameTable.height(),
+						top: pos.top,
+						left: (idx >= half) ? pos.left : (pos.left + gameElem.width())
+					});
+					this._bigPlayPopup.show();
+					window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, this), 10000);
 					return;
 				}
 			}
 		}
 	},
 
-	_bigPlayFinished: function(left)
+	_bigPlayFinished: function()
 	{
-		var anim = {
-			width: '0px',
-			opacity: 0.25
-		};
-		if (left) {
-			anim.left = (this._elements.bigPlay.position().left + 100) + "px";
-		}
-		this._elements.bigPlay.animate(anim, 400);
+		this._bigPlayPopup.hide();
 		if (this._bigPlayQueue.length > 0) {
 			this._bigPlayQueue.shift();
 		}
