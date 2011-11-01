@@ -1,4 +1,4 @@
-Tote = {
+var Tote = {
 };
 
 Tote.ScoreTicker = {
@@ -70,22 +70,24 @@ Tote.ScoreTicker.BigPlay.prototype = {
 	set_data: function(data)
 	{
 		for (var prop in data) {
-			switch (prop) {
-				case 'eid':
-					this.set_eid(data.eid);
-					break;
-				case 'gsis':
-					this.set_gsis(data.gsis);
-					break;
-				case 'id':
-					this.set_id(data.id);
-					break;
-				case 'team':
-					this.set_team(data.team);
-					break;
-				case 'message':
-					this.set_message(data.message);
-					break;
+			if (data.hasOwnProperty(prop)) {
+				switch (prop) {
+					case 'eid':
+						this.set_eid(data.eid);
+						break;
+					case 'gsis':
+						this.set_gsis(data.gsis);
+						break;
+					case 'id':
+						this.set_id(data.id);
+						break;
+					case 'team':
+						this.set_team(data.team);
+						break;
+					case 'message':
+						this.set_message(data.message);
+						break;
+				}
 			}
 		}
 	}
@@ -174,7 +176,7 @@ Tote.ScoreTicker.Game.prototype = {
 		var visitorPossessionCell = jQuery(document.createElement('td'));
 		this._elements.visitorPossessionCell = visitorPossessionCell;
 		visitorPossessionCell.addClass(Tote.ScoreTicker.Game.CSSClasses.possession);
-		if (this.is_playing() && (this._data.possession == this._data.visitor)) {
+		if (this.is_playing() && (this._data.possession === this._data.visitor)) {
 			visitorPossessionCell.text('<');
 		}
 		visitorRow.append(visitorPossessionCell);
@@ -182,7 +184,7 @@ Tote.ScoreTicker.Game.prototype = {
 		var visitorScoreCell = jQuery(document.createElement('td'));
 		this._elements.visitorScoreCell = visitorScoreCell;
 		visitorScoreCell.addClass(Tote.ScoreTicker.Game.CSSClasses.score);
-		if (this._data.quarter != 'P') {
+		if (this._data.quarter !== 'P') {
 			visitorScoreCell.text(this._data.visitorScore);
 		}
 		visitorRow.append(visitorScoreCell);
@@ -201,7 +203,7 @@ Tote.ScoreTicker.Game.prototype = {
 		var homePossessionCell = jQuery(document.createElement('td'));
 		this._elements.homePossessionCell = homePossessionCell;
 		homePossessionCell.addClass(Tote.ScoreTicker.Game.CSSClasses.possession);
-		if (this.is_playing() && (this._data.possession == this._data.home)) {
+		if (this.is_playing() && (this._data.possession === this._data.home)) {
 			homePossessionCell.text('<');
 		}
 		homeRow.append(homePossessionCell);
@@ -209,7 +211,7 @@ Tote.ScoreTicker.Game.prototype = {
 		var homeScoreCell = jQuery(document.createElement('td'));
 		this._elements.homeScoreCell = homeScoreCell;
 		homeScoreCell.addClass(Tote.ScoreTicker.Game.CSSClasses.score);
-		if (this._data.quarter != 'P') {
+		if (this._data.quarter !== 'P') {
 			homeScoreCell.text(this._data.homeScore);
 		}
 		homeRow.append(homeScoreCell);
@@ -295,7 +297,7 @@ Tote.ScoreTicker.Game.prototype = {
 		var visitorwin = false;
 		var homewin = false;
 
-		if ((this._data.quarter == 'F') || (this._data.quarter == 'FO')) {
+		if ((this._data.quarter === 'F') || (this._data.quarter === 'FO')) {
 			var vs = this._data.visitorScore * 1;
 			var hs = this._data.homeScore * 1;
 			if (hs > vs) {
@@ -364,7 +366,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_year: function(year)
 	{
-		if (this._data.year == year) {
+		if (this._data.year === year) {
 			return;
 		}
 
@@ -382,7 +384,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_seasonType: function(type)
 	{
-		if (this._data.seasonType == type) {
+		if (this._data.seasonType === type) {
 			return;
 		}
 
@@ -400,7 +402,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_week: function(week)
 	{
-		if (this._data.week == week) {
+		if (this._data.week === week) {
 			return;
 		}
 
@@ -433,7 +435,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_eid: function(eid)
 	{
-		if (this._data.eid == eid) {
+		if (this._data.eid === eid) {
 			return;
 		}
 
@@ -453,18 +455,18 @@ Tote.ScoreTicker.Game.prototype = {
 	{
 		var changed = false;
 
-		if (this._data.day != day) {
+		if (this._data.day !== day) {
 			this._data.day = day;
 			changed = true;
 		}
 
-		if (this._data.time != time) {
+		if (this._data.time !== time) {
 			this._data.time = time;
 			changed = true;
 		}
 
 		if (changed && this._initialized) {
-			if (this._data.quarter == 'P') {
+			if (this._data.quarter === 'P') {
 				this._elements.statusCell.text(this._buildStatus());
 			}
 		}
@@ -477,7 +479,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_visitor: function(visitor)
 	{
-		if (this._data.visitor == visitor) {
+		if (this._data.visitor === visitor) {
 			return;
 		}
 
@@ -495,7 +497,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_visitorNickname: function(nick)
 	{
-		if (this._data.visitorNickname == nick) {
+		if (this._data.visitorNickname === nick) {
 			return;
 		}
 
@@ -513,7 +515,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_home: function(home)
 	{
-		if (this._data.home == home) {
+		if (this._data.home === home) {
 			return;
 		}
 
@@ -531,7 +533,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_homeNickname: function(nick)
 	{
-		if (this._data.homeNickname == nick) {
+		if (this._data.homeNickname === nick) {
 			return;
 		}
 
@@ -556,9 +558,9 @@ Tote.ScoreTicker.Game.prototype = {
 		this._data.homeScore = score;
 
 		if (this._initialized) {
-			if (this._data.quarter != 'P') {
+			if (this._data.quarter !== 'P') {
 				this._elements.homeScoreCell.text(score);
-				if ((this._data.quarter == 'F') || (this._data.quarter == 'FO')) {
+				if ((this._data.quarter === 'F') || (this._data.quarter === 'FO')) {
 					this._updateWinner();
 				}
 			} else {
@@ -581,9 +583,9 @@ Tote.ScoreTicker.Game.prototype = {
 		this._data.visitorScore = score;
 
 		if (this._initialized) {
-			if (this._data.quarter != 'P') {
+			if (this._data.quarter !== 'P') {
 				this._elements.visitorScoreCell.text(score);
-				if ((this._data.quarter == 'F') || (this._data.quarter == 'FO')) {
+				if ((this._data.quarter === 'F') || (this._data.quarter === 'FO')) {
 					this._updateWinner();
 				}
 			} else {
@@ -599,7 +601,7 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_redZone: function(redZone)
 	{
-		if (this._data.redZone == redZone) {
+		if (this._data.redZone === redZone) {
 			return;
 		}
 
@@ -624,12 +626,12 @@ Tote.ScoreTicker.Game.prototype = {
 		var quarterchanged = false;
 		var clockchanged = false;
 
-		if (this._data.quarter != quarter) {
+		if (this._data.quarter !== quarter) {
 			this._data.quarter = quarter;
 			quarterchanged = true;
 		}
 
-		if (this._data.clock != clock) {
+		if (this._data.clock !== clock) {
 			this._data.clock = clock;
 			clockchanged = true;
 		}
@@ -649,20 +651,20 @@ Tote.ScoreTicker.Game.prototype = {
 
 	set_possession: function(possession)
 	{
-		if (this._data.possession == possession) {
+		if (this._data.possession === possession) {
 			return;
 		}
 
 		this._data.possession = possession;
 
 		if (this._initialized) {
-			if (this.is_playing() && (possession == this._data.visitor)) {
+			if (this.is_playing() && (possession === this._data.visitor)) {
 				this._elements.visitorPossessionCell.text('<');
 			} else {
 				this._elements.visitorPossessionCell.text('');
 			}
 
-			if (this.is_playing() && (possession == this._data.home)) {
+			if (this.is_playing() && (possession === this._data.home)) {
 				this._elements.homePossessionCell.text('<');
 			} else {
 				this._elements.homePossessionCell.text('');
@@ -673,7 +675,7 @@ Tote.ScoreTicker.Game.prototype = {
 	is_playing: function()
 	{
 		var q = this._data.quarter;
-		if ((q != null) && (q != 'P') && (q != 'F') && (q != 'FO') && (q != 'H')) {
+		if ((q !== null) && (q !== 'P') && (q !== 'F') && (q !== 'FO') && (q !== 'H')) {
 			return true;
 		}
 		return false;
@@ -681,62 +683,64 @@ Tote.ScoreTicker.Game.prototype = {
 
 	is_active: function()
 	{
-		return (this.is_playing() || (this._data.quarter == 'H'));
+		return (this.is_playing() || (this._data.quarter === 'H'));
 	},
 
 	set_data: function(data)
 	{
 		for (var prop in data) {
-			switch (prop) {
-				case 'year':
-					this.set_year(data.year);
-					break;
-				case 'seasonType':
-					this.set_seasonType(data.seasonType);
-					break;
-				case 'week':
-					this.set_week(data.week);
-					break;
-				case 'gsis':
-					this.set_gsis(data.gsis);
-					break;
-				case 'eid':
-					this.set_eid(data.eid);
-					break;
-				case 'start':
-					if (('day' in data.start) && ('time' in data.start)) {
-						this.set_start(data.start.day, data.start.time);
-					}
-					break;
-				case 'visitor':
-					this.set_visitor(data.visitor);
-					break;
-				case 'visitorNickname':
-					this.set_visitorNickname(data.visitorNickname);
-					break;
-				case 'home':
-					this.set_home(data.home);
-					break;
-				case 'homeNickname':
-					this.set_homeNickname(data.homeNickname);
-					break;
-				case 'homeScore':
-					this.set_homeScore(data.homeScore);
-					break;
-				case 'visitorScore':
-					this.set_visitorScore(data.visitorScore);
-					break;
-				case 'redZone':
-					this.set_redZone(data.redZone);
-					break;
-				case 'status':
-					if (('quarter' in data.status) && ('clock' in data.status)) {
-						this.set_status(data.status.quarter, data.status.clock);
-					}
-					break;
-				case 'possession':
-					this.set_possession(data.possession);
-					break;
+			if (data.hasOwnProperty(prop)) {
+				switch (prop) {
+					case 'year':
+						this.set_year(data.year);
+						break;
+					case 'seasonType':
+						this.set_seasonType(data.seasonType);
+						break;
+					case 'week':
+						this.set_week(data.week);
+						break;
+					case 'gsis':
+						this.set_gsis(data.gsis);
+						break;
+					case 'eid':
+						this.set_eid(data.eid);
+						break;
+					case 'start':
+						if (('day' in data.start) && ('time' in data.start)) {
+							this.set_start(data.start.day, data.start.time);
+						}
+						break;
+					case 'visitor':
+						this.set_visitor(data.visitor);
+						break;
+					case 'visitorNickname':
+						this.set_visitorNickname(data.visitorNickname);
+						break;
+					case 'home':
+						this.set_home(data.home);
+						break;
+					case 'homeNickname':
+						this.set_homeNickname(data.homeNickname);
+						break;
+					case 'homeScore':
+						this.set_homeScore(data.homeScore);
+						break;
+					case 'visitorScore':
+						this.set_visitorScore(data.visitorScore);
+						break;
+					case 'redZone':
+						this.set_redZone(data.redZone);
+						break;
+					case 'status':
+						if (('quarter' in data.status) && ('clock' in data.status)) {
+							this.set_status(data.status.quarter, data.status.clock);
+						}
+						break;
+					case 'possession':
+						this.set_possession(data.possession);
+						break;
+				}
 			}
 		}
 	}
@@ -933,28 +937,30 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	set_data: function(data)
 	{
 		for (var prop in data) {
-			switch (prop) {
-				case 'team':
-					this.set_team(data.team);
-					break;
-				case 'message':
-					this.set_message(data.message);
-					break;
-				case 'reverse':
-					this.set_reverse(data.reverse);
-					break;
-				case 'height':
-					this.set_height(data.height);
-					break;
-				case 'left':
-					this.set_left(data.left);
-					break;
-				case 'top':
-					this.set_top(data.top);
-					break;
-				case 'animationSpeed':
-					this.set_animationSpeed(data.animationSpeed);
-					break;
+			if (data.hasOwnProperty(prop)) {
+				switch (prop) {
+					case 'team':
+						this.set_team(data.team);
+						break;
+					case 'message':
+						this.set_message(data.message);
+						break;
+					case 'reverse':
+						this.set_reverse(data.reverse);
+						break;
+					case 'height':
+						this.set_height(data.height);
+						break;
+					case 'left':
+						this.set_left(data.left);
+						break;
+					case 'top':
+						this.set_top(data.top);
+						break;
+					case 'animationSpeed':
+						this.set_animationSpeed(data.animationSpeed);
+						break;
+				}
 			}
 		}
 	},
@@ -1087,7 +1093,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 					ticker._elements.toggleLink.removeClass(Tote.ScoreTicker.Ticker.CSSClasses.open);
 					ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
 				});
-			}
+			};
 			if (ticker._bigPlayPopup.is_showing()) {
 				ticker._bigPlayPopup.hide(animateHide);
 			} else {
@@ -1166,7 +1172,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 		this._elements.bound.width(this._elements.gameTable.width() + 4);
 
-		if ((gms.attr('gd') == '1') && (this._hasActiveGames())) {
+		if ((gms.attr('gd') === '1') && (this._hasActiveGames())) {
 			this.set_delay(15);
 		} else {
 			this.set_delay(300);
@@ -1179,7 +1185,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 	_updateTitle: function(year, week, type)
 	{
-		var title = year + '-' + (year * 1 + 1) + ' ' + (type == 'P' ? 'preseason ' : '') + 'week ' + week + ':';
+		var title = year + '-' + (year * 1 + 1) + ' ' + (type === 'P' ? 'preseason ' : '') + 'week ' + week + ':';
 		this._elements.titleDiv.text(title);
 	},
 
@@ -1224,7 +1230,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 					quarter: g.attr('q'),
 					clock: g.attr('k')
 				},
-				redZone: (g.attr('rz') == '1' ? true : false),
+				redZone: (g.attr('rz') === '1' ? true : false),
 				possession: g.attr('p'),
 				homeScore: g.attr('hs'),
 				visitorScore: g.attr('vs')
@@ -1244,7 +1250,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		});
 
 		this._elements.gameRow.find('td.' + Tote.ScoreTicker.Ticker.CSSClasses.gameCell + ' > a').each(function() {
-			if (jQuery.inArray($(this).attr('id'), updated) == -1) {
+			if (jQuery.inArray($(this).attr('id'), updated) === -1) {
 				$(this).parent().remove();
 			}
 		});
@@ -1302,7 +1308,8 @@ Tote.ScoreTicker.Ticker.prototype = {
 		}
 
 		var count = 0;
-		for (var gsis in this._gameObjects) {
+		var gsis = null;
+		for (gsis in this._gameObjects) {
 			if (this._gameObjects.hasOwnProperty(gsis)) {
 				count++;
 			}
@@ -1311,26 +1318,28 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var idx = 0;
 
 		var ticker = this;
-
-		for (var gsis in this._gameObjects) {
-			if (this._gameObjects[gsis]) {
-				idx++;
-				if (gsis == bpObj.get_gsis()) {
-					var gameElem = this._gameObjects[gsis].get_element();
-					var pos = gameElem.position();
-					var bpPos = pos.left;
-					this._bigPlayPopup.set_data({
-						team: bpObj.get_team(),
-						message: bpObj.get_message(),
-						reverse: (idx >= half),
-						height: this._elements.gameTable.height(),
-						top: pos.top,
-						left: (idx >= half) ? pos.left : (pos.left + gameElem.width())
-					});
-					this._bigPlayPopup.show(function() {
-						window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, ticker), 10000);
-					});
-					return;
+		gsis = null;
+		for (gsis in this._gameObjects) {
+			if (this._gameObjects.hasOwnProperty(gsis)) {
+				if (this._gameObjects[gsis]) {
+					idx++;
+					if (gsis === bpObj.get_gsis()) {
+						var gameElem = this._gameObjects[gsis].get_element();
+						var pos = gameElem.position();
+						var bpPos = pos.left;
+						this._bigPlayPopup.set_data({
+							team: bpObj.get_team(),
+							message: bpObj.get_message(),
+							reverse: (idx >= half),
+							height: this._elements.gameTable.height(),
+							top: pos.top,
+							left: (idx >= half) ? pos.left : (pos.left + gameElem.width())
+						});
+						this._bigPlayPopup.show(function() {
+							window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, ticker), 10000);
+						});
+						return;
+					}
 				}
 			}
 		}
@@ -1352,8 +1361,10 @@ Tote.ScoreTicker.Ticker.prototype = {
 	_hasActiveGames: function()
 	{
 		for (var gsis in this._gameObjects) {
-			if (this._gameObjects[gsis] && (this._gameObjects[gsis].is_active())) {
-				return true;
+			if (this._gameObjects.hasOwnProperty(gsis)) {
+				if (this._gameObjects[gsis] && (this._gameObjects[gsis].is_active())) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1364,7 +1375,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 	},
 
 	set_delay: function(value) {
-		if (this._delay == value) {
+		if (this._delay === value) {
 			return;
 		}
 
