@@ -874,7 +874,7 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	set_message: function(message)
 	{
 		this._data.message = message;
-		this._elements.message.text(message);
+		this._elements.message.text((message.length > 52) ? (message.substring(0, 52) + "...") : message);
 	},
 
 	get_reverse: function()
