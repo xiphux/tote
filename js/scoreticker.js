@@ -754,13 +754,19 @@ Tote.ScoreTicker.BigPlayPopup = function()
 	};
 	this._elements = {
 		tile: null,
-		content: null
+		content: null,
+		team: null,
+		message: null
 	};
+
+	this._width = 150;
 };
 
 Tote.ScoreTicker.BigPlayPopup.CSSClasses = {
 	bigPlay: 'tickerBigPlay',
-	bigPlayContent: 'tickerBigPlayContent'
+	bigPlayContent: 'tickerBigPlayContent',
+	bigPlayTeam: 'tickerBigPlayTeam',
+	bigPlayMessage: 'tickerBigPlayMessage'
 };
 
 Tote.ScoreTicker.BigPlayPopup.prototype = {
@@ -773,22 +779,27 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	_buildElement: function()
 	{
 		var tile = jQuery(document.createElement('div'));
+		tile.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlay);
 		tile.width(0);
 		tile.css('opacity', 0.25);
-		tile.css('z-index', 5);
-		tile.css('position', 'absolute');
-		tile.css('overflow', 'hidden');
-		tile.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlay);
 
 		var content = jQuery(document.createElement('div'));
-		content.width(100);
-		content.css('height', '100%');
 		content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayContent);
+
+		var team = jQuery(document.createElement('div'));
+		team.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayTeam);
+		content.append(team);
+
+		var message = jQuery(document.createElement('div'));
+		message.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayMessage);
+		content.append(message);
 
 		tile.append(content);
 
 		this._elements.tile = tile;
 		this._elements.content = content;
+		this._elements.team = team;
+		this._elements.message = message;
 	},
 
 	show: function(afterShow)
@@ -798,12 +809,12 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 		}
 
 		var anim = {
-			width: '100px',
+			width: this._width + 'px',
 			opacity: 1
 		};
 
 		if (this._data.reverse) {
-			anim.left = (this.get_left() - 100) + 'px';
+			anim.left = (this.get_left() - this._width) + 'px';
 		}
 
 		this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
@@ -827,7 +838,7 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 		};
 
 		if (this._data.reverse) {
-			anim.left = (this.get_left() + 100) + 'px';
+			anim.left = (this.get_left() + this._width) + 'px';
 		}
 
 		this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
@@ -852,7 +863,7 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	set_team: function(team)
 	{
 		this._data.team = team;
-		this._updateContent();
+		this._elements.team.text(team);
 	},
 
 	get_message: function()
@@ -863,7 +874,7 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	set_message: function(message)
 	{
 		this._data.message = message;
-		this._updateContent();
+		this._elements.message.text(message);
 	},
 
 	get_reverse: function()
@@ -951,11 +962,6 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	get_element: function()
 	{
 		return this._elements.tile;
-	},
-
-	_updateContent: function()
-	{
-		this._elements.content.html(this._data.team + "<br />" + this._data.message);
 	}
 
 };
