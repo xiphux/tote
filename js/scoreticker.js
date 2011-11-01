@@ -1154,7 +1154,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 		var bps = $(xml).find('bps');
 
 		this._updateBigPlays(bps);
-		if (this._started && this._showBigPlays) {
+		if (this._showBigPlays) {
 			this._showNextBigPlay();
 		}
 
@@ -1379,6 +1379,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 			window.clearTimeout(this._timerId);
 			this._timerId = null;
 		}
+		this._bigPlayQueue = [];
 	},
 
 	get_started: function() {
