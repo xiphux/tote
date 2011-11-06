@@ -119,13 +119,22 @@
 	right: 0;
 	position: absolute;
 	width: 142px;
-	border: 1px solid DarkBlue;
+	border-top: 1px solid DarkBlue;
+	border-bottom: 1px solid DarkBlue;
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 10px;
 	font-weight: bold;
 	color: DarkBlue;
 	background-color: PowderBlue;
 	padding: 3px 3px 3px 3px;
+}
+
+.tickerBigPlay .tickerBigPlayRight {
+	border-right: 1px solid DarkBlue;
+}
+
+.tickerBigPlay .tickerBigPlayLeft {
+	border-left: 1px solid DarkBlue;
 }
 
 .tickerBigPlay .tickerBigPlayContent .tickerBigPlayTeam {

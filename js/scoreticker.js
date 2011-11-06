@@ -769,6 +769,8 @@ Tote.ScoreTicker.BigPlayPopup = function()
 Tote.ScoreTicker.BigPlayPopup.CSSClasses = {
 	bigPlay: 'tickerBigPlay',
 	bigPlayContent: 'tickerBigPlayContent',
+	bigPlayRight: 'tickerBigPlayRight',
+	bigPlayLeft: 'tickerBigPlayLeft',
 	bigPlayTeam: 'tickerBigPlayTeam',
 	bigPlayMessage: 'tickerBigPlayMessage'
 };
@@ -810,6 +812,14 @@ Tote.ScoreTicker.BigPlayPopup.prototype = {
 	{
 		if (this._data.shown) {
 			return;
+		}
+
+		if (this._data.reverse) {
+			this._elements.content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayLeft);
+			this._elements.content.removeClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayRight);
+		} else {
+			this._elements.content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayRight);
+			this._elements.content.removeClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayLeft);
 		}
 
 		var anim = {
