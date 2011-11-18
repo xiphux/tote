@@ -35,7 +35,7 @@ Games for week {$week}:
 	{if $game.start->sec < $smarty.now}
         <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName">{$game.away_team.abbreviation}</span> {$game.away_score} @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName">{$game.home_team.abbreviation}</span> {$game.home_score}</td>
 	{else}
-        <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName">{$game.home_team.abbreviation}</span></td>
+        <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName{if !array_key_exists((string)$game.away_team._id, $teams)} teampicked{/if}">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName{if !array_key_exists((string)$game.home_team._id, $teams)} teampicked{/if}">{$game.home_team.abbreviation}</span></td>
 	{/if}
 	<td>{$game.localstart->format('D M j, Y g:i a T')}</td>
       </tr>

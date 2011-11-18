@@ -175,6 +175,10 @@ div.userOpts table td {
 	border: 0px;
 }
 
+.teampicked {
+	color: darkgray;
+}
+
 .gamestarted {
 	color: darkgray;
 }
