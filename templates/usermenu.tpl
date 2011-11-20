@@ -1,5 +1,6 @@
 {if $user}
   <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
+<tr><td><a href="index.php?a=schedule">Schedule</a></td></tr>
 {if $user.admin}
 <tr><td><a href="index.php?a=update">Update scores</a></td></tr>
 <tr><td><a href="index.php?a=editpool&p={$pool._id}">Manage pool</a></td></tr>
@@ -11,4 +12,5 @@
 <tr><td><a href="index.php?a=logout">Logout</a></td></tr>
 {else}
 <tr><td><a href="index.php?a=login">Login</a></td></tr>
+<tr><td><a href="index.php?a=schedule">Schedule</a></td></tr>
 {/if}
