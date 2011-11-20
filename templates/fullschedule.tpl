@@ -2,7 +2,7 @@
 
 <div>
 <strong>{$year}-{$year+1}</strong><br />
-<strong>By Week</strong> By Team
+<strong>By Week</strong> <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a>
 </div>
 
 <table>
