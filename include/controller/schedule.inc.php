@@ -19,7 +19,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  * @param string $week week
  * @param string $output output format
  */
-function display_schedule($season, $week, $output = 'html')
+function display_schedule($season, $week = null, $output = 'html')
 {
 	global $tpl;
 
@@ -30,49 +30,66 @@ function display_schedule($season, $week, $output = 'html')
 			$season -= 1;
 	}
 
-	if (empty($week)) {
-		$openweeks = get_open_weeks($season);
-		$week = array_search(true, $openweeks, true);
-		if ($week === false) {
-			// for a closed season, default to the last week
-			$week = get_season_weeks($season);
-		}
-	}
-
 	if (!is_numeric($season)) {
 		display_message("Invalid season", SCHEDULE_HEADER);
 		return;
 	}
 
-	if (!is_numeric($week)) {
-		display_message("Invalid week", SCHEDULE_HEADER);
-		return;
-	}
-
 	$games = get_collection(TOTE_COLLECTION_GAMES);
 
-	$gameobjs = $games->find(
-		array(
+	$search = null;
+	$sort = null;
+	if (!empty($week)) {
+		$search = array(
 			'season' => (int)$season,
 			'week' => (int)$week
-		),
-		array('home_team', 'away_team', 'home_score', 'away_score', 'start')
-	)->sort(array('start' => 1));
+		);
+		$sort = array(
+			'start' => 1
+		);
+	} else {
+		$search = array(
+			'season' => (int)$season
+		);
+		$sort = array(
+			'week' => 1,
+			'start' => 1
+		);
+	}
 
-	$weekgames = array();
+	$gameobjs = $games->find(
+		$search,
+		array('home_team', 'away_team', 'home_score', 'away_score', 'start', 'week')
+	)->sort($sort);
+
+	$allgames = array();
 	foreach ($gameobjs as $i => $gameobj) {
 		$gameobj['home_team'] = get_team($gameobj['home_team']);
 		$gameobj['away_team'] = get_team($gameobj['away_team']);
 		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
-		$weekgames[] = $gameobj;
+		$allgames[] = $gameobj;
+	}
+
+	if (empty($week)) {
+		$weekmapped = array();
+		foreach ($allgames as $i => $gameobj) {
+			if (isset($gameobj['week'])) {
+				$weekmapped[$gameobj['week']][] = $gameobj;
+			}
+		}
+		$allgames = $weekmapped;
 	}
 
 	$tpl->assign('year', $season);
 	$tpl->assign('week', $week);
-	$tpl->assign('games', $weekgames);
+	$tpl->assign('games', $allgames);
 
 	if ($output == 'js')
 		$tpl->assign('js', true);
 
-	$tpl->display('schedule.tpl');
+	if (empty($week)) {
+		$tpl->display('fullschedule.tpl');
+	} else {
+		$tpl->display('schedule.tpl');
+	}
 }
