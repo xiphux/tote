@@ -9,6 +9,17 @@ require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
+function teamcmp($a, $b)
+{
+	$teama = get_team($a);
+	$teamb = get_team($b);
+
+	$teamnamea = $teama['home'] . ' ' . $teama['team'];
+	$teamnameb = $teamb['home'] . ' ' . $teamb['team'];
+
+	return strcmp($teamnamea, $teamnameb);
+}
+
 /**
  * teamschedule controller
  *
@@ -71,14 +82,13 @@ function display_teamschedule($season, $team = null, $output = 'html', $week = n
 		ksort($teamgames);
 	} else {
 		$teammapped = array();
+		$teamnames = array();
 		foreach ($gameobjs as $i => $gameobj) {
 			$gameobj['home_team'] = get_team($gameobj['home_team']);
 			$gameobj['away_team'] = get_team($gameobj['away_team']);
 			$gameobj['localstart'] = get_local_datetime($gameobj['start']);
-			$homename = $gameobj['home_team']['home'] . ' ' . $gameobj['home_team']['team'];
-			$awayname = $gameobj['away_team']['home'] . ' ' . $gameobj['away_team']['team'];
-			$teammapped[$homename][$gameobj['week']] = $gameobj;
-			$teammapped[$awayname][$gameobj['week']] = $gameobj;
+			$teammapped[(string)$gameobj['home_team']['_id']][$gameobj['week']] = $gameobj;
+			$teammapped[(string)$gameobj['away_team']['_id']][$gameobj['week']] = $gameobj;
 		}
 		foreach ($teammapped as $eachteam => $teamsched) {
 			for ($i = 1; $i <= $seasonweeks; $i++) {
@@ -87,9 +97,13 @@ function display_teamschedule($season, $team = null, $output = 'html', $week = n
 				}
 			}
 			ksort($teammapped[$eachteam]);
+
+			$teamobj = get_team($eachteam);
+			$teamnames[$eachteam] = $teamobj['home'] . ' ' . $teamobj['team'];
 		}
-		ksort($teammapped);
+		uksort($teammapped, 'teamcmp');
 		$teamgames = $teammapped;
+		$tpl->assign('teamnames', $teamnames);
 	}
 
 	if (!empty($team)) {

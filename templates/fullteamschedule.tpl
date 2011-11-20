@@ -10,15 +10,15 @@
 <td>
 
 {foreach from=$games item=teamgames key=team}
-{$team}<br />
+<a href="#{$team}">{$teamnames.$team}</a><br />
 {/foreach}
 
 </td>
 <td>
 
 {foreach from=$games item=teamgames key=team}
-<div class="divScheduleTeam">
-<strong>{$team}</strong>
+<div class="divScheduleTeam" id="{$team}">
+<strong>{$teamnames.$team}</strong>
 <table>
 {foreach from=$teamgames item=game key=eachweek}
 <tr>
