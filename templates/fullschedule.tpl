@@ -1,28 +1,30 @@
 {include file='header.tpl' header='Game Schedule' homelink=true}
 
 <div>
-<strong>{$year}-{$year+1}</strong><br />
-<strong>By Week</strong> <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a>
+<h2>{$year}-{$year+1}</h2>
+<div class="scheduleTabs">
+<span class="activeTab">By Week</span> <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a>
+</div>
 </div>
 
-<table>
+<table class="scheduleTable">
 <tr>
-<td>
-
+<td class="scheduleToc">
+<div>
 {foreach from=$games item=weekgames key=week}
 <a href="#week{$week}">Week {$week}</a><br />
 {/foreach}
-
+</div>
 </td>
-<td>
+<td class="scheduleContent">
 
 {foreach from=$games item=weekgames key=week}
 <div class="divScheduleWeek" id="week{$week}">
-<strong>Week {$week}</strong><br />
+<div class="scheduleSubHeader">Week {$week}</div>
 
 {foreach name=weekgames from=$weekgames item=game}
 {assign var=day value=$game.localstart->format('D M j, Y')}{if $day != $lastday}
-{if $smarty.foreach.weekgames.first}</div>{/if}
+{if !$smarty.foreach.weekgames.first}</div>{/if}
 <div class="divScheduleDay">
 {$day}:
 {assign var=lastday value=$day}{/if}

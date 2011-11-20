@@ -279,3 +279,41 @@ div.selected {
 	color: darkgray;
 	font-style: italic;
 }
+
+.scheduleTabs {
+	font-size: larger;
+}
+
+.scheduleTabs .activeTab {
+	font-weight: bold;
+	color: #fff;
+	background-color: #8b858f;
+	padding: 1px 2px 0px 2px
+}
+
+.scheduleTable {
+	border-top: 1px solid #8b858f;
+}
+
+.scheduleTable td {
+	padding: 5px 5px;
+}
+
+.scheduleToc {
+	border-right: 1px solid #8b858f;
+}
+
+.scheduleTable .divScheduleTeam {
+	border-bottom: 1px solid #8b858f;
+}
+
+.scheduleTable .divScheduleWeek {
+	border-bottom: 1px solid #8b858f;
+}
+
+.scheduleTable .scheduleSubHeader {
+	font-weight: bold;
+	padding: 2px 0px;
+	font-size: larger;
+}
+

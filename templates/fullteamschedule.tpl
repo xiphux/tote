@@ -1,24 +1,26 @@
-{include file='header.tpl' header='Team Schedule' homelink=true}
+{include file='header.tpl' header='Game Schedule' homelink=true}
 
 <div>
-<strong>{$year}-{$year+1}</strong><br />
-<a href="{$SCRIPT_NAME}?a=schedule&y={$year}">By Week</a> <strong>By Team</strong>
+<h2>{$year}-{$year+1}</h2>
+<div class="scheduleTabs">
+<a href="{$SCRIPT_NAME}?a=schedule&y={$year}">By Week</a> <span class="activeTab">By Team</span>
+</div>
 </div>
 
-<table>
+<table class="scheduleTable">
 <tr>
-<td>
+<td class="scheduleToc">
 
 {foreach from=$games item=teamgames key=team}
 <a href="#{$team}">{$teamnames.$team}</a><br />
 {/foreach}
 
 </td>
-<td>
+<td class="scheduleContent">
 
 {foreach from=$games item=teamgames key=team}
 <div class="divScheduleTeam" id="{$team}">
-<strong>{$teamnames.$team}</strong>
+<div class="scheduleSubHeader">{$teamnames.$team}</div>
 <table>
 {foreach from=$teamgames item=game key=eachweek}
 <tr>

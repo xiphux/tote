@@ -220,3 +220,7 @@ ul.ruleList li {
 	text-align: left;
 	padding: 3px 0px 3px 0px;
 }
+
+.scheduleToc {
+	vertical-align: top;
+}
