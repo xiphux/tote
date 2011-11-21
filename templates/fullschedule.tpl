@@ -1,10 +1,22 @@
 {include file='header.tpl' header='Game Schedule' homelink=true}
 
-<div>
-<h2>{$year}-{$year+1}</h2>
+<div class="scheduleNav">
+{if $allseasons && (count($allseasons) > 1)}
+<form action="index.php" method="get">
+<select id="seasonSelect" name="y">
+{foreach from=$allseasons item=eachseason}
+<option value="{$eachseason}" {if $year == $eachseason}selected="selected"{/if}>{$eachseason}-{$eachseason+1}</option>
+{/foreach}
+</select>
+<input type="hidden" name="a" value="schedule" />
+<input type="submit" value="Go" id="seasonSubmit" />
+</form>
+{else}
+<strong>{$year}-{$year+1}</strong>
+{/if}
+</div>
 <div class="scheduleTabs">
 <span class="activeTab">By Week</span> <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a>
-</div>
 </div>
 
 <table class="scheduleTable">

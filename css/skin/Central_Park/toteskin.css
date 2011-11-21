@@ -310,3 +310,10 @@ div.selected {
 	font-size: larger;
 }
 
+.scheduleNav {
+	padding: 0px 0px 8px 0px;
+}
+
+.scheduleNav select {
+	font-size: larger;
+}
