@@ -133,6 +133,12 @@
     {else}
     <script type="text/javascript" src="js/changepass.js"></script>
     {/if}
+  {elseif $source == 'fullschedule'}
+    {if file_exists('js/fullschedule.min.js')}
+    <script type="text/javascript" src="js/fullschedule.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/fullschedule.js"></script>
+    {/if}
   {/if}
 
   {if $mobile}

@@ -1,4 +1,4 @@
-{include file='header.tpl' header='Game Schedule' homelink=true}
+{include file='header.tpl' header='Game Schedule' homelink=true source='fullschedule'}
 
 <div class="scheduleNav">
 {if $allseasons && (count($allseasons) > 1)}
