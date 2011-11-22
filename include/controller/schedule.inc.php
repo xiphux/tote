@@ -82,7 +82,7 @@ function display_schedule($season, $week = null, $output = 'html')
 	}
 
 	if (empty($week)) {
-		$tpl->assign('allseasons', get_seasons());
+		$tpl->assign('allseasons', array_reverse(get_seasons()));
 	}
 
 	$tpl->assign('year', $season);

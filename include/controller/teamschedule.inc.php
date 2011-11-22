@@ -111,7 +111,7 @@ function display_teamschedule($season, $team = null, $output = 'html', $week = n
 		$tpl->assign('team', get_team($team));
 	}
 	if (empty($week)) {
-		$tpl->assign('allseasons', get_seasons());
+		$tpl->assign('allseasons', array_reverse(get_seasons()));
 	}
 	$tpl->assign('year', $season);
 	$tpl->assign('games', $teamgames);
