@@ -32,6 +32,12 @@
 </div>
 
 </td>
+
+{if $mobile}
+</tr>
+<tr>
+{/if}
+
 <td class="scheduleContent teamScheduleContent">
 
 {foreach from=$games item=teamgames key=team}

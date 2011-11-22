@@ -12,18 +12,30 @@ function initScheduleToc() {
 		var itemId = $(this).attr('href').substr(1);
 		$('.divScheduleItem').each(function() {
 			if ($(this).attr('id') == itemId) {
-				$(this).slideDown('fast');
+				if (mobile) {
+					$(this).show();
+				} else {
+					$(this).slideDown('fast');
+				}
 			} else {
-				$(this).slideUp('fast');
+				if (mobile) {
+					$(this).hide();
+				} else {
+					$(this).slideUp('fast');
+				}
 			}
 		});
 		$('.scheduleTocContent li').removeClass('activeTab');
 		$(this).parent().addClass('activeTab');
-		return false;
+		return mobile;
 	};
 
 	var tocShowAllClick = function() {
-		$('.divScheduleItem').slideDown('fast');
+		if (mobile) {
+			$('.divScheduleItem').show();
+		} else {
+			$('.divScheduleItem').slideDown('fast');
+		}
 		$('.scheduleTocContent li').removeClass('activeTab');
 		$(this).parent().addClass('activeTab');
 		return false;
@@ -42,36 +54,7 @@ function initScheduleToc() {
 	tocContent.find('ul').prepend(li);
 };
 
-function initScheduleTocPin() {
-
-	var toc = $('.scheduleTocContent');
-
-	var tocYLoc = toc.position().top;
-	var tocPosition = toc.css('position');
-	var tocTop = toc.css('top');
-
-	var pinned = false;
-
-	$(window).scroll(function() {
-		var windowYLoc = $(document).scrollTop();
-		if (windowYLoc > tocYLoc) {
-			if (!pinned) {
-				toc.css('position', 'fixed');
-				toc.css('top', '0px');
-				pinned = true;
-			}
-		} else {
-			if (pinned) {
-				toc.css('position', tocPosition);
-				toc.css('top', tocTop);
-				pinned = false;
-			}
-		}
-	});
-};
-
 $(document).ready(function() {
 	initSeasonNav();
 	initScheduleToc();
-	initScheduleTocPin();
 });

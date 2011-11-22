@@ -134,10 +134,24 @@
     <script type="text/javascript" src="js/changepass.js"></script>
     {/if}
   {elseif $source == 'fullschedule'}
+    <script type="text/javascript">
+      {if $mobile}
+      	var mobile = true;
+      {else}
+        var mobile = false;
+      {/if}
+    </script>
     {if file_exists('js/fullschedule.min.js')}
     <script type="text/javascript" src="js/fullschedule.min.js"></script>
     {else}
     <script type="text/javascript" src="js/fullschedule.js"></script>
+    {/if}
+    {if !$mobile}
+      {if file_exists('js/fullschedulefull.min.js')}
+      <script type="text/javascript" src="js/fullschedulefull.min.js"></script>
+      {else}
+      <script type="text/javascript" src="js/fullschedulefull.js"></script>
+      {/if}
     {/if}
   {/if}
 
