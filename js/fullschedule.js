@@ -19,12 +19,14 @@ function initScheduleToc() {
 		});
 		$('.scheduleTocContent li').removeClass('activeTab');
 		$(this).parent().addClass('activeTab');
+		return false;
 	};
 
 	var tocShowAllClick = function() {
 		$('.divScheduleItem').slideDown('fast');
 		$('.scheduleTocContent li').removeClass('activeTab');
 		$(this).parent().addClass('activeTab');
+		return false;
 	};
 
 	tocContent.find('a').click(tocItemClick);
