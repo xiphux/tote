@@ -78,6 +78,10 @@ div.poolFooter {
 	padding: 3px 0px;
 }
 
+.feedIcon {
+	border: 0px;
+}
+
 div.poolRules {
 	float: left;
 	width: 40%;
