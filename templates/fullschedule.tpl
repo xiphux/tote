@@ -22,16 +22,18 @@
 <table class="scheduleTable">
 <tr>
 <td class="scheduleToc">
-<div>
+<div class="scheduleTocContent">
+<ul>
 {foreach from=$games item=weekgames key=week}
-<a href="#week{$week}">Week {$week}</a><br />
+<li><a href="#week{$week}">Week {$week}</li>
 {/foreach}
+</ul>
 </div>
 </td>
-<td class="scheduleContent">
+<td class="scheduleContent weekScheduleContent">
 
 {foreach from=$games item=weekgames key=week}
-<div class="divScheduleWeek" id="week{$week}">
+<div class="divScheduleWeek divScheduleItem" id="week{$week}">
 <div class="scheduleSubHeader">Week {$week}</div>
 
 {foreach name=weekgames from=$weekgames item=game}

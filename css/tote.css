@@ -224,3 +224,22 @@ ul.ruleList li {
 .scheduleToc {
 	vertical-align: top;
 }
+
+.scheduleToc ul {
+	list-style-type: none;
+	list-style-position: outside;
+	margin: 0px 0px;
+	padding: 0px 0px;
+}
+
+.weekScheduleContent {
+	width: 350px;
+}
+
+.teamScheduleContent {
+	width: 500px;
+}
+
+.teamScheduleContent table {
+	width: 100%;
+}
