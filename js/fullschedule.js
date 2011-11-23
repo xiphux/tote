@@ -7,12 +7,12 @@ function getInternetExplorerVersion() {
 			rv = parseFloat(RegExp.$1);
 	}
 	return rv;
-}
+};
 
 function canAnim() {
 	var ver = getInternetExplorerVersion();
 	return (ver === -1) || (ver > 8);
-}
+};
 
 function initSeasonNav() {
 	$('#seasonSelect').change(function() {
