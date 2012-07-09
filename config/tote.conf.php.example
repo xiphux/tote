@@ -27,7 +27,7 @@ $tote_conf['namespace'] = '';
  *
  * path to smarty library
  */
-$tote_conf['smarty'] = 'smarty/';
+$tote_conf['smarty'] = 'lib/smarty/libs/';
 
 /**
  * sitename
