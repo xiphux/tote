@@ -180,4 +180,7 @@
 </div>
 {/if}
 
+<div id="attrFooter">
+<a href="http://gitphp.xiphux.com/projects/php/tote.git">Tote by Chris Han</a>
+</div>
 {include file='footer.tpl'}

@@ -247,3 +247,7 @@ ul.ruleList li {
 .teamScheduleContent table {
 	width: 100%;
 }
+
+#attrFooter {
+	margin-top: 15px;
+}
