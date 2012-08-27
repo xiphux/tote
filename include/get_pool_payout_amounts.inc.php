@@ -1,5 +1,6 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_pool_pot.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
 
 /**
@@ -28,15 +29,13 @@ function get_pool_payout_amounts($poolid)
 	if (!$pool)
 		return null;
 
-	if (empty($pool['fee']) || ($pool['fee'] <= 0))
-		return null;
-
 	$percents = get_pool_payout_percents($poolid);
 	if (count($percents) <= 0)
 		return null;
 
-	$entrantcount = count($pool['entries']);
-	$pot = $entrantcount * $pool['fee'];
+	$pot = get_pool_pot($poolid);
+	if ($pot < 1)
+		return null;
 
 	$payout = array();
 	foreach ($percents as $place => $percent) {
