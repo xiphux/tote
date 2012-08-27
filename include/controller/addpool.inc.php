@@ -99,10 +99,31 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		// TODO: make payouts user entered rather than hardcoding
 		$data['payout'] = array(
 			array(
+				'max' => 29,
 				'percents' => array(
 					0.75,
 					0.15,
 					0.10
+				)
+			),
+			array(
+				'min' => 30,
+				'max' => 39,
+				'percents' => array(
+					0.75,
+					0.15,
+					0.10,
+					0
+				)
+			),
+			array(
+				'min' => 40,
+				'percents' => array(
+					0.73,
+					0.13,
+					0.08,
+					0.06,
+					0
 				)
 			)
 		);
