@@ -41,6 +41,10 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 <li>Payout: {foreach name=payoutpercents from=$payoutpercents key=place item=percent}{$place|place} place wins {$percent*100}%{if !$smarty.foreach.payoutpercents.last}, {/if}{/foreach}.  In the event of a tie, the tied players will split the sum of their payouts.</li>
 {/if}
 
+{if $pot}
+<li>Current pot: ${$pot|string_format:"%.2f"}</li>
+{/if}
+
 {if $payoutamounts}
 <li>Current payout amounts:
 <table>
