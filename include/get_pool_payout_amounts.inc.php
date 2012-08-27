@@ -38,9 +38,19 @@ function get_pool_payout_amounts($poolid)
 		return null;
 
 	$payout = array();
+
+	$entryfeeplace = array_search((float)0, $percents, true);
+	if ($entryfeeplace !== false) {
+		$payout[$entryfeeplace] = $pool['fee'];
+		$pot -= $pool['fee'];
+	}
+
 	foreach ($percents as $place => $percent) {
+		if (($entryfeeplace !== false) && ($place == $entryfeeplace))
+			continue;
 		$payout[$place] = round(($pot * $percent), 2);
 	}
+	ksort($payout);
 
 	if (count($payout) > 0)
 		return $payout;
