@@ -39,7 +39,7 @@ function get_pool_payout_amounts($poolid)
 
 	$payout = array();
 
-	$entryfeeplace = array_search((float)0, $percents, true);
+	$entryfeeplace = array_search(0, $percents);
 	if ($entryfeeplace !== false) {
 		$payout[$entryfeeplace] = $pool['fee'];
 		$pot -= $pool['fee'];
