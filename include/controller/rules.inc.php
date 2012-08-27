@@ -21,7 +21,7 @@ function display_rules($poolid, $output = 'html')
 		$pools = get_collection(TOTE_COLLECTION_POOLS);
 		$poolobj = $pools->findOne(
 			array('_id' => new MongoId($poolid)),
-			array('fee')
+			array('fee', 'name', 'season')
 		);
 		if ($poolobj) {
 			$tpl->assign('pool', $poolobj);
