@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_pool_pot.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_administrators.inc.php');
@@ -27,6 +28,10 @@ function display_rules($poolid, $output = 'html')
 			$tpl->assign('pool', $poolobj);
 		}
 	}
+
+	$pot = get_pool_pot($poolid);
+	if ($pot)
+		$tpl->assign('pot', $pot);
 
 	$payoutpercents = get_pool_payout_percents($poolid);
 	if (count($payoutpercents) > 0)
