@@ -9,12 +9,96 @@ require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
+function sort_username($a, $b)
+{
+	return strcasecmp($a['username'], $b['username']);
+}
+
+function sort_email($a, $b)
+{
+	if (empty($a['email']) && empty($b['email']))
+		return 0;
+
+	if (empty($a['email']))
+		return 1;
+
+	if (empty($b['email']))
+		return -1;
+
+	return strcasecmp($a['email'], $b['email']);
+}
+
+function sort_admin($a, $b)
+{
+	if (!isset($a['admin']) && !isset($b['admin']))
+		return 0;
+
+	if (!isset($a['admin']))
+		return 1;
+
+	if (!isset($b['admin']))
+		return -1;
+
+	return 0;
+}
+
+function sort_created($a, $b)
+{
+	if (!isset($a['created']) && !isset($b['created']))
+		return 0;
+
+	if (!isset($a['created']))
+		return 1;
+
+	if (!isset($b['created']))
+		return -1;
+
+	if ($a['created']->sec == $b['created']->sec)
+		return 0;
+
+	return $a['created']->sec < $b['created']->sec ? 1 : -1;
+}
+
+function sort_login($a, $b)
+{
+	if (!isset($a['lastlogin']) && !isset($b['lastlogin']))
+		return 0;
+
+	if (!isset($a['lastlogin']))
+		return 1;
+
+	if (!isset($b['lastlogin']))
+		return -1;
+
+	if ($a['lastlogin']->sec == $b['lastlogin']->sec)
+		return 0;
+
+	return $a['lastlogin']->sec < $b['lastlogin']->sec ? 1 : -1;
+}
+
+function sort_passwordchange($a, $b)
+{
+	if (!isset($a['lastpasswordchange']) && !isset($b['lastpasswordchange']))
+		return 0;
+
+	if (!isset($a['lastpasswordchange']))
+		return 1;
+
+	if (!isset($b['lastpasswordchange']))
+		return -1;
+
+	if ($a['lastpasswordchange']->sec == $b['lastpasswordchange']->sec)
+		return 0;
+
+	return $a['lastpasswordchange']->sec < $b['lastpasswordchange']->sec ? 1 : -1;
+}
+
 /**
  * editusers
  *
  * central page for editing all users
  */
-function display_editusers()
+function display_editusers($order = 'name')
 {
 	global $tpl;
 
@@ -35,7 +119,7 @@ function display_editusers()
 	$userarray = array();
 	foreach ($allusers as $u) {
 		if (isset($u['created'])) {
-			$u['createdlocal'] = get_local_datetime($u['created']);;
+			$u['createdlocal'] = get_local_datetime($u['created']);
 		}
 		if (isset($u['lastlogin'])) {
 			$u['lastloginlocal'] = get_local_datetime($u['lastlogin']);
@@ -47,11 +131,45 @@ function display_editusers()
 		$userarray[] = $u;
 	}
 
-	// sort alphabetically
-	usort($userarray, 'sort_users');
+	// sort
+	switch ($order) {
+		case 'name':
+			usort($userarray, 'sort_users');
+			break;
+
+		case 'username':
+			usort($userarray, 'sort_username');
+			break;
+
+		case 'email':
+			usort($userarray, 'sort_email');
+			break;
+
+		case 'admin':
+			usort($userarray, 'sort_admin');
+			break;
+
+		case 'created':
+			usort($userarray, 'sort_created');
+			break;
+
+		case 'login':
+			usort($userarray, 'sort_login');
+			break;
+
+		case 'passwordchange':
+			usort($userarray, 'sort_passwordchange');
+			break;
+
+		default:
+			usort($userarray, 'sort_users');
+			$order = 'name';
+			break;
+	}
 
 	// set data and display
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('allusers', $userarray);
+	$tpl->assign('order', $order);
 	$tpl->display('editusers.tpl');
 }

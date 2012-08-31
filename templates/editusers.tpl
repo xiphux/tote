@@ -5,13 +5,55 @@
 <div>
 <table class="displayTable userTable">
 <thead>
-<th>Name</th>
-<th>Username</th>
-<th>Email</th>
-<th>Admin</th>
-<th>Created</th>
-<th>Last Login</th>
-<th>Last Password Change</th>
+<th>
+{if $order != "name"}
+<a href="{$SCRIPT_NAME}?a=editusers">Name</a>
+{else}
+Name
+{/if}
+</th>
+<th>
+{if $order != "username"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=username">Username</a>
+{else}
+Username
+{/if}
+</th>
+<th>
+{if $order != "email"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=email">Email</a>
+{else}
+Email
+{/if}
+</th>
+<th>
+{if $order != "admin"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=admin">Admin</a>
+{else}
+Admin
+{/if}
+</th>
+<th>
+{if $order != "created"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=created">Created</a>
+{else}
+Created
+{/if}
+</th>
+<th>
+{if $order != "login"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=login">Last Login</a>
+{else}
+Last Login
+{/if}
+</th>
+<th>
+{if $order != "passwordchange"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=passwordchange">Last Password Change</a>
+{else}
+Last Password Change
+{/if}
+</th>
 <th>Actions</th>
 </thead>
 <tbody>

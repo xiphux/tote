@@ -201,7 +201,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	// editusers - list of users to edit/add/delete
 	case 'editusers':
 		require_once(TOTE_CONTROLLERDIR . 'editusers.inc.php');
-		display_editusers();
+		display_editusers(empty($_GET['o']) ? 'name' : $_GET['o']);
 		break;
 
 	
