@@ -5,8 +5,7 @@
 <div>
 <table class="displayTable userTable">
 <thead>
-<th>First Name</th>
-<th>Last Name</th>
+<th>Name</th>
 <th>Username</th>
 <th>Email</th>
 <th>Admin</th>
@@ -18,8 +17,7 @@
 <tbody>
 {foreach from=$allusers item=eachuser}
 <tr class="{cycle values=light,dark}">
- <td>{$eachuser.first_name}</td>
- <td>{$eachuser.last_name}</td>
+ <td>{$eachuser.readable_name}</td>
  <td class="username">{$eachuser.username}</td>
  <td>{$eachuser.email}</td>
  <td>{if $eachuser.admin}Yes{/if}</td>

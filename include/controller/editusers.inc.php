@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 /**
@@ -42,6 +43,7 @@ function display_editusers()
 		if (isset($u['lastpasswordchange'])) {
 			$u['lastpasswordchangelocal'] = get_local_datetime($u['lastpasswordchange']);
 		}
+		$u['readable_name'] = user_readable_name($u);
 		$userarray[] = $u;
 	}
 
