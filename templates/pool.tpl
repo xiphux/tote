@@ -3,58 +3,58 @@
 <div class="{if !$mobile || $forcefull}poolInfoDiv{else}poolInfoSingleDiv{/if}">
 
 <table class="displayTable infoTable subSection rounded-top rounded-bottom subShadow">
-<tr>
-<th colspan="2">
-{if $allpools && (count($allpools) > 1)}
-<form action="index.php" method="get">
-<select id="poolNameSelect" name="p">
-{foreach from=$allpools item=eachpool}
-<option value="{$eachpool._id}" {if $eachpool._id == $pool._id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
-{/foreach}
-</select>
-<input type="submit" value="Go" id="poolNameSubmit" />
-</form>
-{else}
-{$pool.name} [{$pool.season}-{$pool.season+1}]
-{/if}
-</th>
-</tr>
-<tr>
-<td>
-<table class="poolAmounts">
-{if $pool.fee}
-<tr>
-<td class="label">Entry fee:</td>
-<td class="amount">${$pool.fee|string_format:"%.2f"}</td>
-</tr>
-{/if}
-{if $pot}
-<tr>
-<td class="label">Pot:</td>
-<td class="amount">${$pot|string_format:"%.2f"}</td>
-</tr>
-{/if}
-</table>
-</td>
-</tr>
-{if ($pool.fee || $pot) && $payoutamounts}
-<tr class="tableBreak"><td></td>
-</tr>
-{/if}
-<tr>
-<td>
-<table class="poolAmounts">
-{if $payoutamounts}
-{foreach from=$payoutamounts key=place item=amount}
-<tr>
-<td class="label">{$place|place} place:</td>
-<td class="amount">${$amount|string_format:"%.2f"}</td>
-</tr>
-{/foreach}
-</table>
-</td>
-</tr>
-{/if}
+  <tr>
+    <th colspan="2">
+    {if $allpools && (count($allpools) > 1)}
+      <form action="index.php" method="get">
+      <select id="poolNameSelect" name="p">
+      {foreach from=$allpools item=eachpool}
+        <option value="{$eachpool._id}" {if $eachpool._id == $pool._id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
+      {/foreach}
+      </select>
+      <input type="submit" value="Go" id="poolNameSubmit" />
+      </form>
+    {else}
+      {$pool.name} [{$pool.season}-{$pool.season+1}]
+    {/if}
+    </th>
+  </tr>
+  <tr>
+    <td>
+    <table class="poolAmounts">
+    {if $pool.fee}
+      <tr>
+      <td class="label">Entry fee:</td>
+      <td class="amount">${$pool.fee|string_format:"%.2f"}</td>
+      </tr>
+    {/if}
+    {if $pot}
+      <tr>
+      <td class="label">Pot:</td>
+      <td class="amount">${$pot|string_format:"%.2f"}</td>
+      </tr>
+    {/if}
+    </table>
+    </td>
+  </tr>
+  {if ($pool.fee || $pot) && $payoutamounts}
+  <tr class="tableBreak"><td></td>
+  </tr>
+  {/if}
+  {if $payoutamounts}
+  <tr>
+  <td>
+    <table class="poolAmounts">
+    {foreach from=$payoutamounts key=place item=amount}
+    <tr>
+    <td class="label">{$place|place} place:</td>
+    <td class="amount">${$amount|string_format:"%.2f"}</td>
+    </tr>
+    {/foreach}
+    </table>
+  </td>
+  </tr>
+  {/if}
 {if $mobile && !$forcefull}
 <tr class="tableBreak"><td></td>
 </tr>
