@@ -65,6 +65,8 @@ Last Password Change
  <td>
  {if $eachuser.role == 1}
  Administrator
+ {elseif $eachuser.role == 2}
+ Manager
  {else}
  User
  {/if}

@@ -39,7 +39,7 @@ function sort_role($a, $b)
 	if (!isset($b['role']))
 		return -1;
 
-	return $b['role'] < $a['role'] ? -1 : 1;
+	return $b['role'] < $a['role'] ? 1 : -1;
 }
 
 function sort_created($a, $b)

@@ -40,6 +40,7 @@
     <select name="role">
       <option>User</option>
       <option value="1" {if $role == 1}selected="selected"{/if}>Administrator</option>
+      <option value="2" {if $role == 2}selected="selected"{/if}>Manager</option>
     </select>
     </td>
   </tr>

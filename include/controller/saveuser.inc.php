@@ -117,7 +117,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		if ($email != $edituser['email'])
 			$setdata['email'] = $email;
 		if (!empty($role))
-			$setdata['role'] = $role;
+			$setdata['role'] = (int)$role;
 		else
 			$unsetdata['role'] = 1;
 		if (!(empty($newpassword) || empty($newpassword2))) {
