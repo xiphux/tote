@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_is_manager.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
@@ -108,8 +109,8 @@ function display_editusers($order = 'name')
 		return redirect();
 	}
 
-	if (!user_is_admin($user)) {
-		// need to be an admin to edit users
+	if (!(user_is_admin($user) || user_is_manager($user))) {
+		// need to be an admin or manager to edit users
 		return redirect();
 	}
 
@@ -171,5 +172,6 @@ function display_editusers($order = 'name')
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('allusers', $userarray);
 	$tpl->assign('order', $order);
+	$tpl->assign('user', $user);
 	$tpl->display('editusers.tpl');
 }

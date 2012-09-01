@@ -1,6 +1,8 @@
 {include file='header.tpl' source='editusers' header='Manage Your Users' homelink=true}
 
+{if $user.role == 1}
 <div><a href="{$SCRIPT_NAME}?a=newuser">Add a new user</a></div>
+{/if}
 
 <div>
 <table class="displayTable userTable">
@@ -54,7 +56,9 @@ Last Login
 Last Password Change
 {/if}
 </th>
+{if $user.role == 1}
 <th>Actions</th>
+{/if}
 </thead>
 <tbody>
 {foreach from=$allusers item=eachuser}
@@ -74,7 +78,9 @@ Last Password Change
  <td>{if $eachuser.createdlocal}{$eachuser.createdlocal->format('c')}{else}<span class="nodata">Unknown</span>{/if}</td>
  <td>{if $eachuser.lastloginlocal}{$eachuser.lastloginlocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>
  <td>{if $eachuser.lastpasswordchangelocal}{$eachuser.lastpasswordchangelocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>
+ {if $user.role == 1}
  <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}&csrftoken={$csrftoken}" class="deleteLink">Delete</a></td>
+ {/if}
 </tr>
 {/foreach}
 </tbody>
