@@ -172,8 +172,17 @@ table.formTable {
 	text-align: left;
 }
 
-div.poolBetDiv {
+#poolPickDiv {
 	margin-top: 30px;
+	width: 250px;
+}
+
+#poolPickHeader {
+	padding: 3px 0px 3px 5px;
+}
+
+#poolPickContent {
+	padding: 3px 3px 3px 5px;
 }
 
 div.poolActionsDiv {

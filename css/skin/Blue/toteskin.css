@@ -327,3 +327,12 @@ div.selected {
 	height: 2px;
 	background-color: #54abe4;
 }
+
+#poolPickDiv {
+	border: 1px solid #54abe4;
+}
+
+#poolPickHeader {
+	background-color: #54abe4;
+	color: #155b89;
+}

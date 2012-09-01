@@ -63,7 +63,11 @@
 </table>
 
 {if $user && $entered && $poolopen}
-<div class="poolBetDiv">
+<div id="poolPickDiv" class="subSection rounded-top rounded-bottom subShadow">
+<div id="poolPickHeader">
+Make a Pick
+</div>
+<div id="poolPickContent">
 <form action="index.php" method="get">
 <label for="bet">Pick for week:</label> 
 <select name="w">
@@ -77,6 +81,7 @@
 <input type="hidden" name="p" value="{$pool._id}" />
 <input value="Pick" type="submit" />
 </form>
+</div>
 </div>
 {/if}
 
