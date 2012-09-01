@@ -345,3 +345,7 @@ div.selected {
 	background-color: #fe0000;
 	color: #fff;
 }
+
+.entrantCount {
+	color: #fff;
+}

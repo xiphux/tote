@@ -184,7 +184,7 @@ Make a Pick
 </div>
 
 {if !$mobile || $forcefull}
-{$record|@count} entrants
+<span class="entrantCount">{$record|@count} entrants</span>
 {/if}
 
 <div class="poolHistory">
