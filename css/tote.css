@@ -270,3 +270,8 @@ ul.ruleList li {
 .poolAmounts .amount {
 	text-align: right;
 }
+
+#attrFooter {
+	margin: 15px;
+	text-align: center;
+}

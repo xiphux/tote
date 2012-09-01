@@ -335,3 +335,18 @@ div.selected {
 .entrantCount {
 	color: #155b89;
 }
+
+#attrFooter {
+	font-style: italic;
+	font-size: smaller;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+#attrFooter a {
+	color: #54abe4;
+	text-decoration: none;
+}
+
+#attrFooter a:hover {
+	text-decoration: underline;
+}

@@ -227,4 +227,4 @@ Make a Pick
 </div>
 {/if}
 
-{include file='footer.tpl'}
+{include file='footer.tpl' showattr=true}
