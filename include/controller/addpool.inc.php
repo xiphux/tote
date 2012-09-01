@@ -129,35 +129,6 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		);
 		// end TODO
 
-		// TODO: make administrators user entered rather than hardcoding
-		$admins = array();
-		$users = get_collection(TOTE_COLLECTION_USERS);
-		$u = $users->findOne(array('username' => 'scott'), array('username', 'first_name', 'last_name'));
-		if ($u) {
-			$admins[] = array(
-				'user' => $u['_id'],
-				'name' => user_readable_name($u)
-			);
-		}
-		$u = $users->findOne(array('username' => 'phil'), array('username', 'first_name', 'last_name'));
-		if ($u) {
-			$admins[] = array(
-				'user' => $u['_id'],
-				'name' => user_readable_name($u)
-			);
-		}
-		$u = $users->findOne(array('email' => 'xiphux@gmail.com'), array('username', 'first_name', 'last_name'));
-		if ($u) {
-			$admins[] = array(
-				'user' => $u['_id'],
-				'name' => user_readable_name($u),
-				'secondary' => true
-			);
-		}
-		if (count($admins) > 0)
-			$data['administrators'] = $admins;
-		// end TODO
-
 		$pools->insert($data);
 
 		// go to the new pool
