@@ -91,4 +91,10 @@ Last Password Change
 </table>
 </div>
 
+<div>
+{if $allusers}
+<a href="mailto:{foreach from=$allusers item=eachuser name=users}{if $eachuser.email}{if !$smarty.foreach.users.first},{/if}{$eachuser.email}{/if}{/foreach}">Email all</a>
+{/if}
+</div>
+
 {include file='footer.tpl'}
