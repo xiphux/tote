@@ -65,7 +65,11 @@ Last Password Change
 <tr class="{cycle values=light,dark}">
  <td>{$eachuser.readable_name}</td>
  <td class="username">{$eachuser.username}</td>
- <td>{$eachuser.email}</td>
+ <td>
+ {if $eachuser.email}
+ <a href="mailto:{$eachuser.email}">{$eachuser.email}</a>
+ {/if}
+ </td>
  <td>
  {if $eachuser.role == 1}
  Administrator
