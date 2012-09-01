@@ -26,7 +26,7 @@
 
 {if $admins}
 <li>
-If there is a dispute by a player, it will be discussed and a decision will be made by the administrative voting board. {$admins.primary|@userlist} {if count($admins.primary) > 1}are the administrators{else}is the administrator{/if} for this pool.
+If there is a dispute by a player, it will be discussed and a decision will be made by the administrative voting board. {if $admins.primary}{$admins.primary|@userlist} {if count($admins.primary) > 1}are the administrators{else}is the administrator{/if} for this pool. {/if}
 {if $admins.secondary}
 In the event that the main administrators cannot reach an agreement, {$admins.secondary|@userlist} will be the tiebreaker {if count($admins.secondary) > 1}administrators{else}administrator{/if} for the pool.
 {/if}
