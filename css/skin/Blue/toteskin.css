@@ -322,3 +322,8 @@ div.selected {
 .scheduleNav select {
 	font-size: larger;
 }
+
+.tableBreak {
+	height: 2px;
+	background-color: #54abe4;
+}

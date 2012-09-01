@@ -1,9 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_pool_pot.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_administrators.inc.php');
 
 /**
@@ -22,24 +20,16 @@ function display_rules($poolid, $output = 'html')
 		$pools = get_collection(TOTE_COLLECTION_POOLS);
 		$poolobj = $pools->findOne(
 			array('_id' => new MongoId($poolid)),
-			array('fee', 'name', 'season')
+			array('name', 'season')
 		);
 		if ($poolobj) {
 			$tpl->assign('pool', $poolobj);
 		}
 	}
 
-	$pot = get_pool_pot($poolid);
-	if ($pot)
-		$tpl->assign('pot', $pot);
-
 	$payoutpercents = get_pool_payout_percents($poolid);
 	if (count($payoutpercents) > 0)
 		$tpl->assign('payoutpercents', $payoutpercents);
-
-	$payoutamounts = get_pool_payout_amounts($poolid);
-	if (count($payoutamounts) > 0)
-		$tpl->assign('payoutamounts', $payoutamounts);
 
 	$admins = get_pool_administrators($poolid);
 	if (count($admins) > 0)

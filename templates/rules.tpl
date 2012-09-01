@@ -33,29 +33,8 @@ In the event that the main administrators cannot reach an agreement, {$admins.se
 </li>
 {/if}
 
-{if $pool.fee}
-<li>Entry fee: ${$pool.fee|string_format:"%.2f"}</li>
-{/if}
-
 {if $payoutpercents}
 <li>Payout: {foreach name=payoutpercents from=$payoutpercents key=place item=percent}{$place|place} place wins {if $percent == 0}entry fee{assign var=hasentryfee value=true}{else}{$percent*100}%{/if}{if !$smarty.foreach.payoutpercents.last}, {/if}{/foreach}. {if $hasentryfee}The percentage payouts are calculated after subtracting the entry fee place from the pot. {/if}In the event of a tie, the tied players will split the sum of their payouts.</li>
-{/if}
-
-{if $pot}
-<li>Current pot: ${$pot|string_format:"%.2f"}</li>
-{/if}
-
-{if $payoutamounts}
-<li>Current payout amounts:
-<table>
-{foreach from=$payoutamounts key=place item=amount}
-<tr>
-<td>{$place|place} place:</td>
-<td>${$amount|string_format:"%.2f"}</td>
-</tr>
-{/foreach}
-</table>
-</li>
 {/if}
 
 </ul>

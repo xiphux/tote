@@ -19,7 +19,35 @@
 {/if}
 </th>
 </tr>
+<tr>
+<td>
+<table class="poolAmounts">
+{if $pool.fee}
+<tr>
+<td class="label">Entry fee:</td>
+<td class="amount">${$pool.fee|string_format:"%.2f"}</td>
+</tr>
+{/if}
+{if $pot}
+<tr>
+<td class="label">Pot:</td>
+<td class="amount">${$pot|string_format:"%.2f"}</td>
+</tr>
+{/if}
+{if $payoutamounts}
+{foreach from=$payoutamounts key=place item=amount}
+<tr>
+<td class="label">{$place|place} place:</td>
+<td class="amount">${$amount|string_format:"%.2f"}</td>
+</tr>
+{/foreach}
+</table>
+</td>
+</tr>
+{/if}
 {if $mobile && !$forcefull}
+<tr class="tableBreak"><td></td>
+</tr>
 {include file='usermenu.tpl'}
 {/if}
 </table>
@@ -139,6 +167,10 @@
 <div class="poolRules">
 	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&p={$pool._id}">Rules</a>
 </div>
+
+{if !$mobile || $forcefull}
+{$record|@count} entrants
+{/if}
 
 <div class="poolHistory">
 <a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&p={$pool._id}">History</a>

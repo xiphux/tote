@@ -76,6 +76,7 @@ div.userOpts table {
 
 div.poolFooter {
 	padding: 3px 0px;
+	text-align: center;
 }
 
 .feedIcon {
@@ -246,4 +247,16 @@ ul.ruleList li {
 
 .teamScheduleContent table {
 	width: 100%;
+}
+
+.poolAmounts {
+	margin: 0px auto;
+}
+
+.poolAmounts .label {
+	text-align: left;
+}
+
+.poolAmounts .amount {
+	text-align: right;
 }
