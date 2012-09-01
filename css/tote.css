@@ -249,5 +249,6 @@ ul.ruleList li {
 }
 
 #attrFooter {
-	margin-top: 15px;
+	margin: 15px;
+	text-align: center;
 }
