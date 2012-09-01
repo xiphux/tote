@@ -29,6 +29,9 @@ function get_pool_pot($poolid)
 	if (empty($pool['fee']) || ($pool['fee'] <= 0))
 		return null;
 
+	if (empty($pool['entries']))
+		return null;
+
 	$entrantcount = count($pool['entries']);
 	return $entrantcount * $pool['fee'];
 }
