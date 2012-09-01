@@ -1195,7 +1195,7 @@ Tote.ScoreTicker.Ticker.prototype = {
 
 	_updateTitle: function(year, week, type)
 	{
-		var title = year + '-' + (year * 1 + 1) + ' ' + (type === 'P' ? 'preseason ' : '') + 'week ' + week + ':';
+		var title = year + '-' + (year * 1 + 1) + ' ' + (type === 'P' ? 'preseason ' : '') + 'week ' + week;
 		this._elements.titleDiv.text(title);
 	},
 

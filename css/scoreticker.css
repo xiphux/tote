@@ -29,6 +29,11 @@
 	text-decoration: none;
 }
 
+.tickerTitle {
+	text-align: center;
+	padding: 2px 0px 2px 0px;
+}
+
 .tickerGameTable {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 10px;
