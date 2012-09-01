@@ -8,7 +8,7 @@
  */
 function user_is_admin($user)
 {
-	if (!empty($user['admin']) && ($user['admin'] === true)) {
+	if (!empty($user['role']) && ($user['role'] == 1)) {
 		return true;
 	}
 

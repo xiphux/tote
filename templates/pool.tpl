@@ -113,11 +113,11 @@
 
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
 <td class="entrantName">
-{if $user.admin}
+{if $user.role == 1}
 <a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
 {/if}
 {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}
-{if $user.admin}
+{if $user.role == 1}
 </a>
 {/if}
 </td>

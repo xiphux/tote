@@ -53,8 +53,8 @@ function display_edituser($userid)
 		$tpl->assign('lastname', $edituser['last_name']);
 	if (!empty($edituser['email']))
 		$tpl->assign('email', $edituser['email']);
-	if (user_is_admin($edituser))
-		$tpl->assign('admin', true);
+	if (!empty($edituser['role']))
+		$tpl->assign('role', $edituser['role']);
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('userid', $userid);
 	$tpl->display('edituser.tpl');

@@ -35,8 +35,13 @@
     <td><input type="password" name="newpassword2"></td>
   </tr>
   <tr>
-    <td></td>
-    <td><input type="checkbox" name="admin" {if $admin}checked="checked"{/if} /> <label for="admin">Admin</label></td>
+    <td><label for="role">Role:</label></td>
+    <td>
+    <select name="role">
+      <option>User</option>
+      <option value="1" {if $role == 1}selected="selected"{/if}>Administrator</option>
+    </select>
+    </td>
   </tr>
   <tr>
     <td></td>

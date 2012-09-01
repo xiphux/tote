@@ -220,7 +220,7 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_POST['firstname']) ? null : $_POST['firstname']),
 			(empty($_POST['lastname']) ? null : $_POST['lastname']),
 			(empty($_POST['email']) ? null : $_POST['email']),
-			(empty($_POST['admin']) ? null : $_POST['admin']),
+			(empty($_POST['role']) ? null : $_POST['role']),
 			(empty($_POST['newpassword']) ? null : $_POST['newpassword']),
 			(empty($_POST['newpassword2']) ? null : $_POST['newpassword2']),
 			(empty($_POST['csrftoken']) ? null : $_POST['csrftoken'])

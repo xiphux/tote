@@ -28,18 +28,18 @@ function sort_email($a, $b)
 	return strcasecmp($a['email'], $b['email']);
 }
 
-function sort_admin($a, $b)
+function sort_role($a, $b)
 {
-	if (!isset($a['admin']) && !isset($b['admin']))
+	if (!isset($a['role']) && !isset($b['role']))
 		return 0;
 
-	if (!isset($a['admin']))
+	if (!isset($a['role']))
 		return 1;
 
-	if (!isset($b['admin']))
+	if (!isset($b['role']))
 		return -1;
 
-	return 0;
+	return $b['role'] < $a['role'] ? -1 : 1;
 }
 
 function sort_created($a, $b)
@@ -115,7 +115,7 @@ function display_editusers($order = 'name')
 
 	// get all users
 	$users = get_collection(TOTE_COLLECTION_USERS);
-	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'admin', 'created', 'lastlogin', 'lastpasswordchange'));
+	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'role', 'created', 'lastlogin', 'lastpasswordchange'));
 	$userarray = array();
 	foreach ($allusers as $u) {
 		if (isset($u['created'])) {
@@ -145,8 +145,8 @@ function display_editusers($order = 'name')
 			usort($userarray, 'sort_email');
 			break;
 
-		case 'admin':
-			usort($userarray, 'sort_admin');
+		case 'role':
+			usort($userarray, 'sort_role');
 			break;
 
 		case 'created':

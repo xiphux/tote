@@ -27,10 +27,10 @@ Email
 {/if}
 </th>
 <th>
-{if $order != "admin"}
-<a href="{$SCRIPT_NAME}?a=editusers&o=admin">Admin</a>
+{if $order != "role"}
+<a href="{$SCRIPT_NAME}?a=editusers&o=role">Role</a>
 {else}
-Admin
+Role
 {/if}
 </th>
 <th>
@@ -62,7 +62,13 @@ Last Password Change
  <td>{$eachuser.readable_name}</td>
  <td class="username">{$eachuser.username}</td>
  <td>{$eachuser.email}</td>
- <td>{if $eachuser.admin}Yes{/if}</td>
+ <td>
+ {if $eachuser.role == 1}
+ Administrator
+ {else}
+ User
+ {/if}
+ </td>
  <td>{if $eachuser.createdlocal}{$eachuser.createdlocal->format('c')}{else}<span class="nodata">Unknown</span>{/if}</td>
  <td>{if $eachuser.lastloginlocal}{$eachuser.lastloginlocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>
  <td>{if $eachuser.lastpasswordchangelocal}{$eachuser.lastpasswordchangelocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>

@@ -21,10 +21,10 @@ define('SAVEUSER_HEADER', 'Edit A User');
  * @param string $firstname first name
  * @param string $lastname last name
  * @param string $email email address
- * @param string $admin admin flag
+ * @param string $role user role
  * @param string $csrftoken CSRF request token
  */
-function display_saveuser($userid, $firstname, $lastname, $email, $admin, $newpassword, $newpassword2, $csrftoken)
+function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpassword, $newpassword2, $csrftoken)
 {
 	global $tpl;
 
@@ -100,8 +100,8 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $newpa
 		$tpl->assign('username', $edituser['username']);
 		if (!empty($email))
 			$tpl->assign('email', $email);
-		if (!empty($admin) && (strcasecmp($admin, 'on') == 0))
-			$tpl->assign('admin', $admin);
+		if (!empty($role))
+			$tpl->assign('role', $role);
 		$tpl->assign('userid', $userid);
 		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('edituser.tpl');
@@ -116,13 +116,10 @@ function display_saveuser($userid, $firstname, $lastname, $email, $admin, $newpa
 			$setdata['last_name'] = $lastname;
 		if ($email != $edituser['email'])
 			$setdata['email'] = $email;
-		if (!empty($admin) && (strcasecmp($admin, 'on') == 0)) {
-			if (!user_is_admin($edituser))
-				$setdata['admin'] = true;
-		} else {
-			if (user_is_admin($edituser))
-				$unsetdata['admin'] = 1;
-		}
+		if (!empty($role))
+			$setdata['role'] = $role;
+		else
+			$unsetdata['role'] = 1;
 		if (!(empty($newpassword) || empty($newpassword2))) {
 			$hashdata = generate_password_hash($edituser['username'], $newpassword);
 			$setdata['salt'] = $hashdata['salt'];
