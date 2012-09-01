@@ -34,6 +34,16 @@
 <td class="amount">${$pot|string_format:"%.2f"}</td>
 </tr>
 {/if}
+</table>
+</td>
+</tr>
+{if ($pool.fee || $pot) && $payoutamounts}
+<tr class="tableBreak"><td></td>
+</tr>
+{/if}
+<tr>
+<td>
+<table class="poolAmounts">
 {if $payoutamounts}
 {foreach from=$payoutamounts key=place item=amount}
 <tr>

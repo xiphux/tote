@@ -251,6 +251,7 @@ ul.ruleList li {
 
 .poolAmounts {
 	margin: 0px auto;
+	width: 85%
 }
 
 .poolAmounts .label {
