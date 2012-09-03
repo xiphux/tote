@@ -1,4 +1,8 @@
+{if $mobile && !$forcefull}
+{include file='header.tpl' poolinfo=$pool source='pool' jsmodule='poolmobile'}
+{else}
 {include file='header.tpl' poolinfo=$pool source='pool' jsmodule='pool'}
+{/if}
 
 <div class="{if !$mobile || $forcefull}poolInfoDiv{else}poolInfoSingleDiv{/if}">
 

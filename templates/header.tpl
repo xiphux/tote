@@ -61,10 +61,6 @@
 		'common': {ldelim}
 			mobile: {if $mobile}true{else}false{/if}
 		{rdelim},
-		'pool': {ldelim}
-			mobile: {if $mobile}true{else}false{/if},
-			forcefull: {if $forcefull}true{else}false{/if}
-		{rdelim},
 		'fullschedule': {ldelim}
 			mobile: {if $mobile}true{else}false{/if}
 		{rdelim}
