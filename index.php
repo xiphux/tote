@@ -59,10 +59,6 @@ if (!empty($tote_conf['defaultstyle'])) {
 	$tpl->assign('defaultstyle', $tote_conf['defaultstyle']);
 }
 
-if (isset($tote_conf['googlejs']) && ($tote_conf['googlejs'] == true)) {
-	$tpl->assign('googlejs', true);
-}
-
 // a= parameter specifies the action to perform
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
