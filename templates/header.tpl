@@ -72,6 +72,11 @@
 		jquery: 'ext/jquery-1.8.1.min',
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min'
+	{rdelim},
+	shim: {ldelim}
+		'cookies': {ldelim}
+			deps: ['jquery']
+		{rdelim}
 	{rdelim}
     {rdelim});
     require(['{$jsmodule}']);
