@@ -69,7 +69,12 @@
 		{if "js/$jsmodule.min.js"|file_exists}
 		{$jsmodule}: '{$jsmodule}.min',
 		{/if}
-		jquery: 'ext/jquery-1.8.1.min',
+		jquery: [
+			{if $googlejs}
+			'http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min',
+			{/if}
+			'ext/jquery-1.8.1.min'
+		],
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min'
 	{rdelim},
