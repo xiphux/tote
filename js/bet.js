@@ -70,7 +70,7 @@ define(['jquery', 'qtip', 'common'], function($) {
 					type: 'GET'
 				},
 				title: {
-					text: teamName + ' Team Schedule',
+					text: teamName + ' Team Schedule'
 				}
 			},
 			style: {

@@ -47,6 +47,9 @@
 
   <script type="text/javascript" src="js/ext/require.js"></script>
   <script type="text/javascript">
+    {if !$source}
+    {assign var=source value=common}
+    {/if}
     require.config({ldelim}
   	baseUrl: 'js',
     	config: {ldelim}
@@ -67,12 +70,15 @@
 		{rdelim}
 	{rdelim},
 	paths: {ldelim}
+		{if "js/$source.min.js"|file_exists}
+		{$source}: '{$source}.min',
+		{/if}
 		jquery: 'ext/jquery-1.8.1.min',
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min'
 	{rdelim}
     {rdelim});
-    require(['{if $source}{$source}{else}common{/if}']);
+    require(['{$source}']);
   </script>
 
  {if $poolinfo}

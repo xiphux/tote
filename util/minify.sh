@@ -38,30 +38,25 @@ fi
 
 for i in ${JSDIR}/*${JSEXT}; do
 	echo "Minifying ${i}..."
-	JSMODULE=${i%$JSEXT}
-	java -jar "${COMPRESSORDIR}/${COMPRESSORJAR}" --charset utf-8 -o "${JSMODULE}${MINEXT}" "${i}"
+	JSMODULE="`basename ${i%$JSEXT}`"
+	java -classpath lib/rhino/js.jar:lib/closure/compiler.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o name=${JSMODULE} out=${JSDIR}/${JSMODULE}${MINEXT} baseUrl=${JSDIR} paths.jquery="ext/jquery-1.8.1.min" paths.qtip="ext/jquery.qtip.min" paths.cookies="ext/jquery.cookies.2.2.0.min" optimize="closure"
 done
 
 for i in ${CSSDIR}/*${CSSEXT}; do
 	echo "Minifying ${i}..."
 	CSSFILE=${i%$CSSEXT}
-	java -jar "${COMPRESSORDIR}/${COMPRESSORJAR}" --charset utf-8 -o "${CSSFILE}${MINCSSEXT}" "${i}"
+	java -classpath lib/rhino/js.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o cssIn=${i} out=${CSSFILE}${MINCSSEXT} optimizeCss="standard"
 done
 
 for i in ${SKINDIR}/*; do
 	for j in ${i}/*${CSSEXT}; do
 		echo "Minifying ${j}..."
 		SKINCSSFILE=${j%$CSSEXT}
-		java -jar "${COMPRESSORDIR}/${COMPRESSORJAR}" --charset utf-8 -o "${SKINCSSFILE}${MINCSSEXT}" "${j}"
+		java -classpath lib/rhino/js.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o cssIn=${j} out=${SKINCSSFILE}${MINCSSEXT} optimizeCss="standard"
 	done
 done
 
 for i in ${JSDIR}/*${MINEXT}; do
-	gzip -v -c ${i} > ${i}${GZEXT}
-	touch ${i} ${i}${GZEXT}
-done
-
-for i in ${JSDIR}/ext/*${MINEXT}; do
 	gzip -v -c ${i} > ${i}${GZEXT}
 	touch ${i} ${i}${GZEXT}
 done
