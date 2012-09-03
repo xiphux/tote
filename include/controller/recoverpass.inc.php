@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+
 /**
  * recoverpass controller
  *
@@ -8,6 +10,8 @@
 function display_recoverpass()
 {
 	global $tpl;
+
+	http_headers();
 
 	$tpl->display('recoverpass.tpl');
 

@@ -7,6 +7,9 @@ require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'load_page.inc.php');
 require_once(TOTE_INCLUDEDIR . 'team_abbreviation_to_id.inc.php');
 require_once(TOTE_INCLUDEDIR . 'import_point_spreads.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+
+http_headers();
 
 // times are reported on websites in Eastern
 date_default_timezone_set('America/New_York');

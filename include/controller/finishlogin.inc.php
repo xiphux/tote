@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * finishlogin controller
@@ -65,6 +66,7 @@ function display_finishlogin($user, $pass)
 	if (count($errors) > 0) {
 		// if login failed, send back to login page
 		// and display errors
+		http_headers();
 		$tpl->assign('errors', $errors);
 		$tpl->display('login.tpl');
 	} else {

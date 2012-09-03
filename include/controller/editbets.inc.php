@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('EDITBETS_HEADER', "Edit A User's Bets");
@@ -101,6 +102,7 @@ function display_editbets($poolID, $entrant)
 	$allteams = $teams->find(array())->sort(array('home' => 1, 'team' => 1));
 
 	// provide data and display
+	http_headers();
 	$tpl->assign('pool', $pool);
 	$tpl->assign('entrant', $entrantobj);
 	$tpl->assign('teams', $allteams);

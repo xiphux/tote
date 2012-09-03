@@ -9,6 +9,7 @@ require_once(TOTE_INCLUDEDIR . 'user_is_manager.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 function sort_username($a, $b)
 {
@@ -169,6 +170,7 @@ function display_editusers($order = 'name')
 	}
 
 	// set data and display
+	http_headers();
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('allusers', $userarray);
 	$tpl->assign('order', $order);

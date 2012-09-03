@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 /**
@@ -137,6 +138,7 @@ function display_bet($poolID, $week)
 	uasort($availableteams, 'sort_teams');
 
 	// set data for display
+	http_headers();
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('teams', $availableteams);
 	$tpl->assign('week', $week);

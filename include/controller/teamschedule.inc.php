@@ -8,6 +8,7 @@ require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -107,6 +108,8 @@ function display_teamschedule($season, $team = null, $output = 'html', $week = n
 		$teamgames = $teammapped;
 		$tpl->assign('teamnames', $teamnames);
 	}
+
+	http_headers();
 
 	if (!empty($team)) {
 		$tpl->assign('team', get_team($team));

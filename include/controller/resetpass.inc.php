@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * resetpass controller
@@ -27,6 +28,8 @@ function display_resetpass($key)
 			$errors[] = 'Invalid key.  It may have been used already.';
 		}
 	}
+
+	http_headers();
 
 	if (count($errors) > 0) {
 		// if we have errors, display them

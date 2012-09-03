@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * feed controller
@@ -116,10 +117,12 @@ function display_feed($format, $poolID)
 		header('Content-type: text/xml; charset=UTF-8');
 		$tpl->display('rss.tpl');
 	} else if ($format == 'js') {
+		http_headers();
 		$tpl->assign('js', true);
 		$tpl->display('history.tpl');
 	} else if ($format == 'html') {
 		// display history html page
+		http_headers();
 		$tpl->display('history.tpl');
 	}
 

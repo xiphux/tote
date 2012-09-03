@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+
 /**
  * message controller
  *
@@ -11,6 +13,8 @@
 function display_message($message, $header = '')
 {
 	global $tpl;
+
+	http_headers();
 
 	$tpl->assign('message', $message);
 

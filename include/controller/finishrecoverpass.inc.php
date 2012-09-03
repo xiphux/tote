@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * finishrecoverpass controller
@@ -40,6 +41,7 @@ function display_finishrecoverpass($email)
 		}
 	}
 
+	http_headers();
 	if (count($errors) > 0) {
 		// if there were errors send back to the recovery form
 		// with the errors displayed

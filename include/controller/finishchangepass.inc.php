@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('FINISHCHANGEPASS_HEADER', 'Change Your Password');
@@ -80,6 +81,7 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 		}
 	}
 
+	http_headers();
 	if (count($errors) > 0) {
 		// if we have errors, send them back to the change pass form
 		// with the errors displayed

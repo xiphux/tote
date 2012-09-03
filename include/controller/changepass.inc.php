@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * changepass controller
@@ -16,6 +17,8 @@ function display_changepass()
 		// user must be logged in
 		return redirect();
 	}
+
+	http_headers();
 
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 

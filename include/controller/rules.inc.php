@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_administrators.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * rules controller
@@ -15,6 +16,8 @@ require_once(TOTE_INCLUDEDIR . 'get_pool_administrators.inc.php');
 function display_rules($poolid, $output = 'html')
 {
 	global $tpl, $tote_conf;
+
+	http_headers();
 
 	if (!empty($poolid)) {
 		$pools = get_collection(TOTE_COLLECTION_POOLS);

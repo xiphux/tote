@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('EDITPOOL_HEADER', 'Manage Your Pool');
@@ -95,6 +96,7 @@ function display_editpool($poolID)
 	}
 
 	// set data and display
+	http_headers();
 	if (count($poolusers) > 0) {
 		uasort($poolusers, 'sort_users');
 		$tpl->assign('poolusers', $poolusers);

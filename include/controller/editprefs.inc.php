@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * editprefs
@@ -18,6 +19,8 @@ function display_editprefs()
 		// user must be logged in
 		return redirect();
 	}
+
+	http_headers();
 
 	// reminder time is stored internally in seconds, convert
 	// it to display in hours

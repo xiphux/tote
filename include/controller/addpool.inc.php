@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');  // TODO remove this
@@ -75,6 +76,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 	}
 
 	if (count($errors) > 0) {
+		http_headers();
 		$tpl->assign('errors', $errors);
 		if (!empty($name))
 			$tpl->assign('name', $name);

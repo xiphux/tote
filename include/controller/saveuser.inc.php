@@ -8,6 +8,7 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('SAVEUSER_HEADER', 'Edit A User');
@@ -92,6 +93,7 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 
 	if (count($errors) > 0) {
 		// if we have errors, go back to the edit page and display them
+		http_headers();
 		$tpl->assign("errors", $errors);
 		if (!empty($firstname))
 			$tpl->assign('firstname', $firstname);

@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
  * finishresetpass controller
@@ -66,6 +67,7 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 		}
 	}
 
+	http_headers();
 	if (count($errors) > 0) {
 		// if we have errors, send user back to password reset form
 		// and display them

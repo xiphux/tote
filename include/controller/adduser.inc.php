@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('ADDUSER_HEADER', 'Add A New User');
@@ -98,6 +99,7 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 	if (count($errors) > 0) {
 		// if we have any errors, send the user back to the
 		// form with the data filled out, and display errors
+		http_headers();
 		$tpl->assign("errors", $errors);
 		if (!empty($firstname))
 			$tpl->assign('firstname', $firstname);

@@ -9,6 +9,7 @@ require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_pot.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
@@ -152,6 +153,8 @@ function display_pool($poolID = null)
 			$tpl->assign('forcefull', true);
 		}
 	}
+
+	http_headers();
 
 	if (count($allpools) > 1)
 		$tpl->assign('allpools', $allpools);

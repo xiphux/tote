@@ -9,6 +9,7 @@ require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -71,6 +72,8 @@ function display_schedule($season, $week = null, $output = 'html')
 		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
 		$allgames[] = $gameobj;
 	}
+
+	http_headers();
 
 	if (empty($week)) {
 		$weekmapped = array();
