@@ -1,4 +1,4 @@
-{include file='header.tpl' source='editpool' header='Manage Your Pool' homelink=true}
+{include file='header.tpl' jsmodule='editpool' header='Manage Your Pool' homelink=true}
 
 <span style="display: none" id="poolID">{$pool._id}</span>
 

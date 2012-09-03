@@ -1,4 +1,4 @@
-{include file='header.tpl' source='bet' header='Make A Pick' homelink=true}
+{include file='header.tpl' jsmodule='bet' header='Make A Pick' homelink=true}
 
 <span id="poolSeason" style="display:none;">{$pool.season}</span>
 

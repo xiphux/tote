@@ -1,4 +1,4 @@
-{include file='header.tpl' source='newuser' small=true header='Add A New User' homelink=true mainlink=true}
+{include file='header.tpl' source='newuser' jsmodule='newuser' small=true header='Add A New User' homelink=true mainlink=true}
 
 {if $errors}
 <ul>

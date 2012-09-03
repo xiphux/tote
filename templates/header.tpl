@@ -47,8 +47,8 @@
 
   <script type="text/javascript" src="js/ext/require.js"></script>
   <script type="text/javascript">
-    {if !$source}
-    {assign var=source value=common}
+    {if !$jsmodule}
+    {assign var=jsmodule value=common}
     {/if}
     require.config({ldelim}
   	baseUrl: 'js',
@@ -70,15 +70,15 @@
 		{rdelim}
 	{rdelim},
 	paths: {ldelim}
-		{if "js/$source.min.js"|file_exists}
-		{$source}: '{$source}.min',
+		{if "js/$jsmodule.min.js"|file_exists}
+		{$jsmodule}: '{$jsmodule}.min',
 		{/if}
 		jquery: 'ext/jquery-1.8.1.min',
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min'
 	{rdelim}
     {rdelim});
-    require(['{$source}']);
+    require(['{$jsmodule}']);
   </script>
 
  {if $poolinfo}
