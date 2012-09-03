@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Login' homelink=true source='login'}
+{include file='header.tpl' small=true header='Login' homelink=true}
 
 {if $errors}
 <ul>
@@ -16,7 +16,7 @@
 <label for="username">Username:</label>
 </td>
 <td>
-<input type="text" name="username" />
+<input type="text" name="username" class="initialFocus" />
 </td>
 </tr>
 <tr>

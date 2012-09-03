@@ -1,36 +1,19 @@
-var oldPassword = "";
-
-function initGeneratePassword()
-{
+define(['jquery', 'modules/generatepassword', 'common'], function($, generatepassword) {
 	$('#generateButton').click(function() {
-		var letters = 'ABCDEFGHJKMNPQRSTUVWXYZ';
-		var numbers = '23456789';
+		var pass = generatepassword();
 
-		var pass = "";
-
-		var rlet = Math.floor(Math.random() * letters.length);
-		pass += letters.substring(rlet, rlet+1);
-
-		for (var i = 0; i < 5; i++) {
-			var rnum = Math.floor(Math.random() * numbers.length);
-			pass += numbers.substring(rnum, rnum+1);
-		}
-
-		$('#password').val(pass);
-		$('#password2').val(pass);
+		$('#password').val(pass).data('oldVal', pass);
+		$('#password2').val(pass).data('oldVal', pass);
 		$('#randomPasswordDisplay').text('Generated: ' + pass);
-		oldPassword = pass;
 	});
-
-	$('#password').keyup(function() {
-		var pVal = $('#password').val();
-		if (pVal != oldPassword) {
-			oldPassword = pVal;
+	$('#password, #password2').keyup(function() {
+		var jThis = $(this);
+		if (jThis.val() != jThis.data('oldVal')) {
+			jThis.data('oldVal', jThis.val());
 			$('#randomPasswordDisplay').text('');
 		}
 	});
-}
 
-$(document).ready(function() {
-	initGeneratePassword();
+	$('#password').data('oldVal', $('#password').val());
+	$('#password2').data('oldVal', $('#password2').val());
 });

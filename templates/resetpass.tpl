@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Reset Your Password' homelink=true source='resetpass'}
+{include file='header.tpl' small=true header='Reset Your Password' homelink=true}
 
 {if $errors}
 <ul>
@@ -11,7 +11,7 @@
 <form method="post" action="index.php?a=finishresetpass">
 <table class="formTable">
 <tr>
-<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword"></td>
+<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" class="initialFocus"></td>
 </tr>
 <tr>
 <td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>

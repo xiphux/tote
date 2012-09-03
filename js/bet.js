@@ -1,5 +1,5 @@
-function initTeamLinks()
-{
+define(['jquery', 'qtip', 'common'], function($) {
+
 	$('span.teamName').each(function()
 	{
 		var teamName = $(this).text();
@@ -23,10 +23,7 @@ function initTeamLinks()
 		$(this).empty();
 		$(this).append(link);
 	});
-};
-
-function initBetConfirm()
-{
+	
 	$('#frmBet').submit(function() {
 		if (!$('select[name="t"]').val()) {
 			return false;
@@ -35,10 +32,7 @@ function initBetConfirm()
 		var team = $('select[name="t"] option:selected').text();
 		return confirm("Are you sure you want to pick the " + team + " for week " + week + "?\nOnce this pick is made it cannot be changed.");
 	});
-};
 
-function initTeamSchedules()
-{
 	var url = window.location.href.match(/^([^\?]+\/)/);
         if (!url) {
                 return;
@@ -91,10 +85,5 @@ function initTeamSchedules()
 			}
 		});
 	});
-};
 
-$(document).ready(function() {
-	initTeamLinks();
-	initBetConfirm();
-	initTeamSchedules();
 });

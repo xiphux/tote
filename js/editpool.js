@@ -1,26 +1,32 @@
-function compareUsers(a, b) {
-	var aname = a.find('span.username').text().toLowerCase();
-	var bname = b.find('span.username').text().toLowerCase();
+define(['jquery', 'module', 'modules/titletips', 'common'], function($, module) {
 
-	if (aname < bname)
-		return -1;
-	else if (aname > bname)
-		return 1;
-	return 0;
-}
-
-function sortUsers(listID) {
-	var users = [];
-	$(listID + ' div.userListItem').each(function() {
-		users.push($(this).detach());
+	$('a.deletePoolAction').click(function() {
+		var poolname = $('#poolName').val();
+		return confirm("Are you sure you want to delete the pool \"" + poolname + "\"?\r\nThis pool and all its bets will be permanently removed.");
 	});
-	users.sort(compareUsers);
-	for (var i = 0; i < users.length; i++) {
-		$(listID).append(users[i]);
-	}
-}
 
-function initEditPool() {
+	var compareUsers = function(a, b) {
+		var aname = a.find('span.username').text().toLowerCase();
+		var bname = b.find('span.username').text().toLowerCase();
+
+		if (aname < bname)
+			return -1;
+		else if (aname > bname)
+			return 1;
+		return 0;
+	}
+
+	var sortUsers = function(listID) {
+		var users = [];
+		$(listID + ' div.userListItem').each(function() {
+			users.push($(this).detach());
+		});
+		users.sort(compareUsers);
+		for (var i = 0; i < users.length; i++) {
+			$(listID).append(users[i]);
+		}
+	}
+
 	$('.availableUsers .selectuser').live('click', function(e) {
 		e.stopPropagation();
 		if ($(this).is(':checked')) {
@@ -62,7 +68,7 @@ function initEditPool() {
 				p: $('span#poolID').text(),
 				m: 'add',
 				u: aUsers,
-				csrftoken: TOTE_CSRF_TOKEN
+				csrftoken: module.config().csrftoken
 			},
 			success: function(msg) {
 				if (msg && (msg.length > 0)) {
@@ -99,7 +105,7 @@ function initEditPool() {
 				p: $('span#poolID').text(),
 				m: 'remove',
 				u: pUsers,
-				csrftoken: TOTE_CSRF_TOKEN
+				csrftoken: module.config().csrftoken
 			},
 			success: function(msg) {
 				if (msg && (msg.length > 0)) {
@@ -149,7 +155,7 @@ function initEditPool() {
 				p: $('span#poolID').text(),
 				u: div.attr('id'),
 				type: secondarychecked ? 2 : (primarychecked ? 1 : 0),
-				csrftoken: TOTE_CSRF_TOKEN
+				csrftoken: module.config().csrftoken
 			},
 			success: function(msg) {
 				if (msg && (msg.length > 0)) {
@@ -163,32 +169,5 @@ function initEditPool() {
 			}
 		});
 	});
-}
 
-function initEditPoolTips()
-{
-	$('*[title]').qtip({
-		style: {
-			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
-		},
-		position: {
-			adjust: {
-				screen: true
-			}
-		}
-	});
-}
-
-function initDeleteConfirm()
-{
-	$('a.deletePoolAction').click(function() {
-		var poolname = $('#poolName').val();
-		return confirm("Are you sure you want to delete the pool \"" + poolname + "\"?\r\nThis pool and all its bets will be permanently removed.");
-	});
-}
-
-$(document).ready(function() {
-	initEditPool();
-	initEditPoolTips();
-	initDeleteConfirm();
 });

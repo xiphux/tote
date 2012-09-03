@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Add A New Pool' homelink=true source='newpool'}
+{include file='header.tpl' small=true header='Add A New Pool' homelink=true}
 
 {if $errors}
 <ul>
@@ -12,7 +12,7 @@
 <table class="formTable">
   <tr>
     <td><label for="name">Pool name:</label></td>
-    <td><input type="text" name="name" {if $name}value="{$name}"{/if} /></td>
+    <td><input type="text" name="name" {if $name}value="{$name}"{/if} class="initialFocus"/></td>
   </tr>
   <tr>
     <td><label for="season">Season:</label></td>

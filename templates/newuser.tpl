@@ -12,7 +12,7 @@
 <table class="formTable">
   <tr>
     <td><label for="username">Username:</label></td>
-    <td><input type="text" name="username" {if $username}value="{$username}"{/if} /></td>
+    <td><input type="text" name="username" {if $username}value="{$username}"{/if} class="initialFocus" /></td>
   </tr>
   <tr>
     <td><label for="firstname">First name:</label></td>

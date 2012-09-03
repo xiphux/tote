@@ -45,150 +45,35 @@
     {/if}
   {/if}
 
-  {if $csrftoken && $jstoken}
+  <script type="text/javascript" src="js/ext/require.js"></script>
   <script type="text/javascript">
-    var TOTE_CSRF_TOKEN="{$csrftoken}"
+    require.config({ldelim}
+  	baseUrl: 'js',
+    	config: {ldelim}
+		{if $csrftoken}
+		'editpool': {ldelim}
+			csrftoken: '{$csrftoken}'
+		{rdelim},
+		{/if}
+		'common': {ldelim}
+			mobile: {if $mobile}true{else}false{/if}
+		{rdelim},
+		'pool': {ldelim}
+			mobile: {if $mobile}true{else}false{/if},
+			forcefull: {if $forcefull}true{else}false{/if}
+		{rdelim},
+		'fullschedule': {ldelim}
+			mobile: {if $mobile}true{else}false{/if}
+		{rdelim}
+	{rdelim},
+	paths: {ldelim}
+		jquery: 'ext/jquery-1.8.1.min',
+		qtip: 'ext/jquery.qtip.min',
+		cookies: 'ext/jquery.cookies.2.2.0.min'
+	{rdelim}
+    {rdelim});
+    require(['{if $source}{$source}{else}common{/if}']);
   </script>
-  {/if}
-
-  <script type="text/javascript" src="js/ext/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="js/ext/jquery.cookies.2.2.0.min.js"></script>
-
-  {if $source == 'pool'}
-    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
-    {if file_exists('js/pool.min.js')}
-    <script type="text/javascript" src="js/pool.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/pool.js"></script>
-    {/if}
-    {if !$mobile || $forcefull}
-      {if file_exists('js/poolfull.min.js')}
-      <script type="text/javascript" src="js/poolfull.min.js"></script>
-      {else}
-      <script type="text/javascript" src="js/poolfull.js"></script>
-      {/if}
-      {if file_exists('js/scoreticker.min.js')}
-      <script type="text/javascript" src="js/scoreticker.min.js"></script>
-      {else}
-      <script type="text/javascript" src="js/scoreticker.js"></script>
-      {/if}
-    {/if}
-  {elseif $source == 'bet'}
-    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
-    {if file_exists('js/bet.min.js')}
-    <script type="text/javascript" src="js/bet.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/bet.js"></script>
-    {/if}
-  {elseif $source == 'editpool'}
-    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
-    {if file_exists('js/editpool.min.js')}
-    <script type="text/javascript" src="js/editpool.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/editpool.js"></script>
-    {/if}
-  {elseif $source == 'newuser'}
-    {if file_exists('js/newuser.min.js')}
-    <script type="text/javascript" src="js/newuser.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/newuser.js"></script>
-    {/if}
-  {elseif $source == 'editusers'}
-    {if file_exists('js/editusers.min.js')}
-    <script type="text/javascript" src="js/editusers.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/editusers.js"></script>
-    {/if}
-  {elseif $source == 'login'}
-    {if file_exists('js/login.min.js')}
-    <script type="text/javascript" src="js/login.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/login.js"></script>
-    {/if}
-  {elseif $source == 'recoverpass'}
-    {if file_exists('js/recoverpass.min.js')}
-    <script type="text/javascript" src="js/recoverpass.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/recoverpass.js"></script>
-    {/if}
-  {elseif $source == 'resetpass'}
-    {if file_exists('js/resetpass.min.js')}
-    <script type="text/javascript" src="js/resetpass.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/resetpass.js"></script>
-    {/if}
-  {elseif $source == 'newpool'}
-    {if file_exists('js/newpool.min.js')}
-    <script type="text/javascript" src="js/newpool.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/newpool.js"></script>
-    {/if}
-  {elseif $source == 'changepass'}
-    {if file_exists('js/changepass.min.js')}
-    <script type="text/javascript" src="js/changepass.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/changepass.js"></script>
-    {/if}
-  {elseif $source == 'fullschedule'}
-    <script type="text/javascript">
-      {if $mobile}
-      	var mobile = true;
-      {else}
-        var mobile = false;
-      {/if}
-    </script>
-    {if file_exists('js/fullschedule.min.js')}
-    <script type="text/javascript" src="js/fullschedule.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/fullschedule.js"></script>
-    {/if}
-    {if !$mobile}
-      {if file_exists('js/fullschedulefull.min.js')}
-      <script type="text/javascript" src="js/fullschedulefull.min.js"></script>
-      {else}
-      <script type="text/javascript" src="js/fullschedulefull.js"></script>
-      {/if}
-    {/if}
-  {elseif $source == 'gridschedule'}
-    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
-    {if file_exists('js/gridschedule.min.js')}
-    <script type="text/javascript" src="js/gridschedule.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/gridschedule.js"></script>
-    {/if}
-  {elseif $source == 'analytics'}
-    <script type="text/javascript" src="js/ext/modernizr.min.js"></script>
-    <![if (gte IE 9)|(!IE)]>
-      <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
-    <![endif]>
-    {if $graphtype == 'pickrisk'}
-      {if file_exists('js/pickrisk.min.js')}
-      	<script type="text/javascript" src="js/pickrisk.min.js"></script>
-      {else}
-      	<script type="text/javascript" src="js/pickrisk.js"></script>
-      {/if}
-    {elseif $graphtype == 'pickdist'}
-      {if file_exists('js/pickdist.min.js')}
-      	<script type="text/javascript" src="js/pickdist.min.js"></script>
-      {else}
-      	<script type="text/javascript" src="js/pickdist.js"></script>
-      {/if}
-    {elseif $graphtype == 'teamrel'}
-      {if file_exists('js/teamrel.min.js')}
-      	<script type="text/javascript" src="js/teamrel.min.js"></script>
-      {else}
-      	<script type="text/javascript" src="js/teamrel.js"></script>
-      {/if}
-    {/if}
-  {/if}
-
-  {if $mobile}
-    {if file_exists('js/mobile.min.js')}
-    <script type="text/javascript" src="js/mobile.min.js"></script>
-    {else}
-    <script type="text/javascript" src="js/mobile.js"></script>
-    {/if}
-  {/if}
 
  {if $poolinfo}
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}" type="application/atom+xml" />

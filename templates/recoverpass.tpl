@@ -1,4 +1,4 @@
-{include file='header.tpl' small=true header='Recover Your Password' homelink=true source='recoverpass'}
+{include file='header.tpl' small=true header='Recover Your Password' homelink=true}
 
 <p>Enter the email address used for the account, and we'll email instructions for setting a new password.</p>
 
@@ -11,7 +11,7 @@
 {/if}
 
 <form method="post" action="index.php?a=finishrecoverpass">
-<label for="email">Email:</label> <input type="email" name="email"><br />
+<label for="email">Email:</label> <input type="email" name="email" class="initialFocus"><br />
 <input type="submit" value="Recover" name="login" />
 </form>
 

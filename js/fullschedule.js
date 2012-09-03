@@ -1,30 +1,9 @@
-function getInternetExplorerVersion() {
-	var rv = -1;
-	if (navigator.appName == 'Microsoft Internet Explorer') {
-		var ua = navigator.userAgent;
-		var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-		if (re.exec(ua) != null)
-			rv = parseFloat(RegExp.$1);
-	}
-	return rv;
-};
+define(['jquery', 'module', 'modules/autoselectnav', 'modules/cananimate', 'common'], function($, module, autoselectnav, cananimate) {
+	autoselectnav('#seasonSelect', '#seasonSubmit');
 
-function canAnim() {
-	var ver = getInternetExplorerVersion();
-	return (ver === -1) || (ver > 8);
-};
+	var mobile = module.config().mobile;
 
-function initSeasonNav() {
-	$('#seasonSelect').change(function() {
-		$(this).parent().submit();
-	});
-	$('#seasonSubmit').remove();
-};
-
-function initScheduleToc() {
 	var tocContent = $('.scheduleTocContent');
-
-	var anim = canAnim();
 
 	var tocItemClick = function() {
 		if (!mobile) {
@@ -33,13 +12,13 @@ function initScheduleToc() {
 		var itemId = $(this).attr('href').substr(1);
 		$('.divScheduleItem').each(function() {
 			if ($(this).attr('id') == itemId) {
-				if (mobile || !anim) {
+				if (mobile || !cananimate) {
 					$(this).show();
 				} else {
 					$(this).slideDown('fast');
 				}
 			} else {
-				if (mobile || !anim) {
+				if (mobile || !cananimate) {
 					$(this).hide();
 				} else {
 					$(this).slideUp('fast');
@@ -55,7 +34,7 @@ function initScheduleToc() {
 		if (!mobile) {
 			window.scrollTo(0, 1);
 		}
-		if (mobile || !anim) {
+		if (mobile || !cananimate) {
 			$('.divScheduleItem').show();
 		} else {
 			$('.divScheduleItem').slideDown('fast');
@@ -76,9 +55,33 @@ function initScheduleToc() {
 	li.addClass('activeTab');
 	li.append(showAllLink);
 	tocContent.find('ul').prepend(li);
-};
 
-$(document).ready(function() {
-	initSeasonNav();
-	initScheduleToc();
+	if (!mobile) {
+		var tocYLoc = tocContent.position().top;
+		var tocPosition = tocContent.css('position');
+		var tocTop = tocContent.css('top');
+		var tocParentWidth = tocContent.parent().width()+1;
+
+		var pinned = false;
+
+		$(window).scroll(function() {
+			var windowYLoc = $(document).scrollTop();
+			if (windowYLoc > tocYLoc) {
+				if (!pinned) {
+					tocContent.css('position', 'fixed');
+					tocContent.css('top', '0px');
+					tocContent.parent().width(tocContent.width()+1);
+					pinned = true;
+				}
+			} else {
+				if (pinned) {
+					tocContent.css('position', tocPosition);
+					tocContent.css('top', tocTop);
+					tocContent.parent().width(tocParentWidth);
+					pinned = false;
+				}
+			}
+		});
+	}
+
 });
