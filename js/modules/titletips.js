@@ -1,14 +1,14 @@
 define(['jquery', 'qtip'], function($) {
 	$('*[title]').qtip({
 		style: {
-			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
+			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded',
+			def: false
 		},
 		position: {
-			adjust: {
-				screen: true
-			},
+			viewport: $(window),
 			my: 'bottom left',
-			at: 'top center'
+			at: 'top center',
+			effect: false
 		}
 	});
 });

@@ -36,7 +36,8 @@ define(['jquery', 'qtip'], function($) {
 			position: {
 				my: 'center',
 				at: 'center',
-				target: $(window)
+				target: $(window),
+				effect: false
 			},
 			show: {
 				event: 'click',
@@ -45,7 +46,8 @@ define(['jquery', 'qtip'], function($) {
 			},
 			hide: false,
 			style: {
-				classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
+				classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup',
+				def: false
 			}
 		});
 

@@ -26,12 +26,12 @@ define(['jquery', 'qtip'], function($) {
 					delay: 150
 				},
 				style: {
-					classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
+					classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded',
+					def: false
 				},
 				position: {
-					adjust: {
-						screen: true
-					}
+					viewport: $(window),
+					effect: false
 				}
 			});
 

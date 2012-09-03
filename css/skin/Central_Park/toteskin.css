@@ -232,10 +232,12 @@ div.selected {
 	color: #6c9ffc;
 }
 
-.ui-tooltip-tote .ui-tooltip-wrapper{
+.ui-tooltip-tote {
 	border-color: #83ff28;
 	background-color: #ffffff;
 	color: #454545;
+	font-size: inherit;
+	line-height: inherit;
 }
 
 .ui-tooltip-tote .ui-tooltip-titlebar{

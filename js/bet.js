@@ -74,14 +74,14 @@ define(['jquery', 'qtip', 'common'], function($) {
 				}
 			},
 			style: {
-				classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
+				classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded',
+				def: false
 			},
 			position: {
-				adjust: {
-					screen: true
-				},
+				viewport: $(window),
 				my: 'left center',
-				at: 'right center'
+				at: 'right center',
+				effect: false
 			}
 		});
 	});

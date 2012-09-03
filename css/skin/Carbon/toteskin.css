@@ -238,10 +238,12 @@ div.selected {
 	background-color: #4f4f4f;
 }
 
-.ui-tooltip-tote .ui-tooltip-wrapper{
+.ui-tooltip-tote {
 	border-color: #4f4f4f;
 	background-color: #ededef;
 	color: #000;
+	font-size: inherit;
+	line-height: inherit;
 }
 
 .ui-tooltip-tote .ui-tooltip-titlebar{
