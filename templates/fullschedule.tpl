@@ -16,7 +16,7 @@
 {/if}
 </div>
 <div class="scheduleTabs">
-<span class="activeTab">By Week</span> <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a>
+<span class="activeTab">By Week</span> | <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a> | <a href="{$SCRIPT_NAME}?a=gridschedule&y={$year}">Grid</a>
 </div>
 
 <table class="scheduleTable">

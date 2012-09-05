@@ -377,6 +377,14 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		);
 		break;
 
+	// gridschedule - display the season schedule as a grid
+	case 'gridschedule':
+		require_once(TOTE_CONTROLLERDIR . 'gridschedule.inc.php');
+		display_gridschedule(
+			(empty($_GET['y']) ? null : $_GET['y'])
+		);
+		break;
+
 
 	// pool (default) - display a pool
 	default:

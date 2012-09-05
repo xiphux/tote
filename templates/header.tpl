@@ -153,6 +153,13 @@
       <script type="text/javascript" src="js/fullschedulefull.js"></script>
       {/if}
     {/if}
+  {elseif $source == 'gridschedule'}
+    <script type="text/javascript" src="js/ext/jquery.qtip.min.js"></script>
+    {if file_exists('js/gridschedule.min.js')}
+    <script type="text/javascript" src="js/gridschedule.min.js"></script>
+    {else}
+    <script type="text/javascript" src="js/gridschedule.js"></script>
+    {/if}
   {/if}
 
   {if $mobile}
