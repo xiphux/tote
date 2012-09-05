@@ -1,19 +1,12 @@
-function initSeasonNav() {
-	$('#seasonSelect').change(function() {
-		$(this).parent().submit();
-	});
-	$('#seasonSubmit').remove();
-};
+define(['jquery', 'modules/autoselectnav', 'qtip', 'common'], function($, autoselectnav) {
+	autoselectnav('#seasonSelect', '#seasonSubmit');
 
-function initGridTips() {
 	$('.gridSchedule .gridGame').qtip({
 		style: {
 			classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
 		},
 		position: {
-			adjust: {
-				screen: true
-			},
+			viewport: $(window),
 			my: 'bottom left',
 			at: 'top center'
 		},
@@ -26,9 +19,4 @@ function initGridTips() {
 			}
 		}
 	});
-};
-
-$(document).ready(function() {
-	initSeasonNav();
-	initGridTips();
 });

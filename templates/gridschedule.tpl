@@ -1,4 +1,4 @@
-{include file='header.tpl' header='Game Schedule' homelink=true source='gridschedule'}
+{include file='header.tpl' header='Game Schedule' homelink=true jsmodule='gridschedule'}
 
 <div class="scheduleNav">
 {if $allseasons && (count($allseasons) > 1)}
