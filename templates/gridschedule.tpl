@@ -30,7 +30,7 @@
   <tr class="{cycle values=light,dark}">
     <td><strong>{$teamabbrs.$team}</strong></td>
     {foreach from=$teamgames key=eachweek item=game}
-     <td{if !$game.bye} title="{$game.localstart->format('D M j, Y g:i a T')}"{/if}>
+     <td {if !$game.bye}class="gridGame" data-start="{$game.localstart->format('D M j, Y g:i a T')}" data-game="{$game.away_team.abbreviation}{if isset($game.away_score)} {$game.away_score}{/if} @ {$game.home_team.abbreviation}{if isset($game.home_score)} {$game.home_score}{/if}"{/if}>
      {if $game.bye}
        Bye
      {elseif $game.away_team._id == $team}

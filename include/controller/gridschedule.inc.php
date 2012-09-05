@@ -47,7 +47,7 @@ function display_gridschedule($season)
 			'season' => (int)$season
 		),
 		array(
-			'home_team', 'away_team', 'week', 'start'
+			'home_team', 'away_team', 'home_score', 'away_score', 'week', 'start'
 		)
 	);
 
