@@ -30,7 +30,7 @@
   <tr class="{cycle values=light,dark}">
     <td><strong>{$teamabbrs.$team}</strong></td>
     {foreach from=$teamgames key=eachweek item=game}
-     <td{if !$game.bye} title="{$game.away_team.abbreviation} @ {$game.home_team.abbreviation}"{/if}>
+     <td{if !$game.bye} title="{$game.localstart->format('D M j, Y g:i a T')}"{/if}>
      {if $game.bye}
        Bye
      {elseif $game.away_team._id == $team}

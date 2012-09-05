@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -46,7 +47,7 @@ function display_gridschedule($season)
 			'season' => (int)$season
 		),
 		array(
-			'home_team', 'away_team', 'week'
+			'home_team', 'away_team', 'week', 'start'
 		)
 	);
 
@@ -57,6 +58,7 @@ function display_gridschedule($season)
 	foreach ($gameobjs as $i => $gameobj) {
 		$gameobj['home_team'] = get_team($gameobj['home_team']);
 		$gameobj['away_team'] = get_team($gameobj['away_team']);
+		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
 		$teamgames[(string)$gameobj['home_team']['_id']][$gameobj['week']] = $gameobj;
 		$teamgames[(string)$gameobj['away_team']['_id']][$gameobj['week']] = $gameobj;
 	}
