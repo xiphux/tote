@@ -25,8 +25,8 @@
 <div>
 <label for="timezone">Timezone:</label>
 <select name="timezone">
-{foreach from=$availabletimezones item=tz}
-<option value="{$tz}" {if ($tz == $user.timezone) || (!$user.timezone && ($tz == $defaulttimezone))}selected="selected"{/if}>{$tz|replace:'_':' '}</option>
+{foreach from=$availabletimezones key=tz item=readabletz}
+<option value="{$tz}" {if ($tz == $user.timezone) || (!$user.timezone && ($tz == $defaulttimezone))}selected="selected"{/if}>{$readabletz}</option>
 {/foreach}
 </select>
 </div>
