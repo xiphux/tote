@@ -182,10 +182,14 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 						this.__homeCell.text(changeData.home);
 						break;
 					case 'homeScore':
-						this.__homeScoreCell.text(changeData.homeScore);
+						if (this.__game.get_quarter() !== 'P') {
+							this.__homeScoreCell.text(changeData.homeScore);
+						}
 						break;
 					case 'visitorScore':
-						this.__visitorScoreCell.text(changeData.visitorScore);
+						if (this.__game.get_quarter() !== 'P') {
+							this.__visitorScoreCell.text(changeData.visitorScore);
+						}
 						break;
 					case 'redZone':
 						if (changeData.redZone) {
@@ -198,12 +202,12 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 						this.__updateQuarter(changeData.quarter);
 						break;
 					case 'possession':
-						if (changeData.possession === this.__game.get_visitor()) {
+						if (this.__game.playing() && (changeData.possession === this.__game.get_visitor())) {
 							this.__visitorPossessionCell.text('<');
 						} else {
 							this.__visitorPossessionCell.text('');
 						}
-						if (changeData.possession === this.__game.get_home()) {
+						if (this.__game.playing() && (changeData.possession === this.__game.get_home())) {
 							this.__homePossessionCell.text('<');
 						} else {
 							this.__homePossessionCell.text('');
