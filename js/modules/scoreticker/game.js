@@ -48,10 +48,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__year = year;
 
-			this.__updates.year = year;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ year: year });
 		},
 
 		get_seasonType: function()
@@ -66,10 +63,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__seasonType = seasonType;
 
-			this.__updates.seasonType = seasonType;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ seasonType: seasonType });
 		},
 
 		get_week: function()
@@ -84,10 +78,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__week = week;
 
-			this.__updates.week = week;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ week: week });
 		},
 
 		get_gsis: function()
@@ -102,10 +93,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__gsis = gsis;
 
-			this.__updates.gsis = gsis;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ gsis: gsis });
 		},
 
 		get_eid: function()
@@ -120,10 +108,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__eid = eid;
 
-			this.__updates.eid = eid;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ eid: eid });
 		},
 
 		get_start: function()
@@ -143,11 +128,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 			this.__localStartDay = shifted.day;
 			this.__localStartTime = shifted.time;
 
-			this.__updates.startDay = day;
-			this.__updates.startTime = time;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ startDay: day, startTime: time });
 		},
 
 		__shiftStart: function(day, time, offset) {
@@ -173,10 +154,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__visitor = visitor;
 
-			this.__updates.visitor = visitor;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ visitor: visitor });
 		},
 
 		get_visitorNickname: function()
@@ -191,10 +169,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__visitorNickname = visitorNickname;
 
-			this.__updates.visitorNickname = visitorNickname;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ visitorNickname: visitorNickname });
 		},
 
 		get_home: function()
@@ -209,10 +184,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__home = home;
 
-			this.__updates.home = home;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ home: home });
 		},
 
 		get_homeNickname: function()
@@ -227,10 +199,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__homeNickname = homeNickname;
 
-			this.__updates.homeNickname = homeNickname;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ homeNickname: homeNickname });
 		},
 
 		get_homeScore: function()
@@ -245,10 +214,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__homeScore = homeScore;
 
-			this.__updates.homeScore = homeScore;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ homeScore: homeScore });
 		},
 
 		get_visitorScore: function()
@@ -263,10 +229,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__visitorScore = visitorScore;
 
-			this.__updates.visitorScore = visitorScore;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ visitorScore: visitorScore });
 		},
 
 		get_redZone: function()
@@ -281,10 +244,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__redZone = redZone;
 
-			this.__updates.redZone = redZone;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ redZone: redZone });
 		},
 
 		get_quarter: function()
@@ -299,10 +259,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__quarter = quarter;
 
-			this.__updates.quarter = quarter;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ quarter: quarter });
 		},
 
 		get_clock: function()
@@ -317,10 +274,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__clock = clock;
 
-			this.__updates.clock = clock;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ clock: clock });
 		},
 
 		get_possession: function()
@@ -335,10 +289,7 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 
 			this.__possession = possession;
 
-			this.__updates.possession = possession;
-			if (!this.__delayNotify) {
-				this.__notify();
-			}
+			this.__queueUpdates({ possession: possession });
 		},
 
 		set_data: function(data)
@@ -509,6 +460,25 @@ define(['modules/scoreticker/localstart'], function(localStart) {
 					this.__observers.splice(i, 1);
 					return;
 				}
+			}
+		},
+
+		__queueUpdates: function(updates)
+		{
+			if (!updates)
+				return;
+
+			var modified = false;
+
+			for (var key in updates) {
+				if (updates.hasOwnProperty(key)) {
+					this.__updates[key] = updates[key];
+					modified = true;
+				}
+			}
+
+			if (modified && !this.__delayNotify) {
+				this.__notify();
 			}
 		},
 
