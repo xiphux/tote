@@ -2,7 +2,7 @@ define(['jquery'], function($) {
 
 	function BigPlayQueue(container) {
 		this.__queue = [];
-		this.__displayed = [];
+		this.__queued = [];
 		this.__container = container;
 	}
 
@@ -11,7 +11,7 @@ define(['jquery'], function($) {
 		__container: null,
 
 		__queue: null,
-		__displayed: null,
+		__queued: null,
 
 		__activeEntry: null,
 		__timer: null,
@@ -36,6 +36,8 @@ define(['jquery'], function($) {
 			this.__started = false;
 
 			this.__hideCurrent();
+
+			this.__queue = [];
 		},
 
 		started: function()
@@ -49,11 +51,11 @@ define(['jquery'], function($) {
 				return;
 
 			var id = popup.get_bigPlay().get_id();
-			if (this.__displayed[id]) {
+			if (this.__queued[id]) {
 				return;
 			}
 
-			this.__displayed[id] = true;
+			this.__queued[id] = true;
 
 			this.__queue.push(popup);
 
