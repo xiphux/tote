@@ -1,4 +1,4 @@
-define(['jquery', 'cookies'], function($) {
+define(['jquery', 'module', 'cookies'], function($, module) {
 
 	var Tote = {
 	};
@@ -106,6 +106,8 @@ define(['jquery', 'cookies'], function($) {
 			eid: null,
 			startDay: null,
 			startTime: null,
+			localStartDay: null,
+			localStartTime: null,
 			visitor: null,
 			visitorNickname: null,
 			home: null,
@@ -249,7 +251,7 @@ define(['jquery', 'cookies'], function($) {
 
 				case 'P':
 					// pending game
-					return this._data.day + ' ' + this._data.time;
+					return this._data.localStartDay + ' ' + this._data.localStartTime;
 
 				case 'F':
 					// final
@@ -450,28 +452,110 @@ define(['jquery', 'cookies'], function($) {
 
 		get_start: function()
 		{
-			return { day: this._data.day, time: this._data.time };
+			return { day: this._data.startDay, time: this._data.startTime };
 		},
 
 		set_start: function(day, time)
 		{
-			var changed = false;
+			if ((this._data.startDay == day) && (this._data.startTime == time))
+				return;
 
-			if (this._data.day !== day) {
-				this._data.day = day;
-				changed = true;
+			this._data.startDay = day;
+			this._data.startTime = time;
+
+			var timezoneoffset = module.config().timezoneoffset;
+			if (timezoneoffset) {
+				var shifted = this._shiftStart(day, time, timezoneoffset);
+				this._data.localStartDay = shifted.day;
+				this._data.localStartTime = shifted.time;
+			} else {
+				this._data.localStartDay = day;
+				this._data.localStartTime = time;
 			}
 
-			if (this._data.time !== time) {
-				this._data.time = time;
-				changed = true;
+			if (this._initialized && (this._data.quarter === 'P')) {
+				this._elements.statusCell.text(this._buildStatus());
+			}
+		},
+
+		_shiftStart: function(day, time, offset) {
+			var now = new Date();
+
+			now.setHours(0, 0, 0, 0);
+
+			var dayInt = this._dayToNum(day);
+			if (dayInt < 0) {
+				return { day: day, time: time };
 			}
 
-			if (changed && this._initialized) {
-				if (this._data.quarter === 'P') {
-					this._elements.statusCell.text(this._buildStatus());
-				}
+			while (now.getDay() != dayInt) {
+				now.setTime(now.getTime() + 86400000);
 			}
+
+			var timepieces = time.split(':');
+			timepieces[0] = parseInt(timepieces[0]);
+			timepieces[1] = parseInt(timepieces[1]);
+			if (timepieces[0] < 11)
+				timepieces[0] += 12;
+			now.setHours(parseInt(timepieces[0]), parseInt(timepieces[1]));
+
+			now.setTime(now.getTime() + (offset * 1000));
+
+			var shiftedDay = this._numToDay(now.getDay());
+			var shiftedHours = now.getHours();
+			if (shiftedHours > 12)
+				shiftedHours -= 12;
+			var shiftedMin = now.getMinutes();
+			if (shiftedMin < 10)
+				shiftedMin = "0" + shiftedMin;
+			var shiftedTime = shiftedHours + ":" + shiftedMin;
+
+			return { day: shiftedDay, time: shiftedTime };
+		},
+
+		_dayToNum: function(day)
+		{
+			day = day.toUpperCase();
+			switch (day) {
+				case 'SUN':
+					return 0;
+				case 'MON':
+					return 1;
+				case 'TUE':
+					return 2;
+				case 'WED':
+					return 3;
+				case 'THU':
+					return 4;
+				case 'FRI':
+					return 5;
+				case 'SAT':
+					return 6;
+			}
+
+			return -1;
+		},
+
+		_numToDay: function(num)
+		{
+			switch (num) {
+				case 0:
+					return 'Sun';
+				case 1:
+					return 'Mon';
+				case 2:
+					return 'Tue';
+				case 3:
+					return 'Wed';
+				case 4:
+					return 'Thu';
+				case 5:
+					return 'Fri';
+				case 6:
+					return 'Sat';
+			}
+
+			return '';
 		},
 
 		get_visitor: function()

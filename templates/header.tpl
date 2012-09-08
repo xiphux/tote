@@ -61,6 +61,11 @@
 		'common': {ldelim}
 			mobile: {if $mobile}true{else}false{/if}
 		{rdelim},
+		{if $timezoneoffset}
+		'modules/scoreticker': {ldelim}
+			timezoneoffset: {$timezoneoffset}
+		{rdelim},
+		{/if}
 		'fullschedule': {ldelim}
 			mobile: {if $mobile}true{else}false{/if}
 		{rdelim}

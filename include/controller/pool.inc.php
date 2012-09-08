@@ -152,6 +152,15 @@ function display_pool($poolID = null)
 		} else if (isset($_COOKIE[TOTE_FULL_VERSION_COOKIE]) && ($_COOKIE[TOTE_FULL_VERSION_COOKIE] == 1)) {
 			$tpl->assign('forcefull', true);
 		}
+	} else {
+		if (!empty($user['timezone']) && ($user['timezone'] != 'America/New_York')) {
+			$localtz = new DateTimeZone('America/New_York');
+			$usertz = new DateTimeZone($user['timezone']);
+			$localtime = new DateTime("now", $localtz);
+			$usertime = new DateTime("now", $usertz);
+			$offset = $usertz->getOffset($usertime) - $localtz->getOffset($localtime);
+			$tpl->assign('timezoneoffset', $offset);
+		}
 	}
 
 	http_headers();
