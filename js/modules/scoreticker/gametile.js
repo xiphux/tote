@@ -135,7 +135,7 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			this.__base.attr('href', game.get_url());
 			this.__base.attr('id', game.get_gsis());
 
-			this.__updateState();
+			this.__updateQuarter(game.get_quarter());
 		},
 
 		observeChange: function(object, changeType, changeData)
@@ -180,7 +180,7 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 						}
 						break;
 					case 'quarter':
-						this.__updateState();
+						this.__updateQuarter(changeData.quarter);
 						break;
 					case 'possession':
 						if (changeData.possession === this.__game.get_visitor()) {
@@ -198,14 +198,13 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			}
 		},
 
-		__updateState: function()
+		__updateQuarter: function(quarter)
 		{
 			if (!this.__game)
 				return;
 
 			var game = this.__game;
 			var table = this.__table;
-			var quarter = game.get_quarter();
 			switch (quarter) {
 				case 'P':
 					table.removeClass('tickerPlaying');
