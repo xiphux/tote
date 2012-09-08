@@ -62,7 +62,7 @@
 			mobile: {if $mobile}true{else}false{/if}
 		{rdelim},
 		{if $timezoneoffset}
-		'modules/scoreticker': {ldelim}
+		'modules/scoreticker/localstart': {ldelim}
 			timezoneoffset: {$timezoneoffset}
 		{rdelim},
 		{/if}
