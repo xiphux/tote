@@ -33,42 +33,34 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 
 		initialize: function()
 		{
+			this.__initElements();
+			this.__initState();
+		},
+
+		__initElements: function()
+		{
 			var a = $(document.createElement('a'));
 			this.__base = a;
 
 			var table = $(document.createElement('table'));
 			this.__table = table;
 			table.addClass('tickerGameTile');
-			if (this.__game && this.__game.get_redZone()) {
-				table.addClass('tickerGameRedZone');
-			}
 
 			var visitorRow = $(document.createElement('tr'));
 
 			var visitorCell = $(document.createElement('td'));
 			this.__visitorCell = visitorCell;
 			visitorCell.addClass('tickerGameTeam');
-			if (this.__game) {
-				visitorCell.text(this.__game.get_visitor());
-			}
 			visitorRow.append(visitorCell);
 
 			var visitorPossessionCell = $(document.createElement('td'));
 			this.__visitorPossessionCell = visitorPossessionCell;
 			visitorPossessionCell.addClass('tickerPossession');
-			if (this.__game) {
-				if (this.__game.playing() && (this.__game.get_possession() === this.__game.get_visitor())) {
-					visitorPossessionCell.text('<');
-				}
-			}
 			visitorRow.append(visitorPossessionCell);
 
 			var visitorScoreCell = $(document.createElement('td'));
 			this.__visitorScoreCell = visitorScoreCell;
 			visitorScoreCell.addClass('tickerGameScore');
-			if (this.__game && (this.__game.get_quarter() !== 'P')) {
-				visitorScoreCell.text(this.__game.get_visitorScore());
-			}
 			visitorRow.append(visitorScoreCell);
 
 			table.append(visitorRow);
@@ -79,27 +71,16 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			var homeCell = $(document.createElement('td'));
 			this.__homeCell = homeCell;
 			homeCell.addClass('tickerGameTeam');
-			if (this.__game) {
-				homeCell.text(this.__game.get_home());
-			}
 			homeRow.append(homeCell);
 
 			var homePossessionCell = $(document.createElement('td'));
 			this.__homePossessionCell = homePossessionCell;
 			homePossessionCell.addClass('tickerPossession');
-			if (this.__game) {
-				if (this.__game.playing() && (this.__game.get_possession() === this.__game.get_home())) {
-					homePossessionCell.text('<');
-				}
-			}
 			homeRow.append(homePossessionCell);
 
 			var homeScoreCell = $(document.createElement('td'));
 			this.__homeScoreCell = homeScoreCell;
 			homeScoreCell.addClass('tickerGameScore');
-			if (this.__game && (this.__game.get_quarter() !== 'P')) {
-				homeScoreCell.text(this.__game.get_homeScore());
-			}
 			homeRow.append(homeScoreCell);
 
 			table.append(homeRow);
@@ -110,19 +91,49 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			this.__statusCell = statusCell;
 			statusCell.addClass('tickerGameStatus');
 			statusCell.attr('colspan', '3');
-			if (this.__game) {
-				statusCell.text(this.__game.get_status());
-			}
 			statusRow.append(statusCell);
 
 			table.append(statusRow);
 
-			if (this.__game) {
-				a.attr('href', this.__game.get_url());
-				a.attr('id', this.__game.get_gsis());
-			}
 			a.attr('target', '_blank');
 			a.append(table);
+		},
+
+		__initState: function()
+		{
+			if (!this.__game)
+				return;
+
+			var game = this.__game;
+
+			if (game.get_redZone()) {
+				this.__table.addClass('tickerGameRedZone');
+			}
+
+			this.__visitorCell.text(game.get_visitor());
+
+			if (game.playing() && (game.get_possession() === game.get_visitor())) {
+				this.__visitorPossessionCell.text('<');
+			}
+
+			if (game.get_quarter() !== 'P') {
+				this.__visitorScoreCell.text(game.get_visitorScore());
+			}
+
+			this.__homeCell.text(game.get_home());
+
+			if (game.playing() && (game.get_possession() === game.get_home())) {
+				this.__homePossessionCell.text('<');
+			}
+
+			if (game.get_quarter() !== 'P') {
+				this.__homeScoreCell.text(game.get_homeScore());
+			}
+
+			this.__statusCell.text(game.get_status());
+
+			this.__base.attr('href', game.get_url());
+			this.__base.attr('id', game.get_gsis());
 
 			this.__updateState();
 		},
@@ -192,8 +203,9 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			if (!this.__game)
 				return;
 
+			var game = this.__game;
 			var table = this.__table;
-			var quarter = this.__game.get_quarter();
+			var quarter = game.get_quarter();
 			switch (quarter) {
 				case 'P':
 					table.removeClass('tickerPlaying');
@@ -216,8 +228,8 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			var visitorwin = false;
 			var homewin = false;
 			if ((quarter === 'F') || (quarter === 'FO')) {
-				var vs = this.__game.get_visitorScore() * 1;
-				var hs = this.__game.get_homeScore() * 1;
+				var vs = game.get_visitorScore() * 1;
+				var hs = game.get_homeScore() * 1;
 				if (hs > vs) {
 					homewin = true;
 				} else if (vs > hs) {
