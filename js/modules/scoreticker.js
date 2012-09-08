@@ -1,4 +1,4 @@
-define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './scoreticker/bigplay', './scoreticker/bigplaypopup', 'cookies'], function($, module, Game, GameTile, BigPlay, BigPlayPopup) {
+define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './scoreticker/bigplay', './scoreticker/bigplaypopup', './scoreticker/bigplayqueue', 'cookies'], function($, module, Game, GameTile, BigPlay, BigPlayPopup, BigPlayQueue) {
 
 	var Tote = {
 	};
@@ -19,12 +19,6 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 		};
 
 		this._gameObjects = {};
-
-		this._bigPlayPopup = null;
-		this._showBigPlays = true;
-
-		this._displayedBigPlays = [];
-		this._bigPlayQueue = [];
 	};
 
 	Tote.ScoreTicker.Ticker.CSSClasses = {
@@ -92,7 +86,6 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 			toggleLink.attr('href', '#');
 			var ticker = this;
 			var showCallback = function(event) {
-				ticker._showBigPlays = false;
 				ticker.start();
 				if ($.cookies.test()) {
 					var exp = new Date();
@@ -101,9 +94,7 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 				}
 				ticker._elements.bound.removeClass('rounded-bottom');
 				ticker._elements.containerDiv.show('fast', function() {
-					ticker._elements.gameTable.animate({marginLeft: 0}, 'fast', function() {
-						ticker._showBigPlays = true;
-					});
+					ticker._elements.gameTable.animate({marginLeft: 0}, 'fast');
 					ticker._elements.toggleLink.text(Tote.ScoreTicker.Ticker.Labels.hideLink);
 					ticker._elements.toggleLink.removeClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
 					ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.open);
@@ -126,11 +117,7 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 						ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
 					});
 				};
-				if (ticker._bigPlayPopup && ticker._bigPlayPopup.visible()) {
-					ticker._bigPlayPopup.hide(animateHide);
-				} else {
-					animateHide();
-				}
+				animateHide();
 				return false;
 			};
 			if (hidden) {
@@ -174,6 +161,11 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 				gameTable.css('margin-left', -this._elements.bound.outerWidth());
 				this._elements.bound.addClass('rounded-bottom');
 			}
+
+			this._bigPlayQueue = new BigPlayQueue(containerDiv);
+			if (!hidden) {
+				this._bigPlayQueue.start();
+			}
 		},
 
 		_update: function()
@@ -196,9 +188,6 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 			var bps = $(xml).find('bps');
 
 			this._updateBigPlays(bps);
-			if (this._showBigPlays && !(this._bigPlayPopup && this._bigPlayPopup.visible())) {
-				this._showNextBigPlay();
-			}
 
 			this._elements.bound.width(this._elements.gameTable.width() + 4);
 
@@ -307,45 +296,6 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 			}
 
 			var ticker = this;
-
-			bps.each(function() {
-				var b = $(this);
-
-				var id = b.attr('id');
-				if (!id) {
-					return;
-				}
-
-				if (ticker._displayedBigPlays[id]) {
-					return;
-				}
-
-				ticker._displayedBigPlays[id] = true;
-
-				var bpObj = new BigPlay();
-				bpObj.set_data({
-					id: id,
-					gsis: b.attr('gsis'),
-					eid: b.attr('eid'),
-					team: b.attr('abbr'),
-					message: b.attr('x')
-				});
-
-				ticker._bigPlayQueue.push(bpObj);
-			});
-		},
-
-		_showNextBigPlay: function()
-		{
-			if (this._bigPlayQueue.length < 1) {
-				return;
-			}
-
-			var bpObj = this._bigPlayQueue[0];
-			if (!bpObj) {
-				return;
-			}
-
 			var count = 0;
 			var gsis = null;
 			for (gsis in this._gameObjects) {
@@ -354,39 +304,31 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 				}
 			}
 			var half = Math.ceil(count/2);
-			var idx = 0;
 
-			var ticker = this;
-			gsis = null;
-			for (gsis in this._gameObjects) {
-				if (this._gameObjects.hasOwnProperty(gsis)) {
-					if (this._gameObjects[gsis]) {
-						idx++;
-						if (gsis === bpObj.get_gsis()) {
-							this._bigPlayPopup = new BigPlayPopup(bpObj, this._gameObjects[gsis], (idx >= half));
-							this._bigPlayPopup.initialize();
-							this._elements.containerDiv.append(this._bigPlayPopup.get_element());
-							this._bigPlayPopup.show(function() {
-								window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, ticker), 10000);
-							});
-							return;
+			bps.each(function() {
+				var b = $(this);
+
+				var bpObj = new BigPlay();
+				bpObj.set_data({
+					id: b.attr('id'),
+					gsis: b.attr('gsis'),
+					eid: b.attr('eid'),
+					team: b.attr('abbr'),
+					message: b.attr('x')
+				});
+
+				var idx = 0;
+				for (var gsis in ticker._gameObjects) {
+					if (ticker._gameObjects.hasOwnProperty(gsis)) {
+						if (ticker._gameObjects[gsis]) {
+							idx++;
+							if (gsis === bpObj.get_gsis()) {
+								var popup = new BigPlayPopup(bpObj, ticker._gameObjects[gsis], (idx >= half));
+								ticker._bigPlayQueue.push(popup);
+								return;
+							}
 						}
 					}
-				}
-			}
-		},
-
-		_bigPlayFinished: function()
-		{
-			var ticker = this;
-			this._bigPlayPopup.hide(function() {
-				ticker._bigPlayPopup.get_element().remove();
-				this._bigPlayPopup = null;
-				if (ticker._bigPlayQueue.length > 0) {
-					ticker._bigPlayQueue.shift();
-				}
-				if ((ticker._bigPlayQueue.length > 0) && ticker._started) {
-					ticker._showNextBigPlay();
 				}
 			});
 		},
@@ -426,6 +368,7 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 
 			this._started = true;
 			this._update();
+			this._bigPlayQueue.start();
 		},
 
 		stop: function() {
@@ -434,7 +377,7 @@ define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './s
 				window.clearTimeout(this._timerId);
 				this._timerId = null;
 			}
-			this._bigPlayQueue = [];
+			this._bigPlayQueue.stop();
 		},
 
 		get_started: function() {
