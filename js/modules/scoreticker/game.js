@@ -1,4 +1,4 @@
-define(['modules/scoreticker/localstart'], function(localStart) {
+define(['./localstart'], function(localStart) {
 	
 	function Game() {
 		this.__observers = [];

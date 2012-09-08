@@ -1,4 +1,4 @@
-define(['jquery', 'modules/scoreticker/game'], function($, Game) {
+define(['jquery'], function($, Game) {
 
 	function GameTile(game) {
 		if (game) {

@@ -1,4 +1,4 @@
-define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gametile', 'modules/scoreticker/bigplay', 'modules/scoreticker/bigplaypopup', 'cookies'], function($, module, Game, GameTile, BigPlay, BigPlayPopup) {
+define(['jquery', 'module', './scoreticker/game', './scoreticker/gametile', './scoreticker/bigplay', './scoreticker/bigplaypopup', 'cookies'], function($, module, Game, GameTile, BigPlay, BigPlayPopup) {
 
 	var Tote = {
 	};
