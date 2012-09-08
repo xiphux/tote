@@ -31,6 +31,21 @@ define(['jquery', 'modules/scoreticker/game'], function($, Game) {
 			return this.__base;
 		},
 
+		get_position: function()
+		{
+			return this.__table.position();
+		},
+
+		get_width: function()
+		{
+			return this.__table.width();
+		},
+
+		get_height: function()
+		{
+			return this.__table.height();
+		},
+
 		initialize: function()
 		{
 			this.__initElements();

@@ -1,244 +1,9 @@
-define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gametile', 'modules/scoreticker/bigplay', 'cookies'], function($, module, Game, GameTile, BigPlay) {
+define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gametile', 'modules/scoreticker/bigplay', 'modules/scoreticker/bigplaypopup', 'cookies'], function($, module, Game, GameTile, BigPlay, BigPlayPopup) {
 
 	var Tote = {
 	};
 
 	Tote.ScoreTicker = {
-	};
-
-	Tote.ScoreTicker.BigPlayPopup = function()
-	{
-		this._data = {
-			team: null,
-			message: null,
-			animationSpeed: 400,
-			shown: false,
-			reverse: false
-		};
-		this._elements = {
-			tile: null,
-			content: null,
-			team: null,
-			message: null
-		};
-
-		this._width = 150;
-	};
-
-	Tote.ScoreTicker.BigPlayPopup.CSSClasses = {
-		bigPlay: 'tickerBigPlay',
-		bigPlayContent: 'tickerBigPlayContent',
-		bigPlayRight: 'tickerBigPlayRight',
-		bigPlayLeft: 'tickerBigPlayLeft',
-		bigPlayTeam: 'tickerBigPlayTeam',
-		bigPlayMessage: 'tickerBigPlayMessage'
-	};
-
-	Tote.ScoreTicker.BigPlayPopup.prototype = {
-
-		initialize: function()
-		{
-			this._buildElement();
-		},
-
-		_buildElement: function()
-		{
-			var tile = jQuery(document.createElement('div'));
-			tile.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlay);
-			tile.width(0);
-			tile.css('opacity', 0.25);
-
-			var content = jQuery(document.createElement('div'));
-			content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayContent);
-
-			var team = jQuery(document.createElement('div'));
-			team.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayTeam);
-			content.append(team);
-
-			var message = jQuery(document.createElement('div'));
-			message.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayMessage);
-			content.append(message);
-
-			tile.append(content);
-
-			this._elements.tile = tile;
-			this._elements.content = content;
-			this._elements.team = team;
-			this._elements.message = message;
-		},
-
-		show: function(afterShow)
-		{
-			if (this._data.shown) {
-				return;
-			}
-
-			if (this._data.reverse) {
-				this._elements.content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayLeft);
-				this._elements.content.removeClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayRight);
-			} else {
-				this._elements.content.addClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayRight);
-				this._elements.content.removeClass(Tote.ScoreTicker.BigPlayPopup.CSSClasses.bigPlayLeft);
-			}
-
-			var anim = {
-				width: this._width + 'px',
-				opacity: 1
-			};
-
-			if (this._data.reverse) {
-				anim.left = (this.get_left() - this._width) + 'px';
-			}
-
-			this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
-				if (afterShow) {
-					afterShow();
-				}
-			});
-
-			this._data.shown = true;
-		},
-
-		hide: function(afterHide)
-		{
-			if (!this._data.shown) {
-				return;
-			}
-
-			var anim = {
-				width: '0px',
-				opacity: 0.25
-			};
-
-			if (this._data.reverse) {
-				anim.left = (this.get_left() + this._width) + 'px';
-			}
-
-			this._elements.tile.animate(anim, this._data.animationSpeed, 'swing', function() {
-				if (afterHide) {
-					afterHide();
-				}
-			});
-
-			this._data.shown = false;
-		},
-
-		is_showing: function()
-		{
-			return this._data.shown;
-		},
-
-		get_team: function()
-		{
-			return this._data.team;
-		},
-
-		set_team: function(team)
-		{
-			this._data.team = team;
-			this._elements.team.text(team);
-		},
-
-		get_message: function()
-		{
-			return this._data.message;
-		},
-
-		set_message: function(message)
-		{
-			this._data.message = message;
-			this._elements.message.text((message.length > 52) ? (message.substring(0, 52) + "...") : message);
-		},
-
-		get_reverse: function()
-		{
-			return this._data.reverse;
-		},
-
-		set_reverse: function(reverse)
-		{
-			if (this._data.shown) {
-				return;
-			}
-			this._data.reverse = reverse;
-		},
-
-		get_height: function()
-		{
-			return this._elements.tile.height();
-		},
-
-		set_height: function(height)
-		{
-			this._elements.tile.height(height);
-		},
-
-		get_left: function()
-		{
-			return this._elements.tile.position().left;
-		},
-
-		set_left: function(left)
-		{
-			this._elements.tile.css('left', left + "px");
-		},
-
-		get_top: function()
-		{
-			return this._elements.tile.position().top;
-		},
-
-		set_top: function(t)
-		{
-			this._elements.tile.css('top', t + "px");
-		},
-
-		get_animationSpeed: function()
-		{
-			return this._data.animationSpeed;
-		},
-
-		set_animationSpeed: function(animationSpeed)
-		{
-			this._data.animationSpeed = animationSpeed;
-		},
-
-		set_data: function(data)
-		{
-			for (var prop in data) {
-				if (data.hasOwnProperty(prop)) {
-					switch (prop) {
-						case 'team':
-							this.set_team(data.team);
-							break;
-						case 'message':
-							this.set_message(data.message);
-							break;
-						case 'reverse':
-							this.set_reverse(data.reverse);
-							break;
-						case 'height':
-							this.set_height(data.height);
-							break;
-						case 'left':
-							this.set_left(data.left);
-							break;
-						case 'top':
-							this.set_top(data.top);
-							break;
-						case 'animationSpeed':
-							this.set_animationSpeed(data.animationSpeed);
-							break;
-					}
-				}
-			}
-		},
-
-		get_element: function()
-		{
-			return this._elements.tile;
-		}
-
 	};
 
 	Tote.ScoreTicker.Ticker = function()
@@ -305,8 +70,6 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 			//	this._initUI(hidden);
 			//	this._update();
 			//}, this), 'xml');
-			this._bigPlayPopup = new Tote.ScoreTicker.BigPlayPopup();
-			this._bigPlayPopup.initialize();
 			this._initUI(hidden);
 			if (!hidden) {
 				this.start();
@@ -363,7 +126,7 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 						ticker._elements.toggleLink.addClass(Tote.ScoreTicker.Ticker.CSSClasses.closed);
 					});
 				};
-				if (ticker._bigPlayPopup.is_showing()) {
+				if (ticker._bigPlayPopup && ticker._bigPlayPopup.visible()) {
 					ticker._bigPlayPopup.hide(animateHide);
 				} else {
 					animateHide();
@@ -400,8 +163,6 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 
 			containerDiv.append(gameTable);
 
-			containerDiv.append(this._bigPlayPopup.get_element());
-
 			this._elements.gameTable = gameTable;
 			this._elements.gameRow = row;
 
@@ -435,7 +196,7 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 			var bps = $(xml).find('bps');
 
 			this._updateBigPlays(bps);
-			if (this._showBigPlays && !this._bigPlayPopup.is_showing()) {
+			if (this._showBigPlays && !(this._bigPlayPopup && this._bigPlayPopup.visible())) {
 				this._showNextBigPlay();
 			}
 
@@ -602,17 +363,9 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 					if (this._gameObjects[gsis]) {
 						idx++;
 						if (gsis === bpObj.get_gsis()) {
-							var gameElem = this._gameObjects[gsis].get_element();
-							var pos = gameElem.position();
-							var bpPos = pos.left;
-							this._bigPlayPopup.set_data({
-								team: bpObj.get_team(),
-								message: bpObj.get_message(),
-								reverse: (idx >= half),
-								height: this._elements.gameTable.height(),
-								top: pos.top,
-								left: (idx >= half) ? pos.left : (pos.left + gameElem.width())
-							});
+							this._bigPlayPopup = new BigPlayPopup(bpObj, this._gameObjects[gsis], (idx >= half));
+							this._bigPlayPopup.initialize();
+							this._elements.containerDiv.append(this._bigPlayPopup.get_element());
 							this._bigPlayPopup.show(function() {
 								window.setTimeout($.proxy(function() { this._bigPlayFinished(); }, ticker), 10000);
 							});
@@ -627,6 +380,8 @@ define(['jquery', 'module', 'modules/scoreticker/game', 'modules/scoreticker/gam
 		{
 			var ticker = this;
 			this._bigPlayPopup.hide(function() {
+				ticker._bigPlayPopup.get_element().remove();
+				this._bigPlayPopup = null;
 				if (ticker._bigPlayQueue.length > 0) {
 					ticker._bigPlayQueue.shift();
 				}
