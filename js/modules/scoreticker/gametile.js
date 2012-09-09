@@ -245,6 +245,11 @@ define(['jquery'], function($, Game) {
 					break;
 			}
 
+			if (quarter !== 'P') {
+				this.__homeScoreCell.text(game.get_homeScore());
+				this.__visitorScoreCell.text(game.get_visitorScore());
+			}
+
 			var visitorwin = false;
 			var homewin = false;
 			if ((quarter === 'F') || (quarter === 'FO')) {
