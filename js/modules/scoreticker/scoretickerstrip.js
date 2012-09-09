@@ -122,6 +122,11 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 			return this.__container;
 		},
 
+		get_width: function()
+		{
+			return this.__gameTable.width();
+		},
+
 		observeChange: function(object, changeType, changeData)
 		{
 			if (object !== this.__engine)
@@ -202,16 +207,11 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 			if (observers.length === 0)
 				return;
 
-			var changeData = null;
-			if (changeType == 'widthchanged') {
-				changeData = this.__gameTable.width();
-			}
-
 			var observer = null;
 			for (var i = 0; i < observers.length; i++) {
 				observer = observers[i];
 				if (typeof observer.observeChange === 'function') {
-					observer.observeChange(this, changeType, changeData);
+					observer.observeChange(this, changeType);
 				}
 			}
 		}

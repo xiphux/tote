@@ -42,6 +42,7 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			this.__strip = strip;
 
 			var stripelement = strip.get_element();
+			stripelement.hide();
 			this.__contentDiv.append(stripelement);
 
 			if (!this.__hidden) {
@@ -107,9 +108,9 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			contentDiv.append(titleDiv);
 
 			var boundElement = this.__boundElement;
+			boundElement.width(650);
 			if (this.__hidden) {
 				boundElement.addClass('rounded-bottom');
-				boundElement.width(900);
 			}
 			boundElement.append(toggleDiv);
 		},
@@ -204,7 +205,8 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 				switch (changeType) {
 					case 'widthchanged':
 						if (!this.__hidden) {
-							this.__boundElement.width(changeData + 4);
+							this.__strip.get_element().slideDown('fast');
+							this.__boundElement.animate({ width: (this.__strip.get_width() + 4) + 'px' }, 'fast');
 						}
 						break;
 				}
