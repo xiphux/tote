@@ -1,4 +1,4 @@
-define(['jquery', 'modules/autoselectnav', 'modules/poolpopup', 'modules/feedtip', 'modules/schedulepopup', 'modules/titletips', 'cookies', 'modules/scoreticker', 'common'], function($, autoselectnav, poolpopup, feedtip, schedulepopup) {
+define(['jquery', 'modules/autoselectnav', 'modules/poolpopup', 'modules/feedtip', 'modules/schedulepopup', 'modules/scoreticker/scoreticker', 'modules/titletips', 'cookies', 'common'], function($, autoselectnav, poolpopup, feedtip, schedulepopup, ScoreTicker) {
 	autoselectnav('#poolNameSelect', '#poolNameSubmit');
 
 	poolpopup('a#lnkHistory', 'history', 'Pool History');
@@ -58,4 +58,6 @@ define(['jquery', 'modules/autoselectnav', 'modules/poolpopup', 'modules/feedtip
 	});
 	$('#spanLinks').replaceWith(link);
 
+	var ticker = new ScoreTicker('#scoreTicker');
+	ticker.initialize();
 });
