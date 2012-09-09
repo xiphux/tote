@@ -115,6 +115,10 @@
 	background-color: PowderBlue !important;
 }
 
+.tickerGameTable .tickerGameTileHighlighted .tickerPossession {
+	color: red;
+}
+
 .tickerBigPlay {
 	z-index: 5;
 	position: absolute;
