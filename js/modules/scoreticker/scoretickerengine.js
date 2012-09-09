@@ -86,8 +86,6 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 		__updateSuccess: function(xml)
 		{
-			this.__notify('datareceived');
-
 			var xmlData = $(xml);
 
 			var gms = xmlData.find('gms');
@@ -106,6 +104,8 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 			this.__notify('propertychanged');
 			
+			this.__notify('datareceived');
+
 			if (this.__started) {
 				this.__timer = window.setTimeout($.proxy(this.update, this), this.__refreshInterval * 1000);
 			}
