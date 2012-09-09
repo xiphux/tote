@@ -77,9 +77,6 @@ define(['jquery'], function ($) {
 
 			var pos = gameTile.get_position();
 			var top = pos.top;
-			if (!reverse) {
-				top += 1;
-			}
 			popup.css('top', top + 'px');
 			
 			var left = pos.left + 1;
