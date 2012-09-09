@@ -122,11 +122,11 @@ define(['jquery'], function ($) {
 			}
 
 			this.__popup.animate(anim, 400, 'swing', function() {
+				gameTile.set_highlight(false);
 				if (callback) {
 					callback();
 				}
 			});
-			gameTile.set_highlight(false);
 
 			this.__visible = false;
 		},
