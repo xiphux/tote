@@ -95,6 +95,8 @@ define(['jquery'], function ($) {
 				anim.left = (left - 150) + 'px';
 			}
 
+			gameTile.set_highlight(true);
+
 			popup.animate(anim, 400, 'swing', function() {
 				if (callback) {
 					callback();
@@ -109,11 +111,13 @@ define(['jquery'], function ($) {
 			if (!this.__visible)
 				return;
 
+			var gameTile = this.__gameTile;
+
 			var anim = {
 				width: '0px'
 			};
 			if (this.__reverse) {
-				var pos = this.__gameTile.get_position();
+				var pos = gameTile.get_position();
 				anim.left = pos.left + 'px';
 			}
 
@@ -122,6 +126,7 @@ define(['jquery'], function ($) {
 					callback();
 				}
 			});
+			gameTile.set_highlight(false);
 
 			this.__visible = false;
 		},

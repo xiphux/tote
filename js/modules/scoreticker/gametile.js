@@ -21,6 +21,8 @@ define(['jquery'], function($, Game) {
 		__homeScoreCell: null,
 		__statusCell: null,
 
+		__highlight: false,
+
 		get_game: function()
 		{
 			return this.__game;
@@ -151,6 +153,25 @@ define(['jquery'], function($, Game) {
 			this.__base.attr('id', game.get_gsis());
 
 			this.__updateQuarter(game.get_quarter());
+		},
+
+		get_highlight: function()
+		{
+			return this.__highlight;
+		},
+
+		set_highlight: function(highlight)
+		{
+			if (highlight === this.__highlight)
+				return;
+
+			this.__highlight = highlight;
+
+			if (highlight) {
+				this.__table.addClass('tickerGameTileHighlighted');
+			} else {
+				this.__table.removeClass('tickerGameTileHighlighted');
+			}
 		},
 
 		observeChange: function(object, changeType, changeData)

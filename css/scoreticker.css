@@ -110,6 +110,11 @@
 	background-color: PowderBlue !important;
 }
 
+.tickerGameTable .tickerGameTileHighlighted {
+	color: DarkBlue !important;
+	background-color: PowderBlue !important;
+}
+
 .tickerBigPlay {
 	z-index: 5;
 	position: absolute;
@@ -124,8 +129,6 @@
 	right: 0;
 	position: absolute;
 	width: 142px;
-	border-top: 1px solid DarkBlue;
-	border-bottom: 1px solid DarkBlue;
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 10px;
 	font-weight: bold;
@@ -135,11 +138,11 @@
 }
 
 .tickerBigPlay .tickerBigPlayRight {
-	border-right: 1px solid DarkBlue;
+       border-right: 1px solid LightGray;
 }
 
 .tickerBigPlay .tickerBigPlayLeft {
-	border-left: 1px solid DarkBlue;
+       border-left: 1px solid LightGray;
 }
 
 .tickerBigPlay .tickerBigPlayContent .tickerBigPlayTeam {
