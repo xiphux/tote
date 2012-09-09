@@ -31,7 +31,6 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 		__bigPlays: null,
 
 		__observers: null,
-		__updates: null,
 
 		__updates: null,
 		__addedGames: null,
