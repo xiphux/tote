@@ -336,14 +336,6 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 				var changeData = this.__updates;
 
-				if (this.__addedGames.length > 0) {
-					modified = true;
-					changeData.addedGames = this.__addedGames;
-				}
-				if (this.__removedGames.length > 0) {
-					modified = true;
-					changeData.removedGames = this.__removedGames;
-				}
 				if (this.__addedBigPlays.length > 0) {
 					modified = true;
 					changeData.addedBigPlays = this.__addedBigPlays;
@@ -351,6 +343,14 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				if (this.__removedBigPlays.length > 0) {
 					modified = true;
 					changeData.removedBigPlays = this.__removedBigPlays;
+				}
+				if (this.__addedGames.length > 0) {
+					modified = true;
+					changeData.addedGames = this.__addedGames;
+				}
+				if (this.__removedGames.length > 0) {
+					modified = true;
+					changeData.removedGames = this.__removedGames;
 				}
 				if (!modified) {
 					for (var key in changeData) {
