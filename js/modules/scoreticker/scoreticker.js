@@ -70,21 +70,9 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			toggleLink.attr('href', '#');
 
 			if (this.__hidden) {
-				toggleLink.toggle($.proxy(function(event) {
-					this.show();
-					return false;
-				}, this), $.proxy(function(event) {
-					this.hide();
-					return false;
-				}, this));
+				toggleLink.toggle($.proxy(this.__showClick, this), $.proxy(this.__hideClick, this));
 			} else {
-				toggleLink.toggle($.proxy(function(event) {
-					this.hide();
-					return false;
-				}, this), $.proxy(function(event) {
-					this.show();
-					return false;
-				}, this));
+				toggleLink.toggle($.proxy(this.__hideClick, this), $.proxy(this.__showClick, this));
 			}
 
 			this.__toggleLink = toggleLink;
@@ -126,6 +114,18 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			boundElement.append(toggleDiv);
 		},
 
+		__showClick: function(event)
+		{
+			this.show();
+			return false;
+		},
+
+		__hideClick: function(event)
+		{
+			this.hide();
+			return false;
+		},
+
 		show: function()
 		{
 			if (!this.__hidden)
@@ -138,9 +138,7 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 
 			this.__boundElement.removeClass('rounded-bottom');
 
-			this.__contentDiv.show('fast', $.proxy(function() {
-				this.__engine.start();
-			}, this));
+			this.__contentDiv.show('fast', $.proxy(this.__startEngine, this));
 
 			if ($.cookies.test()) {
 				var exp = new Date();
@@ -148,6 +146,11 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 				$.cookies.set('ToteScoretickerHidden', false, {expiresAt: exp});
 			}
 			this.__hidden = false;
+		},
+
+		__startEngine: function()
+		{
+			this.__engine.start();
 		},
 
 		hide: function()

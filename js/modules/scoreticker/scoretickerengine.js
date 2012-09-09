@@ -81,9 +81,7 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 			this.__notify('datarequested');
 
-			$.get('scoreticker.php', {}, $.proxy(function(xml) {
-				this.__updateSuccess(xml);
-			}, this), 'xml');
+			$.get('scoreticker.php', {}, $.proxy(this.__updateSuccess, this), 'xml');
 		},
 
 		__updateSuccess: function(xml)
@@ -109,9 +107,7 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			this.__notify('propertychanged');
 			
 			if (this.__started) {
-				this.__timer = window.setTimeout($.proxy(function() {
-					this.update();
-				}, this), this.__refreshInterval * 1000);
+				this.__timer = window.setTimeout($.proxy(this.update, this), this.__refreshInterval * 1000);
 			}
 		},
 

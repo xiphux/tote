@@ -81,11 +81,12 @@ define(['jquery'], function($) {
 			activeEntry.initialize();
 			this.__container.append(activeEntry.get_element());
 
-			activeEntry.show($.proxy(function() {
-				this.__timer = window.setTimeout($.proxy(function() {
-					this.__hideCurrent();
-				}, this), 10000);
-			}, this));
+			activeEntry.show($.proxy(this.__afterShowNext, this));
+		},
+
+		__afterShowNext: function()
+		{
+			this.__timer = window.setTimeout($.proxy(this.__hideCurrent, this), 10000);
 		},
 
 		__hideCurrent: function()
@@ -96,16 +97,17 @@ define(['jquery'], function($) {
 			window.clearTimeout(this.__timer);
 			this.__timer = null;
 
-			this.__activeEntry.hide($.proxy(function() {
+			this.__activeEntry.hide($.proxy(this.__afterHideCurrent, this));
+		},
 
-				this.__activeEntry.get_element().remove();
-				this.__activeEntry = null;
+		__afterHideCurrent: function()
+		{
+			this.__activeEntry.get_element().remove();
+			this.__activeEntry = null;
 
-				if ((this.__queue.length > 0) && this.__started) {
-					this.__showNext();
-				}
-
-			}, this));
+			if ((this.__queue.length > 0) && this.__started) {
+				this.__showNext();
+			}
 		}
 
 	};
