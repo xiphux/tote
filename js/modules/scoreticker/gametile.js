@@ -164,6 +164,8 @@ define(['jquery'], function($, Game) {
 			if (!changeData)
 				return;
 
+			var game = this.__game;
+
 			for (var key in changeData) {
 				if (!changeData.hasOwnProperty(key))
 					continue;
@@ -182,12 +184,12 @@ define(['jquery'], function($, Game) {
 						this.__homeCell.text(changeData.home);
 						break;
 					case 'homeScore':
-						if (this.__game.get_quarter() !== 'P') {
+						if (game.get_quarter() !== 'P') {
 							this.__homeScoreCell.text(changeData.homeScore);
 						}
 						break;
 					case 'visitorScore':
-						if (this.__game.get_quarter() !== 'P') {
+						if (game.get_quarter() !== 'P') {
 							this.__visitorScoreCell.text(changeData.visitorScore);
 						}
 						break;
@@ -202,12 +204,12 @@ define(['jquery'], function($, Game) {
 						this.__updateQuarter(changeData.quarter);
 						break;
 					case 'possession':
-						if (this.__game.playing() && (changeData.possession === this.__game.get_visitor())) {
+						if (game.playing() && (changeData.possession === game.get_visitor())) {
 							this.__visitorPossessionCell.text('<');
 						} else {
 							this.__visitorPossessionCell.text('');
 						}
-						if (this.__game.playing() && (changeData.possession === this.__game.get_home())) {
+						if (game.playing() && (changeData.possession === game.get_home())) {
 							this.__homePossessionCell.text('<');
 						} else {
 							this.__homePossessionCell.text('');

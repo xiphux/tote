@@ -69,16 +69,19 @@ define(['jquery'], function($) {
 			if (this.__activeEntry)
 				return;
 
-			if (this.__queue.length < 1)
+			var queue = this.__queue;
+
+			if (queue.length < 1)
 				return;
 
-			this.__activeEntry = this.__queue[0];
-			this.__queue.shift();
+			var activeEntry = queue[0];
+			this.__activeEntry = activeEntry;
+			queue.shift();
 
-			this.__activeEntry.initialize();
-			this.__container.append(this.__activeEntry.get_element());
+			activeEntry.initialize();
+			this.__container.append(activeEntry.get_element());
 
-			this.__activeEntry.show($.proxy(function() {
+			activeEntry.show($.proxy(function() {
 				this.__timer = window.setTimeout($.proxy(function() {
 					this.__hideCurrent();
 				}, this), 10000);

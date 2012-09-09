@@ -131,17 +131,6 @@ define(['./localstart'], function(localStart) {
 			this.__queueUpdates({ startDay: day, startTime: time });
 		},
 
-		__shiftStart: function(day, time, offset) {
-		},
-
-		__dayToNum: function(day)
-		{
-		},
-
-		__numToDay: function(num)
-		{
-		},
-
 		get_visitor: function()
 		{
 			return this.__visitor;
@@ -300,75 +289,78 @@ define(['./localstart'], function(localStart) {
 			this.__delayNotify = true;
 
 			for (var prop in data) {
-				if (data.hasOwnProperty(prop)) {
-					switch (prop) {
+				
+				if (!data.hasOwnProperty(prop))
+					continue;
 
-						case 'year':
-							this.set_year(data.year);
-							break;
+				switch (prop) {
 
-						case 'seasonType':
-							this.set_seasonType(data.seasonType);
-							break;
+					case 'year':
+						this.set_year(data.year);
+						break;
 
-						case 'week':
-							this.set_week(data.week);
-							break;
+					case 'seasonType':
+						this.set_seasonType(data.seasonType);
+						break;
 
-						case 'gsis':
-							this.set_gsis(data.gsis);
-							break;
+					case 'week':
+						this.set_week(data.week);
+						break;
 
-						case 'eid':
-							this.set_eid(data.eid);
-							break;
+					case 'gsis':
+						this.set_gsis(data.gsis);
+						break;
 
-						case 'start':
-							if (data.start.hasOwnProperty('day') && data.start.hasOwnProperty('time')) {
-								this.set_start(data.start.day, data.start.time);
-							}
-							break;
+					case 'eid':
+						this.set_eid(data.eid);
+						break;
 
-						case 'visitor':
-							this.set_visitor(data.visitor);
-							break;
+					case 'start':
+						var start = data.start;
+						if (start.hasOwnProperty('day') && start.hasOwnProperty('time')) {
+							this.set_start(start.day, start.time);
+						}
+						break;
 
-						case 'visitorNickname':
-							this.set_visitorNickname(data.visitorNickname);
-							break;
+					case 'visitor':
+						this.set_visitor(data.visitor);
+						break;
 
-						case 'home':
-							this.set_home(data.home);
-							break;
+					case 'visitorNickname':
+						this.set_visitorNickname(data.visitorNickname);
+						break;
 
-						case 'homeNickname':
-							this.set_homeNickname(data.homeNickname);
-							break;
+					case 'home':
+						this.set_home(data.home);
+						break;
 
-						case 'homeScore':
-							this.set_homeScore(data.homeScore);
-							break;
+					case 'homeNickname':
+						this.set_homeNickname(data.homeNickname);
+						break;
 
-						case 'visitorScore':
-							this.set_visitorScore(data.visitorScore);
-							break;
+					case 'homeScore':
+						this.set_homeScore(data.homeScore);
+						break;
 
-						case 'redZone':
-							this.set_redZone(data.redZone);
-							break;
+					case 'visitorScore':
+						this.set_visitorScore(data.visitorScore);
+						break;
 
-						case 'quarter':
-							this.set_quarter(data.quarter);
-							break;
+					case 'redZone':
+						this.set_redZone(data.redZone);
+						break;
 
-						case 'clock':
-							this.set_clock(data.clock);
-							break;
+					case 'quarter':
+						this.set_quarter(data.quarter);
+						break;
 
-						case 'possession':
-							this.set_possession(data.possession);
-							break;
-					}
+					case 'clock':
+						this.set_clock(data.clock);
+						break;
+
+					case 'possession':
+						this.set_possession(data.possession);
+						break;
 				}
 			}
 
@@ -393,9 +385,10 @@ define(['./localstart'], function(localStart) {
 		get_url: function()
 		{
 			var typestr;
-			if (this.__seasonType == 'P') {
+			var seasonType = this.__seasonType;
+			if (seasonType == 'P') {
 				typestr = 'PRE';
-			} else if (this.__seasonType == 'R') {
+			} else if (seasonType == 'R') {
 				typestr = 'REG';
 			} else {
 				return '';
@@ -442,12 +435,13 @@ define(['./localstart'], function(localStart) {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer)
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer)
 					return;
 			}
 
-			this.__observers.push(observer);
+			observers.push(observer);
 		},
 
 		removeObserver: function(observer)
@@ -455,9 +449,10 @@ define(['./localstart'], function(localStart) {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer) {
-					this.__observers.splice(i, 1);
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer) {
+					observers.splice(i, 1);
 					return;
 				}
 			}
@@ -470,9 +465,10 @@ define(['./localstart'], function(localStart) {
 
 			var modified = false;
 
+			var mainUpdates = this.__updates;
 			for (var key in updates) {
 				if (updates.hasOwnProperty(key)) {
-					this.__updates[key] = updates[key];
+					mainUpdates[key] = updates[key];
 					modified = true;
 				}
 			}
@@ -484,12 +480,15 @@ define(['./localstart'], function(localStart) {
 
 		__notify: function()
 		{
-			if (this.__observers.length === 0)
+			var observers = this.__observers;
+
+			if (observers.length === 0)
 				return;
 
 			var modified = false;
-			for (var key in this.__updates) {
-				if (this.__updates.hasOwnProperty(key)) {
+			var updates = this.__updates;
+			for (var key in updates) {
+				if (updates.hasOwnProperty(key)) {
 					modified = true;
 					break;
 				}
@@ -497,19 +496,19 @@ define(['./localstart'], function(localStart) {
 			if (!modified)
 				return;
 
-			if (this.__updates.hasOwnProperty('eid') || this.__updates.hasOwnProperty('year') || this.__updates.hasOwnProperty('seasonType') || this.__updates.hasOwnProperty('week') || this.__updates.hasOwnProperty('visitorNickname') || this.__updates.hasOwnProperty('homeNickname')) {
-				this.__updates.url = this.get_url();
+			if (updates.hasOwnProperty('eid') || updates.hasOwnProperty('year') || updates.hasOwnProperty('seasonType') || updates.hasOwnProperty('week') || updates.hasOwnProperty('visitorNickname') || updates.hasOwnProperty('homeNickname')) {
+				updates.url = this.get_url();
 			}
 
-			if (this.__updates.hasOwnProperty('quarter') || this.__updates.hasOwnProperty('startDay') || this.__updates.hasOwnProperty('startTime') || this.__updates.hasOwnProperty('clock')) {
-				this.__updates.status = this.get_status();
+			if (updates.hasOwnProperty('quarter') || updates.hasOwnProperty('startDay') || updates.hasOwnProperty('startTime') || updates.hasOwnProperty('clock')) {
+				updates.status = this.get_status();
 			}
 
 			var observer = null;
-			for (var i = 0; i < this.__observers.length; i++) {
-				observer = this.__observers[i];
-				if (observer.observeChange) {
-					this.__observers[i].observeChange(this, 'propertychanged', this.__updates);
+			for (var i = 0; i < observers.length; i++) {
+				observer = observers[i];
+				if (typeof observer.observeChange === 'function') {
+					observer.observeChange(this, 'propertychanged', updates);
 				}
 			}
 

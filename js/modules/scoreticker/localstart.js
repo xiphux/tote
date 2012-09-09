@@ -63,11 +63,11 @@ define(['module'], function(module) {
 		}
 
 		var timepieces = time.split(':');
-		timepieces[0] = parseInt(timepieces[0]);
-		timepieces[1] = parseInt(timepieces[1]);
-		if (timepieces[0] < 11)
-			timepieces[0] += 12;
-		now.setHours(parseInt(timepieces[0]), parseInt(timepieces[1]));
+		var hours = parseInt(timepieces[0]);
+		var mins = parseInt(timepieces[1]);
+		if (hours < 11)
+			hours += 12;
+		now.setHours(hours, mins);
 
 		now.setTime(now.getTime() + (offset * 1000));
 

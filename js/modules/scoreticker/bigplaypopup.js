@@ -57,8 +57,9 @@ define(['jquery'], function ($) {
 
 		__initState: function()
 		{
-			this.__team.text(this.__bigPlay.get_team());
-			var message = this.__bigPlay.get_message();
+			var bigPlay = this.__bigPlay;
+			this.__team.text(bigPlay.get_team());
+			var message = bigPlay.get_message();
 			if (message.length > 52) {
 				message = message.substr(0, 52) + '...';
 			}
@@ -70,30 +71,34 @@ define(['jquery'], function ($) {
 			if (this.__visible)
 				return;
 
-			var pos = this.__gameTile.get_position();
+			var reverse = this.__reverse;
+			var popup = this.__popup;
+			var gameTile = this.__gameTile;
+
+			var pos = gameTile.get_position();
 			var top = pos.top;
-			if (!this.__reverse) {
+			if (!reverse) {
 				top += 1;
 			}
-			this.__popup.css('top', top + 'px');
+			popup.css('top', top + 'px');
 			
 			var left = pos.left + 1;
-			if (!this.__reverse) {
-				left += this.__gameTile.get_width() + 1;
+			if (!reverse) {
+				left += gameTile.get_width() + 1;
 			}
-			this.__popup.css('left', left + 'px');
+			popup.css('left', left + 'px');
 
-			var height = this.__gameTile.get_height();
-			this.__popup.height(height);
+			var height = gameTile.get_height();
+			popup.height(height);
 
 			var anim = {
 				width: '150px'
 			};
-			if (this.__reverse) {
+			if (reverse) {
 				anim.left = (left - 150) + 'px';
 			}
 
-			this.__popup.animate(anim, 400, 'swing', function() {
+			popup.animate(anim, 400, 'swing', function() {
 				if (callback) {
 					callback();
 				}

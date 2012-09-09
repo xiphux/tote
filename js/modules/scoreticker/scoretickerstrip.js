@@ -29,9 +29,10 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 		initialize: function()
 		{
 			this.__initElements();
-			this.__bigPlayQueue = new BigPlayQueue(this.__container);
+			var bigPlayQueue = new BigPlayQueue(this.__container);
+			this.__bigPlayQueue = bigPlayQueue;
 			if (this.__engine.started()) {
-				this.__bigPlayQueue.start();
+				bigPlayQueue.start();
 			}
 		},
 
@@ -77,9 +78,10 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 				return;
 
 			var gsis = game.get_gsis();
-			if (this.__gameTiles[gsis]) {
-				this.__gameTiles[gsis].get_element().parent().remove();
-				delete this.__gameTiles[gsis];
+			var gameTiles = this.__gameTiles;
+			if (gameTiles[gsis]) {
+				gameTiles[gsis].get_element().parent().remove();
+				delete gameTiles[gsis];
 			}
 		},
 
@@ -89,25 +91,28 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 				return;
 
 			var count = 0;
+			var gameTiles = this.__gameTiles;
 			var gsis = null;
-			for (gsis in this.__gameTiles) {
-				if (this.__gameTiles.hasOwnProperty(gsis)) {
+			for (gsis in gameTiles) {
+				if (gameTiles.hasOwnProperty(gsis)) {
 					count++;
 				}
 			}
 			var half = Math.ceil(count/2);
 
 			var idx = 0;
-			for (var gsis in this.__gameTiles) {
-				if (this.__gameTiles.hasOwnProperty(gsis)) {
-					if (this.__gameTiles[gsis]) {
-						idx++;
-						if (gsis === bigPlay.get_gsis()) {
-							var popup = new BigPlayPopup(bigPlay, this.__gameTiles[gsis], (idx >= half));
-							this.__bigPlayQueue.push(popup);
-							return;
-						}
-					}
+			for (var gsis in gameTiles) {
+				if (!gameTiles.hasOwnProperty(gsis))
+					continue;
+
+				if (!gameTiles[gsis])
+					continue;
+
+				idx++;
+				if (gsis === bigPlay.get_gsis()) {
+					var popup = new BigPlayPopup(bigPlay, gameTiles[gsis], (idx >= half));
+					this.__bigPlayQueue.push(popup);
+					return;
 				}
 			}
 		},
@@ -132,20 +137,23 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 
 				switch (prop) {
 					case 'addedGames':
-						for (i = 0; i < changeData.addedGames.length; i++) {
-							this.__addGameTile(changeData.addedGames[i]);
+						var addedGames = changeData.addedGames;
+						for (i = 0; i < addedGames.length; i++) {
+							this.__addGameTile(addedGames[i]);
 						}
 						this.__notify('widthchanged');
 						break;
 					case 'removedGames':
-						for (i = 0; i < changeData.removedGames.length; i++) {
-							this.__removeGameTile(changeData.removedGames[i]);
+						var removedGames = changeData.removedGames;
+						for (i = 0; i < removedGames.length; i++) {
+							this.__removeGameTile(removedGames[i]);
 						}
 						this.__notify('widthchanged');
 						break;
 					case 'addedBigPlays':
-						for (i = 0; i < changeData.addedBigPlays.length; i++) {
-							this.__addBigPlayPopup(changeData.addedBigPlays[i]);
+						var addedBigPlays = changeData.addedBigPlays;
+						for (i = 0; i < addedBigPlays.length; i++) {
+							this.__addBigPlayPopup(addedBigPlays[i]);
 						}
 						break;
 					case 'started':
@@ -164,22 +172,24 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer)
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer)
 					return;
 			}
 
-			this.__observers.push(observer);
+			observers.push(observer);
 		},
 
 		removeObserver: function(observer)
 		{
 			if (!observer)
 				return;
-
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer) {
-					this.__observers.splice(i, 1);
+	
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer) {
+					observers.splice(i, 1);
 					return;
 				}
 			}
@@ -187,7 +197,9 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 
 		__notify: function(changeType)
 		{
-			if (this.__observers.length === 0)
+			var observers = this.__observers;
+
+			if (observers.length === 0)
 				return;
 
 			var changeData = null;
@@ -196,10 +208,10 @@ define(['jquery', './gametile', './bigplaypopup', './bigplayqueue'], function($,
 			}
 
 			var observer = null;
-			for (var i = 0; i < this.__observers.length; i++) {
-				observer = this.__observers[i];
-				if (observer.observeChange) {
-					this.__observers[i].observeChange(this, changeType, changeData);
+			for (var i = 0; i < observers.length; i++) {
+				observer = observers[i];
+				if (typeof observer.observeChange === 'function') {
+					observer.observeChange(this, changeType, changeData);
 				}
 			}
 		}

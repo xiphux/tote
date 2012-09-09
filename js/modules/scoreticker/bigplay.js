@@ -99,24 +99,25 @@ define(function() {
 
 			this.__delayNotify = true;
 			for (var prop in data) {
-				if (data.hasOwnProperty(prop)) {
-					switch (prop) {
-						case 'eid':
-							this.set_eid(data.eid);
-							break;
-						case 'gsis':
-							this.set_gsis(data.gsis);
-							break;
-						case 'id':
-							this.set_id(data.id);
-							break;
-						case 'team':
-							this.set_team(data.team);
-							break;
-						case 'message':
-							this.set_message(data.message);
-							break;
-					}
+				if (!data.hasOwnProperty(prop))
+					continue;
+
+				switch (prop) {
+					case 'eid':
+						this.set_eid(data.eid);
+						break;
+					case 'gsis':
+						this.set_gsis(data.gsis);
+						break;
+					case 'id':
+						this.set_id(data.id);
+						break;
+					case 'team':
+						this.set_team(data.team);
+						break;
+					case 'message':
+						this.set_message(data.message);
+						break;
 				}
 			}
 
@@ -129,12 +130,13 @@ define(function() {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer)
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer)
 					return;
 			}
 
-			this.__observers.push(observer);
+			observers.push(observer);
 		},
 
 		removeObserver: function(observer)
@@ -142,9 +144,10 @@ define(function() {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer) {
-					this.__observers.splice(i, 1);
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer) {
+					observers.splice(i, 1);
 					return;
 				}
 			}
@@ -157,9 +160,10 @@ define(function() {
 
 			var modified = false;
 
+			var mainUpdates = this.__updates;
 			for (var key in updates) {
 				if (updates.hasOwnProperty(key)) {
-					this.__updates[key] = updates[key];
+					mainUpdates[key] = updates[key];
 					modified = true;
 				}
 			}
@@ -171,12 +175,15 @@ define(function() {
 
 		__notify: function()
 		{
-			if (this.__observers.length === 0)
+			var observers = this.__observers;
+
+			if (observers.length === 0)
 				return;
 
 			var modified = false;
-			for (var key in this.__updates) {
-				if (this.__updates.hasOwnProperty(key)) {
+			var updates = this.__updates;
+			for (var key in updates) {
+				if (updates.hasOwnProperty(key)) {
 					modified = true;
 					break;
 				}
@@ -185,10 +192,10 @@ define(function() {
 				return;
 
 			var observer = null;
-			for (var i = 0; i < this.__observers.length; i++) {
-				observer = this.__observers[i];
-				if (observer.observeChange) {
-					this.__observers[i].observeChange(this, 'propertychanged', this.__updates);
+			for (var i = 0; i < observers.length; i++) {
+				observer = observers[i];
+				if (typeof observer.observeChange === 'function') {
+					observer.observeChange(this, 'propertychanged', updates);
 				}
 			}
 

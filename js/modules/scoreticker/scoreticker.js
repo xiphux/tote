@@ -30,18 +30,20 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 
 			this.__initElements();
 
-			this.__engine = new ScoreTickerEngine();
-			this.__engine.addObserver(this);
-			this.__engine.initialize();
+			var engine = new ScoreTickerEngine();
+			engine.addObserver(this);
+			engine.initialize();
+			this.__engine = engine;
 
-			this.__strip = new ScoreTickerStrip(this.__engine);
-			this.__strip.addObserver(this);
-			this.__strip.initialize();
+			var strip = new ScoreTickerStrip(engine);
+			strip.addObserver(this);
+			strip.initialize();
+			this.__strip = strip;
 
-			this.__contentDiv.append(this.__strip.get_element());
+			this.__contentDiv.append(strip.get_element());
 
 			if (!this.__hidden) {
-				this.__engine.start();
+				engine.start();
 			}
 		},
 
@@ -100,11 +102,12 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 
 			contentDiv.append(titleDiv);
 
+			var boundElement = this.__boundElement;
 			if (this.__hidden) {
-				this.__boundElement.addClass('rounded-bottom');
-				this.__boundElement.width(900);
+				boundElement.addClass('rounded-bottom');
+				boundElement.width(900);
 			}
-			this.__boundElement.append(toggleDiv);
+			boundElement.append(toggleDiv);
 		},
 
 		show: function()
@@ -112,9 +115,10 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			if (!this.__hidden)
 				return;
 
-			this.__toggleLink.text('Score ticker...');
-			this.__toggleLink.removeClass('tickerClosed');
-			this.__toggleLink.addClass('tickerOpen');
+			var toggleLink = this.__toggleLink;
+			toggleLink.text('Score ticker...');
+			toggleLink.removeClass('tickerClosed');
+			toggleLink.addClass('tickerOpen');
 
 			this.__boundElement.removeClass('rounded-bottom');
 
@@ -141,9 +145,10 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 
 			this.__boundElement.addClass('rounded-bottom');
 
-			this.__toggleLink.text('Score ticker...');
-			this.__toggleLink.removeClass('tickerOpen');
-			this.__toggleLink.addClass('tickerClosed');
+			var toggleLink = this.__toggleLink;
+			toggleLink.text('Score ticker...');
+			toggleLink.removeClass('tickerOpen');
+			toggleLink.addClass('tickerClosed');
 
 			if ($.cookies.test()) {
 				var exp = new Date();

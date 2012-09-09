@@ -117,19 +117,21 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 		__updateInfo: function(year, week, type)
 		{
+			var updates = this.__updates;
+
 			if (year !== this.__year) {
 				this.__year = year;
-				this.__updates.year = year;
+				updates.year = year;
 			}
 
 			if (week !== this.__week) {
 				this.__week = week;
-				this.__updates.week = week;
+				updates.week = week;
 			}
 
 			if (type !== this.__type) {
 				this.__type = type;
-				this.__updates.type = type;
+				updates.type = type;
 			}
 		},
 
@@ -138,8 +140,10 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			if (!gms)
 				return;
 
-			var engine = this;
 			var updated = [];
+
+			var games = this.__games;
+			var addedGames = this.__addedGames;
 
 			gms.find('g').each(function() {
 
@@ -171,12 +175,12 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				};
 
 				var game;
-				if (engine.__games[gsis]) {
-					game = engine.__games[gsis];
+				if (games[gsis]) {
+					game = games[gsis];
 				} else {
 					game = new Game();
-					engine.__games[gsis] = game;
-					engine.__addedGames.push(game);
+					games[gsis] = game;
+					addedGames.push(game);
 
 					gameData.gsis = gsis;
 				}
@@ -186,15 +190,17 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				updated[gsis] = true;
 			});
 
-			for (var gsis in this.__games) {
-				if (!this.__games.hasOwnProperty(gsis))
+			var removedGames = this.__removedGames;
+
+			for (var gsis in games) {
+				if (!games.hasOwnProperty(gsis))
 					continue;
 			
 				if (updated[gsis])
 					continue;
 
-				this.__removedGames.push(this.__games[gsis]);
-				delete this.__games[gsis];
+				removedGames.push(games[gsis]);
+				delete games[gsis];
 			}
 		},
 
@@ -203,8 +209,10 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			if (!bps)
 				return;
 
-			var engine = this;
 			var updated = [];
+
+			var bigPlays = this.__bigPlays;
+			var addedBigPlays = this.__addedBigPlays;
 
 			bps.find('b').each(function() {
 
@@ -223,12 +231,12 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				};
 
 				var bp;
-				if (engine.__bigPlays[id]) {
-					bp = engine.__bigPlays[id];
+				if (bigPlays[id]) {
+					bp = bigPlays[id];
 				} else {
 					bp = new BigPlay();
-					engine.__bigPlays[id] = bp;
-					engine.__addedBigPlays.push(bp);
+					bigPlays[id] = bp;
+					addedBigPlays.push(bp);
 				}
 
 				bp.set_data(bpData);
@@ -237,15 +245,17 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 			});
 
-			for (var id in this.__bigPlays) {
-				if (!this.__bigPlays.hasOwnProperty(id))
+			var removedBigPlays = this.__removedBigPlays;
+
+			for (var id in bigPlays) {
+				if (!bigPlays.hasOwnProperty(id))
 					continue;
 
 				if (updated[id])
 					continue;
 
-				this.__removedBigPlays.push(this.__bigPlays[id]);
-				delete this.__bigPlays[id];
+				removedBigPlays.push(bigPlays[id]);
+				delete bigPlays[id];
 			}
 		},
 
@@ -264,14 +274,18 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 		get_weekString: function()
 		{
-			return this.__year + '-' + (this.__year * 1 + 1) + ' ' + (this.__type === 'P' ? 'preseason ' : '') + 'week ' + this.__week;
+			var year = this.__year;
+			var type = this.__type;
+			var week = this.__week;
+			return year + '-' + (year * 1 + 1) + ' ' + (type === 'P' ? 'preseason ' : '') + 'week ' + week;
 		},
 
 		hasActiveGames: function()
 		{
-			for (var gsis in this.__games) {
-				if (this.__games.hasOwnProperty(gsis)) {
-					if (this.__games[gsis] && (this.__games[gsis].active())) {
+			var games = this.__games;
+			for (var gsis in games) {
+				if (games.hasOwnProperty(gsis)) {
+					if (games[gsis] && (games[gsis].active())) {
 						return true;
 					}
 				}
@@ -284,12 +298,13 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer)
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer)
 					return;
 			}
 
-			this.__observers.push(observer);
+			observers.push(observer);
 		},
 
 		removeObserver: function(observer)
@@ -297,9 +312,10 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			if (!observer)
 				return;
 
-			for (var i = 0; i < this.__observers.length; i++) {
-				if (this.__observers[i] === observer) {
-					this.__observers.splice(i, 1);
+			var observers = this.__observers;
+			for (var i = 0; i < observers.length; i++) {
+				if (observers[i] === observer) {
+					observers.splice(i, 1);
 					return;
 				}
 			}
@@ -307,44 +323,51 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 		__notify: function()
 		{
-			if (this.__observers.length === 0)
+			var observers = this.__observers;
+
+			if (observers.length === 0)
 				return;
 
 			var modified = false;
-			for (var key in this.__updates) {
-				if (this.__updates.hasOwnProperty(key)) {
-					modified = true;
-					break;
-				}
-			}
+
+			var updates = this.__updates;
+
 			if (this.__addedGames.length > 0) {
 				modified = true;
-				this.__updates.addedGames = this.__addedGames;
+				updates.addedGames = this.__addedGames;
 			}
 			if (this.__removedGames.length > 0) {
 				modified = true;
-				this.__updates.removedGames = this.__removedGames;
+				updates.removedGames = this.__removedGames;
 			}
 			if (this.__addedBigPlays.length > 0) {
 				modified = true;
-				this.__updates.addedBigPlays = this.__addedBigPlays;
+				updates.addedBigPlays = this.__addedBigPlays;
 			}
 			if (this.__removedBigPlays.length > 0) {
 				modified = true;
-				this.__updates.removedBigPlays = this.__removedBigPlays;
+				updates.removedBigPlays = this.__removedBigPlays;
+			}
+			if (!modified) {
+				for (var key in updates) {
+					if (updates.hasOwnProperty(key)) {
+						modified = true;
+						break;
+					}
+				}
 			}
 			if (!modified)
 				return;
 
-			if (this.__updates.year || this.__updates.week || this.__updates.type) {
-				this.__updates.weekString = this.get_weekString();
+			if (updates.year || updates.week || updates.type) {
+				updates.weekString = this.get_weekString();
 			}
 
 			var observer = null;
-			for (var i = 0; i < this.__observers.length; i++) {
-				observer = this.__observers[i];
-				if (observer.observeChange) {
-					this.__observers[i].observeChange(this, 'propertychanged', this.__updates);
+			for (var i = 0; i < observers.length; i++) {
+				observer = observers[i];
+				if (typeof observer.observeChange === 'function') {
+					observer.observeChange(this, 'propertychanged', updates);
 				}
 			}
 
