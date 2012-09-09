@@ -184,6 +184,9 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				game.set_data(gameData);
 
 				updated[gsis] = true;
+
+				game = null;
+				g = null;
 			});
 
 			var removedGames = this.__removedGames;
@@ -239,6 +242,8 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 				updated[id] = true;
 
+				bp = null;
+				b = null;
 			});
 
 			var removedBigPlays = this.__removedBigPlays;
