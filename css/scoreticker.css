@@ -150,3 +150,7 @@
 .tickerBigPlay .tickerBigPlayContent .tickerBigPlayMessage {
 	height: 66%;
 }
+
+.tickerLoaderImageDiv {
+	text-align: center;
+}

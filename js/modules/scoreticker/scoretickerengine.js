@@ -38,10 +38,6 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 		__addedBigPlays: null,
 		__removedBigPlays: null,
 
-		initialize: function()
-		{
-		},
-
 		start: function()
 		{
 			if (this.__started)
@@ -52,7 +48,7 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			this.update();
 
 			this.__updates.started = true;
-			this.__notify();
+			this.__notify('propertychanged');
 		},
 
 		stop: function()
@@ -68,7 +64,7 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			}
 
 			this.__updates.started = false;
-			this.__notify();
+			this.__notify('propertychanged');
 		},
 
 		started: function()
@@ -83,6 +79,8 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				this.__timer = null;
 			}
 
+			this.__notify('datarequested');
+
 			$.get('scoreticker.php', {}, $.proxy(function(xml) {
 				this.__updateSuccess(xml);
 			}, this), 'xml');
@@ -90,6 +88,8 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 
 		__updateSuccess: function(xml)
 		{
+			this.__notify('datareceived');
+
 			var xmlData = $(xml);
 
 			var gms = xmlData.find('gms');
@@ -106,7 +106,7 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 				this.set_refreshInterval(300);
 			}
 
-			this.__notify();
+			this.__notify('propertychanged');
 			
 			if (this.__started) {
 				this.__timer = window.setTimeout($.proxy(function() {
@@ -321,61 +321,66 @@ define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
 			}
 		},
 
-		__notify: function()
+		__notify: function(changeType)
 		{
 			var observers = this.__observers;
 
 			if (observers.length === 0)
 				return;
 
-			var modified = false;
+			var changeData = null;
+			if (changeType == 'propertychanged') {
 
-			var updates = this.__updates;
+				var modified = false;
 
-			if (this.__addedGames.length > 0) {
-				modified = true;
-				updates.addedGames = this.__addedGames;
-			}
-			if (this.__removedGames.length > 0) {
-				modified = true;
-				updates.removedGames = this.__removedGames;
-			}
-			if (this.__addedBigPlays.length > 0) {
-				modified = true;
-				updates.addedBigPlays = this.__addedBigPlays;
-			}
-			if (this.__removedBigPlays.length > 0) {
-				modified = true;
-				updates.removedBigPlays = this.__removedBigPlays;
-			}
-			if (!modified) {
-				for (var key in updates) {
-					if (updates.hasOwnProperty(key)) {
-						modified = true;
-						break;
+				var changeData = this.__updates;
+
+				if (this.__addedGames.length > 0) {
+					modified = true;
+					changeData.addedGames = this.__addedGames;
+				}
+				if (this.__removedGames.length > 0) {
+					modified = true;
+					changeData.removedGames = this.__removedGames;
+				}
+				if (this.__addedBigPlays.length > 0) {
+					modified = true;
+					changeData.addedBigPlays = this.__addedBigPlays;
+				}
+				if (this.__removedBigPlays.length > 0) {
+					modified = true;
+					changeData.removedBigPlays = this.__removedBigPlays;
+				}
+				if (!modified) {
+					for (var key in changeData) {
+						if (changeData.hasOwnProperty(key)) {
+							modified = true;
+							break;
+						}
 					}
 				}
-			}
-			if (!modified)
-				return;
+				if (!modified)
+					return;
 
-			if (updates.year || updates.week || updates.type) {
-				updates.weekString = this.get_weekString();
+				if (changeData.year || changeData.week || changeData.type) {
+					changeData.weekString = this.get_weekString();
+				}
+
+
+				this.__updates = {};
+				this.__addedGames = [];
+				this.__removedGames = [];
+				this.__addedBigPlays = [];
+				this.__removedBigPlays = [];
 			}
 
 			var observer = null;
 			for (var i = 0; i < observers.length; i++) {
 				observer = observers[i];
 				if (typeof observer.observeChange === 'function') {
-					observer.observeChange(this, 'propertychanged', updates);
+					observer.observeChange(this, changeType, changeData);
 				}
 			}
-
-			this.__updates = {};
-			this.__addedGames = [];
-			this.__removedGames = [];
-			this.__addedBigPlays = [];
-			this.__removedBigPlays = [];
 		}
 
 	};

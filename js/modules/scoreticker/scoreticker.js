@@ -12,6 +12,8 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 		__toggleLink: null,
 		__contentDiv: null,
 		__titleDiv: null,
+		__titleSpan: null,
+		__loaderImage: null,
 		
 		__engine: null,
 
@@ -32,7 +34,6 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 
 			var engine = new ScoreTickerEngine();
 			engine.addObserver(this);
-			engine.initialize();
 			this.__engine = engine;
 
 			var strip = new ScoreTickerStrip(engine);
@@ -40,7 +41,8 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			strip.initialize();
 			this.__strip = strip;
 
-			this.__contentDiv.append(strip.get_element());
+			var stripelement = strip.get_element();
+			this.__contentDiv.append(stripelement);
 
 			if (!this.__hidden) {
 				engine.start();
@@ -99,6 +101,20 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 			var titleDiv = $(document.createElement('div'));
 			titleDiv.addClass('tickerTitle');
 			this.__titleDiv = titleDiv;
+
+			var titleSpan = $(document.createElement('span'));
+			titleSpan.text('Loading...');
+			this.__titleSpan = titleSpan;
+
+			titleDiv.append(titleSpan);
+
+			var loaderImage = $(document.createElement('img'));
+			loaderImage.attr('src', 'images/scoreticker-loader.gif');
+			loaderImage.css('margin-left', '10px');
+			loaderImage.css('display', 'inline-block');
+			this.__loaderImage = loaderImage;
+
+			titleDiv.append(loaderImage);
 
 			contentDiv.append(titleDiv);
 
@@ -161,18 +177,25 @@ define(['jquery', './scoretickerengine', './scoretickerstrip', 'cookies'], funct
 		observeChange: function(object, changeType, changeData)
 		{
 			if (object === this.__engine) {
-				if (changeType !== 'propertychanged')
-					return;
+				switch (changeType) {
+					case 'propertychanged':
+						for (var prop in changeData) {
+							if (!changeData.hasOwnProperty(prop))
+								continue;
 
-				for (var prop in changeData) {
-					if (!changeData.hasOwnProperty(prop))
-						continue;
-
-					switch (prop) {
-						case 'weekString':
-							this.__titleDiv.text(changeData.weekString);
-							break;
-					}
+							switch (prop) {
+								case 'weekString':
+									this.__titleSpan.text(changeData.weekString);
+									break;
+							}
+						}
+						break;
+					case 'datarequested':
+						this.__loaderImage.fadeTo('slow', 1);
+						break;
+					case 'datareceived':
+						this.__loaderImage.fadeTo('slow', 0);
+						break;
 				}
 			} else if (object === this.__strip) {
 				switch (changeType) {
