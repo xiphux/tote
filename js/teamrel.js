@@ -56,18 +56,19 @@
 
 	function draw()
 	{
-		var groupdata = svg.selectAll("path.arc")
+		var groupdata = svg.selectAll("g.arc")
 			.data(chord.groups);
 
-		var groups = groupdata.enter().append('g');
-
-		groups.append('path')
+		groupdata.enter().append('g')
 			.attr('class', 'arc')
+			.append('path')
 			.style("fill", function (d) { return color(d.index); })
 			.style("stroke", function (d) { return d3.rgb(color(d.index)).darker(); })
 			.attr("d", arc)
 			.on('mouseover', fade(.1))
 			.on('mouseout', fade(1));
+
+		groupdata.select('path').attr('d', arc);
 
 		var divisions = {};
 
@@ -106,7 +107,8 @@
 		}
 
 		svg.append('g')
-			.selectAll('path')
+			.attr('class', 'divisions')
+			.selectAll('text')
 			.data(divisionEntries)
 			.enter().append('text')
 			.attr('dy', '.35em')
@@ -146,16 +148,21 @@
 
 		chord.matrix(data);
 
-		var labels = svg.selectAll('g text');
+		var labels = svg.selectAll('g.arc text');
 		var lastlabel = labels[0].length - 1;
 
-		svg.selectAll('g path')
+		svg.selectAll('g.chord')
 			.transition()
 			.duration(500)
 			.style('opacity', 0)
 			.remove();
 
 		if (lastlabel >= 0) {
+			svg.selectAll('g.divisions')
+				.transition()
+				.duration(500)
+				.style('opacity', 0)
+				.remove();
 			labels.transition()
 				.duration(500)
 				.style('opacity', 0)
