@@ -76,10 +76,13 @@
 				d.angle = (d.startAngle + d.endAngle) / 2;
 				var team = teamData[i];
 				var division = team.conference + ' ' + team.division;
-				if (divisions[division]) {
-					divisions[division] = (divisions[division] + d.angle) / 2;
+				if (!divisions[division]) {
+					divisions[division] = { lowAngle: d.angle, highAngle: d.angle };
 				} else {
-					divisions[division] = d.angle;
+					if (d.angle < divisions[division].lowAngle)
+						divisions[division].lowAngle = d.angle;
+					else if (d.angle > divisions[division].highAngle)
+						divisions[division].highAngle = d.angle;
 				}
 			})
 			.attr('dy', '.35em')
@@ -98,6 +101,9 @@
 			.style('opacity', 1);
 
 		var divisionEntries = d3.entries(divisions);
+		for (var i = 0; i < divisionEntries.length; i++) {
+			divisionEntries[i].value = (divisionEntries[i].value.lowAngle + divisionEntries[i].value.highAngle) / 2;
+		}
 
 		svg.append('g')
 			.selectAll('path')
