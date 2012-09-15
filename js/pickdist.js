@@ -100,8 +100,6 @@
 			});
 
 			paths.enter().append("path")
-				.attr("stroke", "white")
-				.attr("stroke-width", 0.5)
 				.attr("fill", function(d, i) { return color(i); })
 				.transition()
 				.duration(750)
@@ -204,7 +202,8 @@
 				pickData = data;
 
 				var controlsContainer = d3.select(graphControlsContainer);
-				var poolselect = controlsContainer.append('select');
+				var poolselect = controlsContainer.append('select')
+					.style('font-size', 'larger');
 				poolselect.append('option').attr('value', '').text('All pools');
 				for (var pool in data) {
 					if (data.hasOwnProperty(pool)) {
