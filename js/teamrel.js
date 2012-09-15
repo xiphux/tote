@@ -8,6 +8,7 @@
 
 	var chord = null;
 	var color = null;
+	var arc = null;
 
 	var svg = null;
 
@@ -55,8 +56,7 @@
 
 	function draw()
 	{
-		var groupdata = svg.append("g")
-			.selectAll("path")
+		var groupdata = svg.selectAll("path.arc")
 			.data(chord.groups);
 
 		var groups = groupdata.enter().append('g');
@@ -65,13 +65,13 @@
 			.attr('class', 'arc')
 			.style("fill", function (d) { return color(d.index); })
 			.style("stroke", function (d) { return d3.rgb(color(d.index)).darker(); })
-			.attr("d", d3.svg.arc().innerRadius(600*.41).outerRadius(600*.41*1.1))
+			.attr("d", arc)
 			.on('mouseover', fade(.1))
 			.on('mouseout', fade(1));
 
 		var divisions = {};
 
-		groups.append('text')
+		groupdata.append('text')
 			.each(function(d, i) { 
 				d.angle = (d.startAngle + d.endAngle) / 2;
 				var team = teamData[i];
@@ -186,6 +186,8 @@
 			.attr('height', 900)
 			.append("g")
 			.attr("transform", "translate(450,450)");
+
+		arc = d3.svg.arc().innerRadius(600*.41).outerRadius(600*.41*1.1);
 
 		d3.json('index.php?a=graphdata&g=teamrel', function(data) {
 			teamData = data.teams;
