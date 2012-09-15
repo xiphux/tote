@@ -17,8 +17,9 @@ function team_relationships()
 		array(),
 		array('team', 'home', 'conference', 'division', 'abbreviation')
 	)->sort(array('conference' => 1, 'division' => 1));
+	$js = 'function() { return this.home_score != null || this.away_score != null; }';
 	$gameobjects = $games->find(
-		array('$and' => array( array('home_score' => array( '$exists' => true )), array('away_score' => array( '$exists' => true )))),
+		array('$where' => $js),
 		array('home_team', 'away_team', 'home_score', 'away_score', 'season')
 	)->sort(array('season' => -1));
 
