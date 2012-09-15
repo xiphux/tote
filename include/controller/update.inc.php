@@ -564,3 +564,142 @@ if ($gms->item(0)->attributes->getNamedItem('t')->value == 'P') {
 	}
 
 }
+
+/**
+ * Update the proint spread on a game
+ *
+ * @param int $season season
+ * @param int $week week
+ * @param string $favorite favorite
+ * @param string $underdog underdog
+ * $param float $spread point spread
+ */
+function update_point_spread($season, $week, $favorite, $underdog, $spread)
+{
+	echo 'Updating ' . $favorite . ' and ' . $underdog . ' to ' . $favorite . ' favored by ' . $spread . '... ';
+
+	// find teams
+	$favoriteid = get_team_id($favorite);
+	if (empty($favoriteid)) {
+		echo "error: Couldn't locate " . $favorite . "<br />\n";
+		return;
+	}
+	$underdogid = get_team_id($underdog);
+	if (empty($underdogid)) {
+		echo "error: Couldn't locate " . $underdog . "<br />\n";
+		return;
+	}
+
+	$games = get_collection(TOTE_COLLECTION_GAMES);
+
+	// find the game
+	$js = "function() {
+		return ((this.home_team == '" . $favoriteid . "') && (this.away_team == '" . $underdogid . "')) || ((this.home_team == '" . $underdogid . "') && (this.away_team == '" . $favoriteid . "'));
+	}";
+	$gameobj = $games->findOne(
+		array(
+			'season' => (int)$season,
+			'week' => (int)$week,
+			'$where' => $js
+		)
+	);
+
+	if (!$gameobj) {
+		// these teams aren't playing this week
+		echo "error: Couldn't locate " . $favorite . ' vs ' . $underdog . ' for week ' . $week . "<br />\n";
+		return;
+	}
+
+	if (!isset($gameobj['favorite']) || !isset($gameobj['point_spread']) || ($gameobj['favorite'] != $favoriteid) || ($gameobj['point_spread'] != $spread)) {
+		$games->update(
+			array('_id' => $gameobj['_id']),
+			array('$set' => array(
+				'favorite' => $favoriteid,
+				'point_spread' => (float)$spread
+			))
+		);
+		echo 'updated spread to ' . $favorite . ' favored by ' . $spread . "<br />\n";
+	} else {
+		echo "no update necessary, point spread up to date<br />\n";
+	}
+}
+
+// check for point spreads
+
+$url = 'http://www.footballlocks.com/nfl_point_spreads.shtml';
+
+$raw = load_page($url);
+
+$dom = new DOMDocument();
+@$dom->loadHTML($raw);
+
+$xpath = new DOMXPath($dom);
+
+echo '<p><strong>Scraping point spreads from ' . $url . "...</strong></p>\n";
+
+// find week and season
+$week = null;
+$season = null;
+$sentinel = 'NFL Point Spreads For Week ';
+$pos = strpos($raw, $sentinel);
+if ($pos !== false) {
+	$week = trim(substr($raw, $pos + strlen($sentinel), 2));
+	if (!is_numeric($week))
+		$week = null;
+	else
+		$week = (int)$week;
+
+	// find season
+	$header = substr($raw, $pos, 150);
+	if (preg_match('@([0-9]+)/[0-9]+, ([0-9]{4})@', $header, $regs)) {
+		$season = $regs[2];
+		$month = $regs[1];
+		if (abs((int)$season - (int)date('Y')) > 1) {
+			$season = null;
+		} else {
+			$season = (int)$season;
+			if ((int)$month < 3)
+				$season--;
+		}
+	}
+}
+
+
+if (($week === null) || ($season === null)) {
+	echo "<p>Error: couldn't determine point spread season and week</p>\n";
+} else {
+	echo "<p><strong>Updating " . $season . " week " . $week . " point spreads...</strong></p>\n";
+
+	// find spread tables
+	$tables = $xpath->evaluate('//table[@cols="4"]');
+
+	for ($i = 0; $i < $tables->length; $i++) {
+		$table = $tables->item($i);
+
+		for ($j = 0; $j < $table->childNodes->length; $j++) {
+			$tr = $table->childNodes->item($j);
+
+			$date = $tr->childNodes->item(0)->textContent;
+			if (!preg_match('@^[0-9]+/[0-9]+ @', $date))
+				continue;
+
+			$favorite = $tr->childNodes->item(2)->textContent;
+			if (strncasecmp($favorite, 'At ', 3) === 0)
+				$favorite = substr($favorite, 3);
+			$spread = $tr->childNodes->item(4)->textContent;
+			if (preg_match('/^(\-)?([0-9\.]+)$/', $spread, $regs)) {
+				$spread = (float)$regs[2];
+			} else if ($spread == 'PK') {
+				$spread = 0;
+			} else {
+				$spread = null;
+			}
+			$underdog = $tr->childNodes->item(6)->textContent;
+			if (strncasecmp($underdog, 'At ', 3) === 0)
+				$underdog = substr($underdog, 3);
+
+			update_point_spread($season, $week, team_to_abbr($favorite), team_to_abbr($underdog), $spread);
+		}
+	}
+
+}
