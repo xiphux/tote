@@ -15,7 +15,7 @@ function pick_distribution()
 	$poolobjects = $pools->find(
 		array(),
 		array('entries', 'name', 'season')
-	);
+	)->sort(array('season' => -1, 'name' => 1));
 
 	$distdata = array();
 
