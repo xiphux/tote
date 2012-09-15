@@ -279,3 +279,7 @@ ul.ruleList li {
 .gridSchedule td {
 	padding: 1px 2px;
 }
+
+#graphControls {
+	padding-top: 50px;
+}

@@ -160,6 +160,15 @@
     {else}
     <script type="text/javascript" src="js/gridschedule.js"></script>
     {/if}
+  {elseif $source == 'analytics'}
+    <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
+    {if $graphtype == 'pickdist'}
+      {if file_exists('js/pickdist.min.js')}
+      	<script type="text/javascript" src="js/pickdist.min.js"></script>
+      {else}
+      	<script type="text/javascript" src="js/pickdist.js"></script>
+      {/if}
+    {/if}
   {/if}
 
   {if $mobile}

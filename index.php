@@ -385,6 +385,23 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 		);
 		break;
 
+	
+	// analytics - graphing
+	case 'analytics':
+		require_once(TOTE_CONTROLLERDIR . 'analytics.inc.php');
+		display_analytics(
+			(empty($_GET['g']) ? null : $_GET['g'])
+		);
+		break;
+
+	// graphdata - graph data load
+	case 'graphdata':
+		require_once(TOTE_CONTROLLERDIR . 'graphdata.inc.php');
+		display_graphdata(
+			(empty($_GET['g']) ? null : $_GET['g'])
+		);
+		break;
+
 
 	// pool (default) - display a pool
 	default:
