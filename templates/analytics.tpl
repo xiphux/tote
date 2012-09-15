@@ -1,4 +1,4 @@
-{include file='header.tpl' header='Analytics' homelink=true source='analytics'}
+{include file='header.tpl' header='Analytics' homelink=true jsmodule=$graphtype}
 
 <div class="navTabs">
 {if $graphtype == 'pickrisk'}
