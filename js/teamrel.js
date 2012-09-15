@@ -10,6 +10,8 @@
 	var color = null;
 	var arc = null;
 
+	var loading = null;
+
 	var svg = null;
 
 	var groupAngles = [];
@@ -228,11 +230,22 @@
 			.append("g")
 			.attr("transform", "translate(450,450)");
 
+		loading = svg.append('text')
+			.attr('transform', 'translate(-40,0)')
+			.attr('font-size', "20")
+			.style('opacity', 1)
+			.text('Loading...');
+
 		arc = d3.svg.arc().innerRadius(600*.41).outerRadius(600*.41*1.1);
 
 		d3.json('index.php?a=graphdata&g=teamrel', function(data) {
 			teamData = data.teams;
 			relData = data.games;
+
+			loading.transition()
+				.duration(500)
+				.style('opacity', 0)
+				.remove();
 
 			var controlsContainer = d3.select(graphControlsContainer);
 			var seasonselect = controlsContainer.append('select')
