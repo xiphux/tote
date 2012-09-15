@@ -6,6 +6,12 @@
 {else}
 <a href="{$SCRIPT_NAME}?a=analytics&g=pickdist">Pick Distribution</a>
 {/if}
+|
+{if $graphtype == 'teamrel'}
+<span class="activeTab">Team Relationships</span>
+{else}
+<a href="{$SCRIPT_NAME}?a=analytics&g=teamrel">Team Relationships</a>
+{/if}
 </div>
 
 <div id="graphControls">

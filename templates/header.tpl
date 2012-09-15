@@ -168,6 +168,12 @@
       {else}
       	<script type="text/javascript" src="js/pickdist.js"></script>
       {/if}
+    {elseif $graphtype == 'teamrel'}
+      {if file_exists('js/teamrel.min.js')}
+      	<script type="text/javascript" src="js/teamrel.min.js"></script>
+      {else}
+      	<script type="text/javascript" src="js/teamrel.js"></script>
+      {/if}
     {/if}
   {/if}
 

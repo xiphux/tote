@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'pick_distribution.inc.php');
+require_once(TOTE_INCLUDEDIR . 'team_relationships.inc.php');
 
 /**
  * graphdata controller
@@ -22,6 +23,9 @@ function display_graphdata($graphtype)
 	switch ($graphtype) {
 		case 'pickdist':
 			$data = pick_distribution();
+			break;
+		case 'teamrel':
+			$data = team_relationships();
 			break;
 		default:
 			return;
