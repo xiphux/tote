@@ -268,8 +268,9 @@ div.selected {
 	font-style: italic;
 }
 
-.scheduleTabs {
+.navTabs {
 	font-size: larger;
+	border-bottom: 1px solid #6c9ffc;
 }
 
 .activeTab {
@@ -282,12 +283,8 @@ div.selected {
 	color: #fff;
 }
 
-.scheduleTabs .activeTab {
+.navTabs .activeTab {
 	padding: 1px 2px 0px 2px
-}
-
-.scheduleTable {
-	border-top: 1px solid #6c9ffc;
 }
 
 .scheduleTable td {

@@ -15,7 +15,7 @@
 <strong>{$year}-{$year+1}</strong>
 {/if}
 </div>
-<div class="scheduleTabs">
+<div class="navTabs">
 <span class="activeTab">By Week</span> | <a href="{$SCRIPT_NAME}?a=teamschedule&y={$year}">By Team</a> | <a href="{$SCRIPT_NAME}?a=gridschedule&y={$year}">Grid</a>
 </div>
 
