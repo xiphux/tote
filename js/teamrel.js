@@ -237,7 +237,7 @@
 			var controlsContainer = d3.select(graphControlsContainer);
 			var seasonselect = controlsContainer.append('select')
 				.style('font-size', 'larger');
-			seasonselect.append('option').attr('value', '').text('All seasons');
+			//seasonselect.append('option').attr('value', '').text('All seasons');
 			var seasonarray = [];
 			for (var season in relData) {
 				if (relData.hasOwnProperty(season)) {
