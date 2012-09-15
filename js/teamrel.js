@@ -12,6 +12,8 @@
 
 	var svg = null;
 
+	var groupAngles = [];
+
 	function teamNameByIndex(index)
 	{
 		var team = teamData[index];
@@ -54,25 +56,22 @@
 		return data;
 	}
 
-	function draw()
+	function arcTween(d, i)
 	{
-		var groupdata = svg.selectAll("g.arc")
-			.data(chord.groups);
+		var start = { startAngle: 0, endAngle: 0 };
+		if (groupAngles[i])
+			start = groupAngles[i];
+		var inter = d3.interpolate(start, d);
+		return function(t) {
+			return arc(inter(t));
+		}
+	}
 
-		groupdata.enter().append('g')
-			.attr('class', 'arc')
-			.append('path')
-			.style("fill", function (d) { return color(d.index); })
-			.style("stroke", function (d) { return d3.rgb(color(d.index)).darker(); })
-			.attr("d", arc)
-			.on('mouseover', fade(.1))
-			.on('mouseout', fade(1));
-
-		groupdata.select('path').attr('d', arc);
-
+	function drawtext(update)
+	{
 		var divisions = {};
 
-		groupdata.append('text')
+		update.append('text')
 			.each(function(d, i) { 
 				d.angle = (d.startAngle + d.endAngle) / 2;
 				var team = teamData[i];
@@ -124,6 +123,10 @@
 			.duration(500)
 			.style('opacity', 1);
 
+	}
+
+	function drawchords()
+	{
 		svg.append("g")
 			.attr('class', 'chord')
 			.selectAll("path")
@@ -136,6 +139,37 @@
 			.transition()
 			.duration(500)
 			.style('opacity', 1);
+	}
+
+	function draw()
+	{
+		var groupdata = svg.selectAll("g.arc")
+			.data(chord.groups);
+
+		groupdata.enter().append('g')
+			.attr('class', 'arc')
+			.append('path')
+			.style("fill", function (d) { return color(d.index); })
+			.style("stroke", function (d) { return d3.rgb(color(d.index)).darker(); })
+			.on('mouseover', fade(.1))
+			.on('mouseout', fade(1))
+			.transition()
+			.duration(500)
+			.attrTween('d', arcTween)
+			.each('end', function(d, i) {
+				groupAngles[i] = { startAngle: d.startAngle, endAngle: d.endAngle };
+			});
+		groupdata.select('path')
+			.transition()
+			.duration(500)
+			.attrTween('d', arcTween)
+			.each('end', function(d, i) {
+				groupAngles[i] = { startAngle: d.startAngle, endAngle: d.endAngle };
+				if (i == (groupdata[0].length - 1)) {
+					drawtext(groupdata);
+					drawchords();
+				}
+			});
 	}
 
 	function set_season(season)
