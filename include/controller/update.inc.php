@@ -5,6 +5,8 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'load_page.inc.php');
+require_once(TOTE_INCLUDEDIR . 'team_abbreviation_to_id.inc.php');
+require_once(TOTE_INCLUDEDIR . 'import_point_spreads.inc.php');
 
 // times are reported on websites in Eastern
 date_default_timezone_set('America/New_York');
@@ -84,34 +86,6 @@ function team_to_abbr($team)
 		case 'San Diego':
 			return 'SD';
 	}
-}
-
-// cache team abbreviation to id mapping
-$teamids = null;
-
-/**
- * Given a team abbreviation, get the team object id
- *
- * @param string $team team abbreviation
- * @return object team id
- */
-function get_team_id($team)
-{
-	global $teamids;
-
-	if ($teamids == null) {
-		$teams = get_collection(TOTE_COLLECTION_TEAMS);
-
-		$teamcol = $teams->find(array());
-
-		foreach ($teamcol as $teamobj) {
-			if (!empty($teamobj['abbreviation'])) {
-				$teamids[$teamobj['abbreviation']] = $teamobj['_id'];
-			}
-		}
-	}
-
-	return $teamids[$team];
 }
 
 /**
@@ -226,12 +200,12 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 	}
 
 	// find the teams we're updating
-	$team1id = get_team_id($team1);
+	$team1id = team_abbreviation_to_id($team1);
 	if (empty($team1id)) {
 		echo "error: Couldn't locate " . $team1 . "<br />\n";
 		return;
 	}
-	$team2id = get_team_id($team2);
+	$team2id = team_abbreviation_to_id($team2);
 	if (empty($team2id)) {
 		echo "error: Couldn't locate " . $team2 . "<br />\n";
 		return;
@@ -323,12 +297,12 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 	echo 'Updating ' . $away . ' @ ' . $home . ' at ' . $newstart->format('D M j, Y g:i a T') . '... ';
 
 	// find teams
-	$homeid = get_team_id($home);
+	$homeid = team_abbreviation_to_id($home);
 	if (empty($homeid)) {
 		echo "error: Couldn't locate " . $home . "<br />\n";
 		return;
 	}
-	$awayid = get_team_id($away);
+	$awayid = team_abbreviation_to_id($away);
 	if (empty($awayid)) {
 		echo "error: Couldn't locate " . $away . "<br />\n";
 		return;
@@ -574,17 +548,19 @@ if ($gms->item(0)->attributes->getNamedItem('t')->value == 'P') {
  * @param string $underdog underdog
  * $param float $spread point spread
  */
+
+/*
 function update_point_spread($season, $week, $favorite, $underdog, $spread)
 {
 	echo 'Updating ' . $favorite . ' and ' . $underdog . ' to ' . $favorite . ' favored by ' . $spread . '... ';
 
 	// find teams
-	$favoriteid = get_team_id($favorite);
+	$favoriteid = team_abbreviation_to_id($favorite);
 	if (empty($favoriteid)) {
 		echo "error: Couldn't locate " . $favorite . "<br />\n";
 		return;
 	}
-	$underdogid = get_team_id($underdog);
+	$underdogid = team_abbreviation_to_id($underdog);
 	if (empty($underdogid)) {
 		echo "error: Couldn't locate " . $underdog . "<br />\n";
 		return;
@@ -703,3 +679,11 @@ if (($week === null) || ($season === null)) {
 	}
 
 }
+
+*/
+
+// import point spreads
+$season = (int)date('Y');
+if ((int)date('n') < 3)
+	$season--;
+import_point_spreads($season);
