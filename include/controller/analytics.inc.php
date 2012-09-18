@@ -12,7 +12,7 @@ function display_analytics($graphtype)
 	global $tpl;
 
 	if (empty($graphtype)) {
-		$graphtype = 'pickdist';
+		$graphtype = 'pickrisk';
 	}
 
 	$tpl->assign('graphtype', $graphtype);

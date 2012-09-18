@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'pick_distribution.inc.php');
+require_once(TOTE_INCLUDEDIR . 'pick_risk.inc.php');
 require_once(TOTE_INCLUDEDIR . 'team_relationships.inc.php');
 
 /**
@@ -21,6 +22,9 @@ function display_graphdata($graphtype)
 	$data = null;
 
 	switch ($graphtype) {
+		case 'pickrisk':
+			$data = pick_risk();
+			break;
 		case 'pickdist':
 			$data = pick_distribution();
 			break;

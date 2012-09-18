@@ -1,6 +1,12 @@
 {include file='header.tpl' header='Analytics' homelink=true source='analytics'}
 
 <div class="navTabs">
+{if $graphtype == 'pickrisk'}
+<span class="activeTab">Pick Risk</span>
+{else}
+<a href="{$SCRIPT_NAME}?a=analytics&g=pickrisk">Pick Risk</a>
+{/if}
+|
 {if $graphtype == 'pickdist'}
 <span class="activeTab">Pick Distribution</span>
 {else}

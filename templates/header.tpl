@@ -162,7 +162,13 @@
     {/if}
   {elseif $source == 'analytics'}
     <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
-    {if $graphtype == 'pickdist'}
+    {if $graphtype == 'pickrisk'}
+      {if file_exists('js/pickrisk.min.js')}
+      	<script type="text/javascript" src="js/pickrisk.min.js"></script>
+      {else}
+      	<script type="text/javascript" src="js/pickrisk.js"></script>
+      {/if}
+    {elseif $graphtype == 'pickdist'}
       {if file_exists('js/pickdist.min.js')}
       	<script type="text/javascript" src="js/pickdist.min.js"></script>
       {else}
