@@ -7,6 +7,8 @@
 	var graphContainer = null;
 	var graphControlsContainer = null;
 
+	var userselect = null;
+
 	var svg = null;
 	var xaxisgroup = null;
 	var yaxisgroup = null;
@@ -166,7 +168,7 @@
 
 		yscale.domain([upperspread, lowerspread]);
 
-		var colorindex = 0;
+		var users = [];
 
 		activedata = [];
 		for (var i = 0; i < data.entries.length; i++) {
@@ -222,7 +224,31 @@
 			}
 
 			activedata.push(entrantdata);
+
+			users.push(entrant.user);
 		}
+
+		
+		// user selector
+		userselect.selectAll('option').remove();
+		userselect.append('option')
+			.attr('value', '')
+			.text('All users');
+		users.sort(function(a, b) {
+			var an = readable_name(a).toLowerCase();
+			var bn = readable_name(b).toLowerCase();
+			if (an < bn)
+				return -1;
+			if (an > bn)
+				return 1;
+			return 0;
+		});
+		for (var i = 0; i < users.length; i++) {
+			userselect.append('option')
+				.attr('value', users[i].username)
+				.text(readable_name(users[i]));
+		}
+
 
 		// user data binding
 		var maindata = usergroup.selectAll('g.user').data(activedata, function(d) { return d.user.username; });
@@ -274,10 +300,16 @@
 			.style('stroke-width', 3)
 			.style('opacity', 0)
 			.on('mouseover', function(d, i) {
-				set_user(d.user.username);
+				var option = userselect.node().options[userselect.node().selectedIndex];
+				if (!option.value) {
+					set_user(d.user.username);
+				}
 			})
 			.on('mouseout', function(d, i) {
-				set_user(null);
+				var option = userselect.node().options[userselect.node().selectedIndex];
+				if (!option.value) {
+					set_user(null);
+				}
 			})
 			.transition()
 			.duration(500)
@@ -386,7 +418,28 @@
 			poolselect.on('change', function(d) {
 				var select = d3.select(this);
 				var option = select.node().options[select.node().selectedIndex];
-				set_pool(option.value);
+				var selectedpool = option.value;
+
+				var selecteduser = userselect.node().options[userselect.node().selectedIndex];
+				if (selecteduser.value) {
+					set_user(null);
+					setTimeout(function() {set_pool(selectedpool);}, 500);
+				} else {
+					set_pool(selectedpool);
+				}
+			});
+
+			controls.append('br');
+
+			userselect = controls.append('select')
+				.style('font-size', 'larger');
+			userselect.on('change', function(d) {
+				var select = d3.select(this);
+				var option = select.node().options[select.node().selectedIndex];
+				set_user(null);
+				if (option.value) {
+					set_user(option.value);
+				}
 			});
 
 			weeklabel = svg.append('text')
