@@ -20,6 +20,8 @@
 	var headertext1 = null;
 	var headertext2 = null;
 
+	var loadingtext = null;
+
 	var midline = null;
 	var weeklabel = null;
 	var favoritelabel = null;
@@ -389,6 +391,14 @@
 			.attr('font-size', 20)
 			.style('opacity', 0);
 
+		loadingtext = svg.append('text')
+			.attr('x', width/2)
+			.attr('y', height/2)
+			.attr('font-size', 20)
+			.attr('text-anchor', 'middle')
+			.style('opacity', 1)
+			.text('Loading...');
+
 		line = d3.svg.line()
 			.x(function(d) { 
 				return xscale(d.week);
@@ -401,6 +411,11 @@
 
 		d3.json('index.php?a=graphdata&g=pickrisk', function(data) {
 			pooldata = data;
+
+			loadingtext.transition()
+				.duration(500)
+				.style('opacity', 0)
+				.remove();
 
 			var controls = d3.select(graphControlsContainer);
 			var poolselect = controls.append('select')
