@@ -215,6 +215,13 @@
 				datapoint = { week: pick.week, spread: spread, win: win, game: pick.game };
 
 				dataset.push(datapoint);
+				dataset.sort(function(a, b) {
+					if (a.week < b.week)
+						return -1;
+					if (a.week > b.week)
+						return 1;
+					return 0;
+				});
 			}
 
 			var entrantdata = {
