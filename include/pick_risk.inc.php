@@ -34,7 +34,7 @@ function pick_risk()
 			continue;
 		}
 
-		$games = [];
+		$games = array();
 
 		foreach ($pool['entries'] as $entrant) {
 
@@ -60,7 +60,7 @@ function pick_risk()
 				'user' => $userdata
 			);
 
-			$entrantgames = [];
+			$entrantgames = array();
 
 			foreach ($entrant['bets'] as $bet) {
 				if (empty($bet['team']))
