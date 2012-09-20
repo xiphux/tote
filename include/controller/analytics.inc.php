@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+
 /**
  * analytics controller
  *
@@ -17,5 +19,6 @@ function display_analytics($graphtype)
 
 	$tpl->assign('graphtype', $graphtype);
 
+	http_headers();
 	$tpl->display('analytics.tpl');
 }
