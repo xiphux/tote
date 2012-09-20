@@ -196,6 +196,7 @@
  <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (RSS)" href="{$SCRIPT_NAME}?a=rss&p={$pool._id}" type="application/rss+xml" />
  {/if}
 
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta name="viewport" content="initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
