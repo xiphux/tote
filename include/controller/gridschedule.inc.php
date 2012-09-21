@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
+require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -74,6 +75,8 @@ function display_gridschedule($season)
 		$teamabbrs[$eachteam] = $teamobj['abbreviation'];
 	}
 	uksort($teamgames, 'teamcmp');
+
+	http_headers();
 	
 	$tpl->assign('teamabbrs', $teamabbrs);
 	$tpl->assign('games', $teamgames);
