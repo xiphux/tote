@@ -19,7 +19,7 @@
 
 {foreach from=$timeactions item=action}
 <tr class="{cycle values=light,dark}">
-  <td>{$action.time->format('r')}</td>
+  <td><time datetime="{$action.time->format('Y-m-d\TH:i:sO')}">{$action.time->format('r')}</time></td>
   <td>{$action.user_name}</td>
   <td>{if $action.admin_name}{$action.admin_name}{/if}</td>
   <td class="center">{if $action.week && ($action.week > 0)}{$action.week}{/if}</td>

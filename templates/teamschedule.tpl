@@ -15,7 +15,6 @@ Week {$eachweek}:
 {if $game.bye}
 Bye
 {else}
-{assign var=day value=$game.localstart->format('D M j, Y')}
 <span>{$game.away_team.abbreviation} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team.abbreviation} {if isset($game.home_score)}{$game.home_score}{/if}</span>
 {/if}
 </td>

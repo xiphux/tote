@@ -14,7 +14,12 @@ define(['jquery', 'modules/autoselectnav', 'qtip', 'common'], function($, autose
 			text: function(api) {
 				var tipcontent = $(document.createElement('div'));
 				tipcontent.css('text-align', 'center');
-				tipcontent.html($(this).attr('data-game') + "<br />" + $(this).attr('data-start'));
+				tipcontent.html($(this).attr('data-game'));
+				tipcontent.append($(document.createElement('br')));
+				var time = $(document.createElement('time'));
+				time.attr('datetime', $(this).attr('data-startstamp'));
+				time.text($(this).attr('data-start'));
+				tipcontent.append(time);
 				return tipcontent;
 			}
 		}

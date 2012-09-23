@@ -79,9 +79,9 @@ Last Password Change
  User
  {/if}
  </td>
- <td>{if $eachuser.createdlocal}{$eachuser.createdlocal->format('c')}{else}<span class="nodata">Unknown</span>{/if}</td>
- <td>{if $eachuser.lastloginlocal}{$eachuser.lastloginlocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>
- <td>{if $eachuser.lastpasswordchangelocal}{$eachuser.lastpasswordchangelocal->format('c')}{else}<span class="nodata">Never</span>{/if}</td>
+ <td>{if $eachuser.createdlocal}<time datetime="{$eachuser.createdlocal->format('Y-m-d\TH:i:sO')}">{$eachuser.createdlocal->format('c')}</time>{else}<span class="nodata">Unknown</span>{/if}</td>
+ <td>{if $eachuser.lastloginlocal}<time datetime="{$eachuser.lastloginlocal->format('Y-m-d\TH:i:sO')}">{$eachuser.lastloginlocal->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
+ <td>{if $eachuser.lastpasswordchangelocal}<time datetime="{$eachuser.lastpasswordchangelocal->format('Y-m-d\TH:i:sO')}">{$eachuser.lastpasswordchangelocal->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
  {if $user.role == 1}
  <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&u={$eachuser._id}&csrftoken={$csrftoken}" class="deleteLink">Delete</a></td>
  {/if}

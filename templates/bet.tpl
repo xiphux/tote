@@ -37,7 +37,7 @@ Games for week {$week}:
 	{else}
         <td><span id="{$game.away_team._id}" title="{$game.away_team.abbreviation}" class="teamName{if !array_key_exists((string)$game.away_team._id, $teams)} teampicked{/if}">{$game.away_team.abbreviation}</span> @ <span id="{$game.home_team._id}" title="{$game.home_team.abbreviation}" class="teamName{if !array_key_exists((string)$game.home_team._id, $teams)} teampicked{/if}">{$game.home_team.abbreviation}</span></td>
 	{/if}
-	<td>{$game.localstart->format('D M j, Y g:i a T')}</td>
+	<td><time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('D M j, Y g:i a T')}</time></td>
       </tr>
     {/foreach}
   </tbody>

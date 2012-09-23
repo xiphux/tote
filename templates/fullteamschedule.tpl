@@ -58,7 +58,7 @@ Bye
 </td>
 <td>
 {if !$game.bye}
-{$game.localstart->format('D M j, Y g:i a T')}
+<time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('D M j, Y g:i a T')}</time>
 {/if}
 </td>
 </tr>

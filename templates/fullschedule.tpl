@@ -46,9 +46,9 @@
 {assign var=day value=$game.localstart->format('D M j, Y')}{if $day != $lastday}
 {if !$smarty.foreach.weekgames.first}</div>{/if}
 <div class="divScheduleDay">
-{$day}:
+<time datetime="{$game.localstart->format('Y-m-d')}">{$day}</time>:
 {assign var=lastday value=$day}{/if}
-<br />{$game.away_team.abbreviation} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team.abbreviation} {if isset($game.home_score)}{$game.home_score}{/if} at {$game.localstart->format('g:i a T')}
+<br />{$game.away_team.abbreviation} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team.abbreviation} {if isset($game.home_score)}{$game.home_score}{/if} at <time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('g:i a T')}</time>
 {/foreach}
 </div>
 
