@@ -5,7 +5,9 @@ define(['module', 'modernizr'], function(module) {
 	}
 	if (!Modernizr.input.autofocus) {
 		require(['jquery'], function($) {
-			$('input[autofocus]').filter(':first').focus();
+			$(document).ready(function() {
+				$('input[autofocus]').filter(':first').focus();
+			});
 		});
 	}
 });
