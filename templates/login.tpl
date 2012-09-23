@@ -16,7 +16,7 @@
 <label for="username">Username:</label>
 </td>
 <td>
-<input type="text" name="username" class="initialFocus" />
+<input type="text" name="username" autofocus />
 </td>
 </tr>
 <tr>

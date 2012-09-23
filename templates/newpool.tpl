@@ -12,7 +12,7 @@
 <table class="formTable">
   <tr>
     <td><label for="name">Pool name:</label></td>
-    <td><input type="text" name="name" {if $name}value="{$name}"{/if} class="initialFocus"/></td>
+    <td><input type="text" name="name" {if $name}value="{$name}"{/if} autofocus /></td>
   </tr>
   <tr>
     <td><label for="season">Season:</label></td>

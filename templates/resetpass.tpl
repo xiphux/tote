@@ -11,7 +11,7 @@
 <form method="post" action="index.php?a=finishresetpass">
 <table class="formTable">
 <tr>
-<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" class="initialFocus"></td>
+<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" autofocus /></td>
 </tr>
 <tr>
 <td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>
