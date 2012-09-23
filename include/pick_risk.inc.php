@@ -28,13 +28,12 @@ function pick_risk()
 			continue;
 
 		$poolid = (string)$pool['_id'];
+		$seasonweeks = get_season_weeks($pool['season']);
 		$openweeks = get_open_weeks($pool['season']);
-		if (isset($openweeks[2]) && ($openweeks[2] == true)) {
-			// only one week of data to show, not very useful
-			continue;
-		}
 
 		$games = array();
+
+		$weekpickcount = array();
 
 		foreach ($pool['entries'] as $entrant) {
 
@@ -66,11 +65,6 @@ function pick_risk()
 				if (empty($bet['team']))
 					continue;
 
-				if (isset($openweeks[$bet['week']]) && ($openweeks[$bet['week']] == true)) {
-					// don't give away point spreads for open weeks
-					continue;
-				}
-
 				$game = get_game_by_team($pool['season'], $bet['week'], $bet['team']);
 				if (!$game)
 					continue;
@@ -98,6 +92,11 @@ function pick_risk()
 					'team' => (string)$bet['team'],
 					'week' => $bet['week']
 				);
+
+				if (isset($weekpickcount[$bet['week']]))
+					$weekpickcount[$bet['week']] += 1;
+				else
+					$weekpickcount[$bet['week']] = 1;
 			}
 
 			if (count($entrantdata['picks']) < 1)
@@ -109,13 +108,43 @@ function pick_risk()
 				$pooldata[$poolid] = array(
 					'name' => $pool['name'],
 					'season' => $pool['season'],
-					'weeks' => get_season_weeks($pool['season']),
+					'weeks' => $seasonweeks,
 					'entries' => array()
 				);
 			}
 
 			$pooldata[$poolid]['entries'][] = $entrantdata;
 
+		}
+
+		$openweek = 0;
+		for ($i = 1; $i <= $seasonweeks; ++$i) {
+			if (!(isset($openweeks[$i]) && ($openweeks[$i] == true))) {
+				// week is closed, ok to show
+				continue;
+			}
+			if (isset($weekpickcount[$i]) && ($weekpickcount[$i] == count($pool['entries']))) {
+				// everybody picked, ok to show
+				continue;
+			}
+			if ($openweek == 0)
+				$openweek = $i;
+
+			$entrycount = count($pooldata[$poolid]['entries']);
+			for ($j = 0; $j < $entrycount; ++$j) {
+				$pickcount = count($pooldata[$poolid]['entries'][$j]['picks']);
+				for ($k = 0; $k < $pickcount; ++$k) {
+					$week = $pooldata[$poolid]['entries'][$j]['picks'][$k]['week'];
+					if ($week == $i) {
+						unset($pooldata[$poolid]['entries'][$j]['picks'][$k]);
+					}
+				}
+			}
+		}
+		if (($openweek > 0) && ($openweek < 3)) {
+			// only one week of data to show - not useful
+			unset($pooldata[$poolid]);
+			continue;
 		}
 
 		if (isset($pooldata[$poolid])) {
