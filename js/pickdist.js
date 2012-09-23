@@ -225,7 +225,32 @@
 
 
 	$(document).ready(function() {
-		initialize('#graph', '#graphControls');
+		if (Modernizr.inlinesvg) {
+			initialize('#graph', '#graphControls');
+		} else {
+			d3.select('div.navTabs').remove();
+			var graph = d3.select('#graph');
+			graph.append('div')
+				.text('Analytics requires features that your browser does not support.');
+			graph.append('div')
+				.style('padding-bottom', '10px')
+				.text('Please upgrade to one of the following browsers:');
+			graph.append('div')
+				.append('a')
+				.attr('href', 'http://www.google.com/chrome')
+				.attr('target', '_blank')
+				.text('Google Chrome');
+			graph.append('div')
+				.append('a')
+				.attr('href', 'http://www.getfirefox.com')
+				.attr('target', '_blank')
+				.text('Mozilla Firefox');
+			graph.append('div')
+				.append('a')
+				.attr('href', 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home')
+				.attr('target', '_blank')
+				.text('Internet Explorer 9');
+		}
 	});
 
 })()

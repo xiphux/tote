@@ -161,6 +161,7 @@
     <script type="text/javascript" src="js/gridschedule.js"></script>
     {/if}
   {elseif $source == 'analytics'}
+    <script type="text/javascript" src="js/ext/modernizr.min.js"></script>
     <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
     {if $graphtype == 'pickrisk'}
       {if file_exists('js/pickrisk.min.js')}
