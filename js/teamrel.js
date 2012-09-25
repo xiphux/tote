@@ -281,7 +281,7 @@
 	}
 
 	$(document).ready(function() {
-		if (Modernizr.inlinesvg) {
+		if (Modernizr.inlinesvg && d3) {
 			initialize('#graph', '#graphControls');
 		} else {
 			$('div.navTabs').remove();
