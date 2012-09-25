@@ -1,8 +1,10 @@
-define(['modules/pickdistgraph', 'modules/analyticsunsupported', 'modernizr', 'd3', 'common'], function(pickdist, analyticsunsupported) {
+define(['modules/pickdistgraph', 'modules/analyticsunsupported', 'modernizr', 'common'], function(pickdist, analyticsunsupported) {
 	if (Modernizr.inlinesvg) {
 		pickdist('#graph', '#graphControls');
 	} else {
-		d3.select('div.navTabs').remove();
-		analyticsunsupported('#graph');
+		require(['jquery'], function() {
+			$('div.navTabs').remove();
+			analyticsunsupported('#graph');
+		});
 	}
 });
