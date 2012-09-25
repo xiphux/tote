@@ -1,3 +1,3 @@
-define(['jquery', 'modules/autoselectnav', 'common'], function($, autoselectnav) {
+define(['modules/autoselectnav', 'common'], function(autoselectnav) {
 	autoselectnav('#poolNameSelect', '#poolNameSubmit');
 });
