@@ -162,9 +162,9 @@
     {/if}
   {elseif $source == 'analytics'}
     <script type="text/javascript" src="js/ext/modernizr.min.js"></script>
-    <!--[if !IE || gte IE 9]><!-->
-    <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
-    <!-- <![endif]-->
+    <![if (gte IE 9)|(!IE)]>
+      <script type="text/javascript" src="js/ext/d3.v2.min.js"></script>
+    <![endif]>
     {if $graphtype == 'pickrisk'}
       {if file_exists('js/pickrisk.min.js')}
       	<script type="text/javascript" src="js/pickrisk.min.js"></script>
