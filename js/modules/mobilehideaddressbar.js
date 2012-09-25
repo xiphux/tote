@@ -1,5 +1,7 @@
 define(function() {
-	if (!(location.hash || pageYOffset)) {
-		window.scrollTo(0, 1);
+	return function() {
+		if (!(location.hash || pageYOffset)) {
+			window.scrollTo(0, 1);
+		}
 	}
 });

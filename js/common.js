@@ -1,7 +1,7 @@
-define(['module', 'modernizr'], function(module) {
+define(['module', 'modules/mobilehideaddressbar', 'modernizr'], function(module, mobilehideaddressbar) {
 	var isMobile = module.config().mobile;
 	if (isMobile) {
-		require(['modules/mobilehideaddressbar']);
+		mobilehideaddressbar();
 	}
 	if (!Modernizr.input.autofocus) {
 		require(['jquery'], function($) {
