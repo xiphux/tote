@@ -243,7 +243,6 @@
 
 			var chrome = $(document.createElement('div'));
 			var chromelink = $(document.createElement('a'))
-				.append('a')
 				.attr('href', 'http://www.google.com/chrome')
 				.attr('target', '_blank')
 				.text('Google Chrome');
