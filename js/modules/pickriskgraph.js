@@ -1,4 +1,4 @@
-define(['d3'], function() {
+define(function() {
 
 	var width = 900;
 	var height = 950;
@@ -359,11 +359,8 @@ define(['d3'], function() {
 			.attr('y2', yscale(0));
 	}
 
-	function initialize(container, controlscontainer)
+	function initialize()
 	{
-		graphContainer = container;
-		graphControlsContainer = controlscontainer;
-
 		svg = d3.select(graphContainer)
 			.append('svg')
 			.attr('width', width)
@@ -484,6 +481,16 @@ define(['d3'], function() {
 		});
 	}
 
-	return initialize;
+	function pickriskgraph(container, controlscontainer)
+	{
+		graphContainer = container;
+		graphControlsContainer = controlscontainer;
+
+		require(['d3'], function() {
+			initialize();
+		});
+	}
+
+	return pickriskgraph;
 
 });

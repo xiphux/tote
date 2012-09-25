@@ -1,4 +1,4 @@
-define(['d3'], function() {
+define(function() {
 
 	var graphContainer = null;
 	var graphControlsContainer = null;
@@ -148,11 +148,8 @@ define(['d3'], function() {
 			});
 	}
 
-	function initialize(graphcontainer, graphcontrolscontainer)
+	function initialize()
 	{
-		graphContainer = graphcontainer;
-		graphControlsContainer = graphcontrolscontainer;
-
 		pie = d3.layout.pie().value(function(d) {
 			return d.value;
 		});
@@ -221,6 +218,16 @@ define(['d3'], function() {
 		});
 	}
 
-	return initialize;
+	function pickdistgraph(graphcontainer, graphcontrolscontainer)
+	{
+		graphContainer = graphcontainer;
+		graphControlsContainer = graphcontrolscontainer;
+
+		require(['d3'], function() {
+			initialize();
+		});
+	}
+
+	return pickdistgraph;
 
 });

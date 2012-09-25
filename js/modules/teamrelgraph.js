@@ -1,4 +1,4 @@
-define(['d3'], function() {
+define(function() {
 
 	var graphContainer = null;
 	var graphControlsContainer = null;
@@ -213,11 +213,8 @@ define(['d3'], function() {
 
 	}
 
-	function initialize(container, controlscontainer)
+	function initialize()
 	{
-		graphContainer = container;
-		graphControlsContainer = controlscontainer;
-
 		chord = d3.layout.chord()
 			.padding(.05);
 
@@ -280,6 +277,16 @@ define(['d3'], function() {
 		});
 	}
 
-	return initialize;
+	function teamrelgraph(container, controlscontainer)
+	{
+		graphContainer = container;
+		graphControlsContainer = controlscontainer;
+
+		require(['d3'], function() {
+			initialize();
+		});
+	}
+
+	return teamrelgraph;
 
 });
