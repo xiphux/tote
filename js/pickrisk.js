@@ -488,28 +488,43 @@
 		if (Modernizr.inlinesvg) {
 			initialize('#graph', '#graphControls');
 		} else {
-			d3.select('div.navTabs').remove();
-			var graph = d3.select('#graph');
-			graph.append('div')
+			$('div.navTabs').remove();
+
+			var graph = $('#graph');
+
+			var line1 = $(document.createElement('div'))
 				.text('Analytics requires features that your browser does not support.');
-			graph.append('div')
-				.style('padding-bottom', '10px')
+			graph.append(line1);
+			
+			var line2 = $(document.createElement('div'))
+				.css('padding-bottom', '10px')
 				.text('Please upgrade to one of the following browsers:');
-			graph.append('div')
+			graph.append(line2);
+
+			var chrome = $(document.createElement('div'));
+			var chromelink = $(document.createElement('a'))
 				.append('a')
 				.attr('href', 'http://www.google.com/chrome')
 				.attr('target', '_blank')
 				.text('Google Chrome');
-			graph.append('div')
-				.append('a')
+			chrome.append(chromelink);
+			graph.append(chrome);
+
+			var firefox = $(document.createElement('div'));
+			var firefoxlink = $(document.createElement('a'))
 				.attr('href', 'http://www.getfirefox.com')
 				.attr('target', '_blank')
 				.text('Mozilla Firefox');
-			graph.append('div')
-				.append('a')
+			firefox.append(firefoxlink);
+			graph.append(firefox);
+
+			var ie9 = $(document.createElement('div'));
+			var ie9link = $(document.createElement('a'))
 				.attr('href', 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home')
 				.attr('target', '_blank')
 				.text('Internet Explorer 9');
+			ie9.append(ie9link);
+			graph.append(ie9);
 		}
 	});
 
