@@ -1,4 +1,4 @@
-define(['jquery', 'modules/generatepassword', 'common'], function($, generatepassword) {
+define(['jquery', 'cs!modules/generatepassword', 'common'], function($, generatepassword) {
 	$('#generateButton').click(function() {
 		var pass = generatepassword();
 
