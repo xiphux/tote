@@ -82,7 +82,9 @@
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min',
 		d3: 'ext/d3.v2.min',
-		modernizr: 'ext/modernizr.custom'
+		modernizr: 'ext/modernizr.custom',
+		'coffee-script': 'ext/coffee-script',
+		cs: 'ext/cs'
 	{rdelim},
 	shim: {ldelim}
 		'cookies': {ldelim}

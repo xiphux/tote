@@ -39,7 +39,7 @@ fi
 for i in ${JSDIR}/*${JSEXT}; do
 	echo "Minifying ${i}..."
 	JSMODULE="`basename ${i%$JSEXT}`"
-	java -classpath lib/rhino/js.jar:lib/closure/compiler.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o name=${JSMODULE} out=${JSDIR}/${JSMODULE}${MINEXT}.tmp baseUrl=${JSDIR} paths.jquery="empty:" paths.qtip="empty:" paths.cookies="empty:" paths.d3="empty:" paths.modernizr="ext/modernizr.custom" optimize="closure" preserveLicenseComments="false"
+	node lib/requirejs/r.js -o util/build.js name=${JSMODULE} out=${JSDIR}/${JSMODULE}${MINEXT}.tmp
 	cat util/jsheader.js ${JSDIR}/${JSMODULE}${MINEXT}.tmp > ${JSDIR}/${JSMODULE}${MINEXT}
 	rm -f ${JSDIR}/${JSMODULE}${MINEXT}.tmp
 done
@@ -47,14 +47,14 @@ done
 for i in ${CSSDIR}/*${CSSEXT}; do
 	echo "Minifying ${i}..."
 	CSSFILE=${i%$CSSEXT}
-	java -classpath lib/rhino/js.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o cssIn=${i} out=${CSSFILE}${MINCSSEXT} optimizeCss="standard"
+	node lib/requirejs/r.js -o cssIn=${i} out=${CSSFILE}${MINCSSEXT} optimizeCss="standard"
 done
 
 for i in ${SKINDIR}/*; do
 	for j in ${i}/*${CSSEXT}; do
 		echo "Minifying ${j}..."
 		SKINCSSFILE=${j%$CSSEXT}
-		java -classpath lib/rhino/js.jar org.mozilla.javascript.tools.shell.Main lib/requirejs/r.js -o cssIn=${j} out=${SKINCSSFILE}${MINCSSEXT} optimizeCss="standard"
+		node lib/requirejs/r.js -o cssIn=${j} out=${SKINCSSFILE}${MINCSSEXT} optimizeCss="standard"
 	done
 done
 
@@ -63,10 +63,12 @@ for i in ${JSDIR}/*${MINEXT}; do
 	touch ${i} ${i}${GZEXT}
 done
 
-for i in ${JSDIR}/ext/*${JSEXT}; do
+for i in ${JSDIR}/ext/*${MINEXT}; do
 	gzip -v -c ${i} > ${i}${GZEXT}
 	touch ${i} ${i}${GZEXT}
 done
+gzip -v -c ${JSDIR}/ext/require.js > ${JSDIR}/ext/require.js${GZEXT}
+touch ${JSDIR}/ext/require.js ${JSDIR}/ext/require.js${GZEXT}
 
 for i in ${CSSDIR}/*${MINCSSEXT}; do
 	gzip -v -c ${i} > ${i}${GZEXT}
