@@ -1,4 +1,4 @@
-define(['module', 'modules/mobilehideaddressbar', 'modernizr'], function(module, mobilehideaddressbar) {
+define(['module', 'cs!modules/mobilehideaddressbar', 'modernizr'], function(module, mobilehideaddressbar) {
 	var isMobile = module.config().mobile;
 	if (isMobile) {
 		mobilehideaddressbar();
