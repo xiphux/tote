@@ -1,4 +1,4 @@
-define(['jquery', 'module', 'modules/autoselectnav', 'cs!modules/cananimate', 'common'], function($, module, autoselectnav, cananimate) {
+define(['jquery', 'module', 'cs!modules/autoselectnav', 'cs!modules/cananimate', 'common'], function($, module, autoselectnav, cananimate) {
 	autoselectnav('#seasonSelect', '#seasonSubmit');
 
 	var mobile = module.config().mobile;

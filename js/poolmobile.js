@@ -1,3 +1,3 @@
-define(['modules/autoselectnav', 'common'], function(autoselectnav) {
+define(['cs!modules/autoselectnav', 'common'], function(autoselectnav) {
 	autoselectnav('#poolNameSelect', '#poolNameSubmit');
 });

@@ -1,4 +1,4 @@
-define(['jquery', 'modules/autoselectnav', 'qtip', 'common'], function($, autoselectnav) {
+define(['jquery', 'cs!modules/autoselectnav', 'qtip', 'common'], function($, autoselectnav) {
 	autoselectnav('#seasonSelect', '#seasonSubmit');
 
 	$('.gridSchedule .gridGame').qtip({
