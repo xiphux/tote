@@ -1,4 +1,4 @@
-define(['jquery', 'cs!modules/autoselectnav', 'cs!modules/poolpopup', 'modules/feedtip', 'modules/schedulepopup', 'modules/scoreticker/scoreticker', 'cs!modules/titletips', 'cookies', 'common'], function($, autoselectnav, poolpopup, feedtip, schedulepopup, ScoreTicker) {
+define(['jquery', 'cs!modules/autoselectnav', 'cs!modules/poolpopup', 'modules/feedtip', 'cs!modules/schedulepopup', 'modules/scoreticker/scoreticker', 'cs!modules/titletips', 'cookies', 'common'], function($, autoselectnav, poolpopup, feedtip, schedulepopup, ScoreTicker) {
 	autoselectnav('#poolNameSelect', '#poolNameSubmit');
 
 	poolpopup('a#lnkHistory', 'history', 'Pool History');
