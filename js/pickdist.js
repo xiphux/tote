@@ -1,4 +1,4 @@
-define(['modules/pickdistgraph', 'modules/analyticsunsupported', 'modernizr', 'common'], function(pickdist, analyticsunsupported) {
+define(['modules/pickdistgraph', 'cs!modules/analyticsunsupported', 'modernizr', 'common'], function(pickdist, analyticsunsupported) {
 	if (Modernizr.inlinesvg) {
 		pickdist('#graph', '#graphControls');
 	} else {

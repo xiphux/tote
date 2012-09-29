@@ -1,4 +1,4 @@
-define(['modules/teamrelgraph', 'modules/analyticsunsupported', 'modernizr', 'common'], function(teamrel, analyticsunsupported) {
+define(['modules/teamrelgraph', 'cs!modules/analyticsunsupported', 'modernizr', 'common'], function(teamrel, analyticsunsupported) {
 	if (Modernizr.inlinesvg) {
 		teamrel('#graph', '#graphControls');
 	} else {
