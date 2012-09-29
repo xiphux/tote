@@ -74,11 +74,10 @@ define ->
 
     arcGroup = svg.select('g.arcs')
     paths = arcGroup.selectAll('path')
-      .data pie(dataEntries), (d) ->
-        d.key
+      .data pie(dataEntries), (d) -> return d.key
 
     paths.enter().append('path')
-      .attr('fill', (d, i) -> color i)
+      .attr('fill', (d, i) -> return color i)
       .transition()
       .duration(pieDuration)
       .attrTween('d', pieTween)

@@ -10,7 +10,7 @@ define ['jquery', 'qtip'], ($) ->
     return unless poolid
     poolid = poolid[1]
 
-    qtipParams =
+    jLink.qtip
       content:
         text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />'
         ajax:
@@ -37,8 +37,6 @@ define ['jquery', 'qtip'], ($) ->
       style:
         classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
         def: false
-
-    jLink.qtip qtipParams
 
     jLink.click ->
       return false

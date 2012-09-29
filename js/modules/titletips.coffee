@@ -1,6 +1,6 @@
 define ['jquery', 'qtip'], ($) ->
   titles = $ '*[title]'
-  qtipData =
+  titles.qtip
     style:
       classes: 'ui-tooltip-tote ui-tooltip-shadow ui-tooltip-rounded'
       def: false
@@ -9,5 +9,4 @@ define ['jquery', 'qtip'], ($) ->
       my: 'bottom left'
       at: 'top center'
       effect: false
-  titles.qtip qtipData
   return

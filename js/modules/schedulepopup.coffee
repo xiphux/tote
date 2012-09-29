@@ -19,7 +19,7 @@ define ['jquery', 'qtip'], ($) ->
 
       jLink.removeData 'qtip'
 
-      qtipData =
+      jLink.qtip
         content:
           text: '<img src="' + url + 'images/editpool-loader.gif" alt="Loading..." />'
           ajax:
@@ -47,7 +47,6 @@ define ['jquery', 'qtip'], ($) ->
         style:
           classes: 'ui-tooltip-tote ui-tooltip-modal ui-tooltip-rounded totePopup'
           def: false
-      jLink.qtip qtipData
 
       jLink.click ->
         return false

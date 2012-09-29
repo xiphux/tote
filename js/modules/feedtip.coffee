@@ -13,7 +13,7 @@ define ['jquery', 'qtip'], ($) ->
       content += '<a href="index.php?a=rss&p=' + poolid + '">RSS</a>'
       content += '</div>'
 
-      qtipData =
+      jLink.qtip
         content:
           text: content
         show:
@@ -27,7 +27,6 @@ define ['jquery', 'qtip'], ($) ->
         position:
           viewport: $ window
           effect: false
-      jLink.qtip qtipData
 
       jLink.click ->
         return false
