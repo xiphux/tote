@@ -1,4 +1,4 @@
-define(['jquery', 'module', 'modules/titletips', 'common'], function($, module) {
+define(['jquery', 'module', 'cs!modules/titletips', 'common'], function($, module) {
 
 	$('a.deletePoolAction').click(function() {
 		var poolname = $('#poolName').val();
