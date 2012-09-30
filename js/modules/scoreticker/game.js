@@ -1,4 +1,4 @@
-define(['./localstart'], function(localStart) {
+define(['cs!./localstart'], function(localStart) {
 	
 	function Game() {
 		this.__observers = [];
