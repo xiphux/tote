@@ -183,6 +183,7 @@ define ['cs!./localstart'], (localStart) ->
 
       @__delayNotify = false
       @__notify()
+      return
 
     playing: ->
       return @__quarter? and
