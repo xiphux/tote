@@ -1,4 +1,4 @@
-define(['modules/pickriskgraph', 'cs!modules/analyticsunsupported', 'modernizr', 'common'], function(pickrisk, analyticsunsupported) {
+define(['cs!modules/pickriskgraph', 'cs!modules/analyticsunsupported', 'modernizr', 'common'], function(pickrisk, analyticsunsupported) {
 	if (Modernizr.inlinesvg) {
 		pickrisk('#graph', '#graphControls');
 	} else {
