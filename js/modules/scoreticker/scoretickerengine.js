@@ -1,4 +1,4 @@
-define(['jquery', './game', './bigplay'], function($, Game, BigPlay) {
+define(['jquery', 'cs!./game', './bigplay'], function($, Game, BigPlay) {
 	
 	function ScoreTickerEngine()
 	{
