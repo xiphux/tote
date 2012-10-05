@@ -1,4 +1,4 @@
-define(['jquery', 'cs!./gametile', 'cs!./bigplaypopup', './bigplayqueue'], function($, GameTile, BigPlayPopup, BigPlayQueue) {
+define(['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue'], function($, GameTile, BigPlayPopup, BigPlayQueue) {
 
 	function ScoreTickerStrip(engine)
 	{
