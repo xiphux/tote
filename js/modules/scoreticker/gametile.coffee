@@ -126,8 +126,8 @@ define ['jquery'], ($, Game) ->
       visitorwin = false
       homewin = false
       if (quarter is 'F') or (quarter is 'FO')
-        vs = +game.get_visitorScore()
-        hs = +game.get_homeScore()
+        vs = +@__game.get_visitorScore()
+        hs = +@__game.get_homeScore()
         homewin = true if hs > vs
         visitorwin = true if vs > hs
 
