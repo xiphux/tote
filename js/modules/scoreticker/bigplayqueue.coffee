@@ -23,7 +23,7 @@ define ['jquery'], ($) ->
 
     push: (popup) ->
       return unless popup
-      id = popup.get_bigPlay().get_id()
+      id = popup.bigPlay().id()
       return if @__queued[id]
       @__queued[id] = true
       @__queue.push popup
@@ -38,7 +38,7 @@ define ['jquery'], ($) ->
       @__queue.shift()
 
       @__activeEntry.initialize()
-      @__container.append @__activeEntry.get_element()
+      @__container.append @__activeEntry.element()
 
       @__activeEntry.show $.proxy @__afterShowNext, @
       return
@@ -55,7 +55,7 @@ define ['jquery'], ($) ->
       return
 
     __afterHideCurrent: ->
-      @__activeEntry.get_element().remove()
+      @__activeEntry.element().remove()
       @__activeEntry = null
       @__showNext() if @__started and (@__queue.length > 0)
       return

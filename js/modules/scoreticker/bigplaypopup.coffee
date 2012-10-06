@@ -34,8 +34,8 @@ define ['jquery'], ($) ->
       return
 
     __initState: ->
-      @__team.text @__bigPlay.get_team()
-      message = @__bigPlay.get_message()
+      @__team.text @__bigPlay.team()
+      message = @__bigPlay.message()
       message = message.substr 0, 52 + '...' if message.length > 52
       @__message.text message
       return
@@ -43,19 +43,19 @@ define ['jquery'], ($) ->
     show: (callback) ->
       return if @__visible
 
-      pos = @__gameTile.get_position()
+      pos = @__gameTile.position()
       @__popup.css 'top', pos.top+'px'
 
       left = pos.left+1
-      left += @__gameTile.get_width()+1  if not @__reverse
+      left += @__gameTile.width()+1  if not @__reverse
       @__popup.css 'left', left+'px'
 
-      @__popup.height @__gameTile.get_height()
+      @__popup.height @__gameTile.height()
 
       anim = width: '150px'
       anim.left = (left - 150) + 'px' if @__reverse
 
-      @__gameTile.set_highlight true
+      @__gameTile.highlight true
 
       @__popup.animate anim, 400, 'swing', callback ? null
 
@@ -65,24 +65,24 @@ define ['jquery'], ($) ->
     hide: (callback) ->
       return unless @__visible
       anim = width: '0px'
-      anim.left = @__gameTile.get_position().left + 'px' if @__reverse
+      anim.left = @__gameTile.position().left + 'px' if @__reverse
       @__popup.animate anim, 400, 'swing', =>
-        @__gameTile.set_highlight false
+        @__gameTile.highlight false
         callback() if callback
         return
       @__visible = false
       return
 
-    get_bigPlay: ->
+    bigPlay: ->
       return @__bigPlay
 
-    get_gameTile: ->
+    gameTile: ->
       return @__gameTile
 
     visible: ->
       return @__visible
 
-    get_element: ->
+    element: ->
       return @__popup
 
     observeChange: (object, changeType, changeData) ->

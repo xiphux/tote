@@ -5,56 +5,50 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
       mixin this, observable
       @__updates = {}
 
-    get_year: ->
-      return @__year
+    year: (year) ->
+      return @__year if typeof year is 'undefined'
 
-    set_year: (year) ->
-      return if year is @__year
+      return @ if year is @__year
       @__year = year
       @__queueUpdates year: year
-      return
+      return @
 
-    get_seasonType: ->
-      return @__seasonType
+    seasonType: (seasonType) ->
+      return @__seasonType if typeof seasonType is 'undefined'
 
-    set_seasonType: (seasonType) ->
-      return if seasonType is @__seasonType
+      return @ if seasonType is @__seasonType
       @__seasonType = seasonType
       @__queueUpdates seasonType: seasonType
-      return
+      return @
 
-    get_week: ->
-      return @__week
+    week: (week) ->
+      return @__week if typeof week is 'undefined'
 
-    set_week: (week) ->
-      return if week is @__week
+      return @ if week is @__week
       @__week = week
       @__queueUpdates week: week
-      return
+      return @
 
-    get_gsis: ->
-      return @__gsis
+    gsis: (gsis) ->
+      return @__gsis if typeof gsis is 'undefined'
 
-    set_gsis: (gsis) ->
-      return if gsis is @__gsis
+      return @ if gsis is @__gsis
       @__gsis = gsis
       @__queueUpdates gsis: gsis
-      return
+      return @
 
-    get_eid: ->
-      return @__eid
+    eid: (eid) ->
+      return @__eid if typeof eid is 'undefined'
 
-    set_eid: (eid) ->
-      return if eid is @__eid
+      return @ if eid is @__eid
       @__eid = eid
       @__queueUpdates eid: eid
-      return
+      return @
 
-    get_start: ->
-      return day: @__startDay, time: @__startTime
+    start: (day, time) ->
+      return day: @__startDay, time: @__startTime if (typeof day is 'undefined') and (typeof time is 'undefined')
 
-    set_start: (day, time) ->
-      return if day is @__startDay and time is @__startTime
+      return @ if day is @__startDay and time is @__startTime
       @__startDay = day
       @__startTime = time
 
@@ -65,121 +59,111 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
       @__queueUpdates
         startDay: day
         startTime: time
-      return
+      return @
 
-    get_visitor: ->
-      return @__visitor
+    visitor: (visitor) ->
+      return @__visitor if typeof visitor is 'undefined'
 
-    set_visitor: (visitor) ->
-      return if visitor is @__visitor
+      return @ if visitor is @__visitor
       @__visitor = visitor
       @__queueUpdates visitor: visitor
-      return
+      return @
 
-    get_visitorNickname: ->
-      return @__visitorNickname
+    visitorNickname: (visitorNickname) ->
+      return @__visitorNickname if typeof visitorNickname is 'undefined'
 
-    set_visitorNickname: (visitorNickname) ->
-      return if visitorNickname is @__visitorNickname
+      return @ if visitorNickname is @__visitorNickname
       @__visitorNickname = visitorNickname
       @__queueUpdates visitorNickname: visitorNickname
-      return
+      return @
 
-    get_home: ->
-      return @__home
+    home: (home) ->
+      return @__home if typeof home is 'undefined'
 
-    set_home: (home) ->
-      return if home is @__home
+      return @ if home is @__home
       @__home = home
       @__queueUpdates home: home
-      return
+      return @
 
-    get_homeNickname: ->
-      return @__homeNickname
+    homeNickname: (homeNickname) ->
+      return @__homeNickname if typeof homeNickname is 'undefined'
 
-    set_homeNickname: (homeNickname) ->
-      return if homeNickname is @__homeNickname
+      return @ if homeNickname is @__homeNickname
       @__homeNickname = homeNickname
       @__queueUpdates homeNickname: homeNickname
-      return
+      return @
 
-    get_homeScore: ->
-      return @__homeScore
+    homeScore: (homeScore) ->
+      return @__homeScore if typeof homeScore is 'undefined'
 
-    set_homeScore: (homeScore) ->
-      return if homeScore is @__homeScore
+      return @ if homeScore is @__homeScore
       @__homeScore = homeScore
       @__queueUpdates homeScore: homeScore
-      return
+      return @
 
-    get_visitorScore: ->
-      return @__visitorScore
+    visitorScore: (visitorScore) ->
+      return @__visitorScore if typeof visitorScore is 'undefined'
 
-    set_visitorScore: (visitorScore) ->
-      return if visitorScore is @__visitorScore
+      return @ if visitorScore is @__visitorScore
       @__visitorScore = visitorScore
       @__queueUpdates visitorScore: visitorScore
-      return
+      return @
 
-    get_redZone: ->
-      return @__redZone
+    redZone: (redZone) ->
+      return @__redZone if typeof redZone is 'undefined'
 
-    set_redZone: (redZone) ->
-      return if redZone is @__redZone
+      return @ if redZone is @__redZone
       @__redZone = redZone
       @__queueUpdates redZone: redZone
-      return
+      return @
 
-    get_quarter: ->
-      return @__quarter
+    quarter: (quarter) ->
+      return @__quarter if typeof quarter is 'undefined'
 
-    set_quarter: (quarter) ->
-      return if quarter is @__quarter
+      return @ if quarter is @__quarter
       @__quarter = quarter
       @__queueUpdates quarter: quarter
-      return
+      return @
 
-    get_clock: ->
-      return @__clock
+    clock: (clock) ->
+      return @__clock if typeof clock is 'undefined'
 
-    set_clock: (clock) ->
-      return if clock is @__clock
+      return @ if clock is @__clock
       @__clock = clock
       @__queueUpdates clock: clock
-      return
+      return @
 
-    get_possession: ->
-      return @__possession
+    possession: (possession) ->
+      return @__possession if typeof possession is 'undefined'
 
-    set_possession: (possession) ->
-      return if possession is @__possession
+      return @ if possession is @__possession
       @__possession = possession
       @__queueUpdates possession: possession
-      return
+      return @
 
-    set_data: (data) ->
+    data: (data) ->
       return unless data
 
       @__delayNotify = true
 
       for own key, value of data
         switch key
-          when 'year' then @set_year value
-          when 'seasonType' then @set_seasonType value
-          when 'week' then @set_week value
-          when 'gsis' then @set_gsis value
-          when 'eid' then @set_eid value
-          when 'start' then @set_start value.day, value.time if value.day and value.time
-          when 'visitor' then @set_visitor value
-          when 'visitorNickname' then @set_visitorNickname value
-          when 'home' then @set_home value
-          when 'homeNickname' then @set_homeNickname value
-          when 'homeScore' then @set_homeScore value
-          when 'visitorScore' then @set_visitorScore value
-          when 'redZone' then @set_redZone value
-          when 'quarter' then @set_quarter value
-          when 'clock' then @set_clock value
-          when 'possession' then @set_possession value
+          when 'year' then @year value
+          when 'seasonType' then @seasonType value
+          when 'week' then @week value
+          when 'gsis' then @gsis value
+          when 'eid' then @eid value
+          when 'start' then @start value.day, value.time if value.day and value.time
+          when 'visitor' then @visitor value
+          when 'visitorNickname' then @visitorNickname value
+          when 'home' then @home value
+          when 'homeNickname' then @homeNickname value
+          when 'homeScore' then @homeScore value
+          when 'visitorScore' then @visitorScore value
+          when 'redZone' then @redZone value
+          when 'quarter' then @quarter value
+          when 'clock' then @clock value
+          when 'possession' then @possession value
 
       @__delayNotify = false
       @__notify()
@@ -195,7 +179,7 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
     active: ->
       return @playing() or @__quarter is 'H'
 
-    get_url: ->
+    url: ->
       typestr = ''
       switch @__seasonType
         when 'P' then typestr = 'PRE'
@@ -203,7 +187,7 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
         else return ''
       return 'http://www.nfl.com/gamecenter/' + @__eid + '/' + @__year + '/' + typestr + @__week + '/' + @__visitorNickname + '@' + @__homeNickname
 
-    get_status: ->
+    status: ->
       switch @__quarter
         when 'P' then return @__localStartDay + ' ' + @__localStartTime
         when 'F' then return 'Final'
@@ -230,14 +214,14 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
         break
       return unless modified
 
-      @__updates.url = @get_url() if @__updates.eid or
+      @__updates.url = @url() if @__updates.eid or
       @__updates.year or
       @__updates.seasonType or
       @__updates.week or
       @__updates.visitorNickname or
       @__updates.homeNickname
 
-      @__updates.status = @get_status() if @__updates.quarter or
+      @__updates.status = @status() if @__updates.quarter or
       @__updates.startDay or
       @__updates.startTime or
       @__updates.clock

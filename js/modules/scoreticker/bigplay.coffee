@@ -5,63 +5,58 @@ define ['cs!modules/utils/mixin', 'cs!modules/utils/observable'], (mixin, observ
       mixin this, observable
       @__updates = {}
 
-    get_eid: ->
-      return @__eid
+    eid: (eid) ->
+      return @__eid if typeof eid is 'undefined'
 
-    set_eid: (eid) ->
-      return if eid is @__eid
+      return @ if eid is @__eid
       @__eid = eid
       @__queueUpdates eid: eid
-      return
+      return @
 
-    get_gsis: ->
-      return @__gsis
+    gsis: (gsis) ->
+      return @__gsis if typeof gsis is 'undefined'
 
-    set_gsis: (gsis) ->
-      return if gsis is @__gsis
+      return @ if gsis is @__gsis
       @__gsis = gsis
       @__queueUpdates gsis: gsis
-      return
+      return @
 
-    get_id: ->
-      return @__id
+    id: (id) ->
+      return @__id if typeof id is 'undefined'
 
-    set_id: (id) ->
-      return if id is @__id
+      return @ if id is @__id
       @__id = id
       @__queueUpdates id: id
-      return
+      return @
 
-    get_team: ->
-      return @__team
+    team: (team) ->
+      return @__team if typeof team is 'undefined'
 
-    set_team: (team) ->
-      return if team is @__team
+      return @ if team is @__team
       @__team = team
       @__queueUpdates team: team
-      return
+      return @
 
-    get_message: ->
-      return @__message
+    message: (message) ->
+      return @__message if typeof message is 'undefined'
 
-    set_message: (message) ->
-      return if message is @__message
+      return @ if message is @__message
       @__message = message
       @__queueUpdates message: message
-      return
+      return @
 
-    set_data: (data) ->
+    data: (data) ->
       return unless data
 
       @__delayNotify = true
 
       for own key, value of data
         switch key
-          when 'eid' then @set_eid value
-          when 'gsis' then @set_gsis value
-          when 'id' then @set_id value
-          when 'team' then @set_team value
-          when 'message' then @set_message value
+          when 'eid' then @eid value
+          when 'gsis' then @gsis value
+          when 'id' then @id value
+          when 'team' then @team value
+          when 'message' then @message value
 
       @__delayNotify = false
       @__notify()

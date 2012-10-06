@@ -7,19 +7,19 @@ define ['jquery'], ($, Game) ->
         game.addObserver this
       @__highlight = false
 
-    get_game: ->
+    game: ->
       return @__game
 
-    get_element: ->
+    element: ->
       return @__base
 
-    get_position: ->
+    position: ->
       return @__table.position()
 
-    get_width: ->
+    width: ->
       return @__table.width()
 
-    get_height: ->
+    height: ->
       return @__table.height()
 
     initialize: ->
@@ -80,24 +80,24 @@ define ['jquery'], ($, Game) ->
 
       game = @__game
 
-      @__table.addClass 'tickerGameRedZone' if game.get_redZone()
+      @__table.addClass 'tickerGameRedZone' if game.redZone()
 
-      @__visitorCell.text game.get_visitor()
-      @__homeCell.text game.get_home()
+      @__visitorCell.text game.visitor()
+      @__homeCell.text game.home()
 
       if game.playing()
-        @__visitorPossessionCell.text '<' if game.get_possession() is game.get_visitor()
-        @__homePossessionCell.text '<' if game.get_possession() is game.get_home()
+        @__visitorPossessionCell.text '<' if game.possession() is game.visitor()
+        @__homePossessionCell.text '<' if game.possession() is game.home()
 
-      quarter = game.get_quarter()
+      quarter = game.quarter()
       if quarter isnt 'P'
-        @__visitorScoreCell.text game.get_visitorScore()
-        @__homeScoreCell.text game.get_homeScore()
+        @__visitorScoreCell.text game.visitorScore()
+        @__homeScoreCell.text game.homeScore()
 
-      @__statusCell.text game.get_status()
+      @__statusCell.text game.status()
 
-      @__base.attr 'href', game.get_url()
-      @__base.attr 'id', game.get_gsis()
+      @__base.attr 'href', game.url()
+      @__base.attr 'id', game.gsis()
 
       @__updateQuarter quarter
       return
@@ -120,14 +120,14 @@ define ['jquery'], ($, Game) ->
           @__table.addClass 'tickerPlaying'
 
       if quarter isnt 'P'
-        @__homeScoreCell.text @__game.get_homeScore()
-        @__visitorScoreCell.text @__game.get_visitorScore()
+        @__homeScoreCell.text @__game.homeScore()
+        @__visitorScoreCell.text @__game.visitorScore()
 
       visitorwin = false
       homewin = false
       if (quarter is 'F') or (quarter is 'FO')
-        vs = +@__game.get_visitorScore()
-        hs = +@__game.get_homeScore()
+        vs = +@__game.visitorScore()
+        hs = +@__game.homeScore()
         homewin = true if hs > vs
         visitorwin = true if vs > hs
 
@@ -147,17 +147,16 @@ define ['jquery'], ($, Game) ->
 
       return
 
-    get_highlight: ->
-      return @__highlight
+    highlight: (highlight) ->
+      return @__highlight if typeof highlight is 'undefined'
 
-    set_highlight: (highlight) ->
-      return if highlight is @__highlight
+      return @ if highlight is @__highlight
       @__highlight = highlight
       if highlight
         @__table.addClass 'tickerGameTileHighlighted'
       else
         @__table.removeClass 'tickerGameTileHighlighted'
-      return
+      return @
 
     observeChange: (object, changeType, changeData) ->
       return unless object is @__game
@@ -169,8 +168,8 @@ define ['jquery'], ($, Game) ->
           when 'url' then @__base.attr 'href', value
           when 'visitor' then @__visitorCell.text value
           when 'home' then @__homeCell.text value
-          when 'homeScore' then @__homeScoreCell.text value if @__game.get_quarter() isnt 'P'
-          when 'visitorScore' then @__visitorScoreCell.text value if @__game.get_quarter() isnt 'P'
+          when 'homeScore' then @__homeScoreCell.text value if @__game.quarter() isnt 'P'
+          when 'visitorScore' then @__visitorScoreCell.text value if @__game.quarter() isnt 'P'
           when 'redZone'
             if value
               @__table.addClass 'tickerGameRedZone'
@@ -178,11 +177,11 @@ define ['jquery'], ($, Game) ->
               @__table.removeClass 'tickerGameRedZone'
           when 'quarter' then @__updateQuarter value
           when 'possession'
-            if @__game.playing() and (value is @__game.get_visitor())
+            if @__game.playing() and (value is @__game.visitor())
               @__visitorPossessionCell.text '<'
             else
               @__visitorPossessionCell.text ''
-            if @__game.playing() and (value is @__game.get_home())
+            if @__game.playing() and (value is @__game.home())
               @__homePossessionCell.text '<'
             else
               @__homePossessionCell.text ''

@@ -51,9 +51,9 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
       @__updateGames gms
       @__updateBigPlays xmlData.find('bps')
       if (gms.attr('gd') is '1') and @hasActiveGames()
-        @set_refreshInterval 15
+        @refreshInterval 15
       else
-        @set_refreshInterval 300
+        @refreshInterval 300
       @__notify('propertychanged')
       @__notify('datareceived')
       @__timer = window.setTimeout $.proxy(@update, @), @__refreshInterval*1000 if @__started
@@ -108,7 +108,7 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
           addedGames.push game
           gameData.gsis = gsis
 
-        game.set_data gameData
+        game.data gameData
 
         updated[gsis] = true
 
@@ -146,7 +146,7 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
           bigPlays[id] = bp
           addedBigPlays.push bp
 
-        bp.set_data bpData
+        bp.data bpData
 
         updated[id] = true
 
@@ -160,14 +160,14 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
         delete bigPlays[id]
       return
 
-    get_refreshInterval: ->
-      return @__refreshInterval
+    refreshInterval: (refreshInterval) ->
+      return @__refreshInterval if typeof refreshInterval is 'undefined'
 
-    set_refreshInterval: (refreshInterval) ->
-      return if refreshInterval is @__refreshInterval
+      return @ if refreshInterval is @__refreshInterval
       @__refreshInterval = refreshInterval
+      return @
 
-    get_weekString: ->
+    weekString: ->
       return @__year + '-' + (@__year*1+1) + ' ' + (if @__type is 'P' then 'preseason' else '') + 'week ' + @__week
 
     hasActiveGames: ->
@@ -198,7 +198,7 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
             modified = true
             break
         return unless modified
-        changeData.weekString = @get_weekString() if changeData.year or changeData.week or changeData.type
+        changeData.weekString = @weekString() if changeData.year or changeData.week or changeData.type
 
         @__updates = {}
         @__addedGames = []

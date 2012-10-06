@@ -28,21 +28,21 @@ define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs
 
     __addGameTile: (game) ->
       return unless game
-      gsis = game.get_gsis()
+      gsis = game.gsis()
       td = $ document.createElement 'td'
       td.addClass 'tickerGameCell'
       gameTile = new GameTile game
       gameTile.initialize()
       @__gameTiles[gsis] = gameTile
-      td.append gameTile.get_element()
+      td.append gameTile.element()
       @__gameRow.append td
       return
 
     __removeGameTile: (game) ->
       return unless game
-      gsis = game.get_gsis()
+      gsis = game.gsis()
       if @__gameTiles[gsis]
-        @__gameTiles[gsis].get_element().parent().remove()
+        @__gameTiles[gsis].element().parent().remove()
         delete @__gameTiles[gsis]
       return
 
@@ -56,15 +56,15 @@ define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs
       for own gsis, gameTile of @__gameTiles
         continue unless gameTile
         idx += 1
-        if gsis is bigPlay.get_gsis()
+        if gsis is bigPlay.gsis()
           popup = new BigPlayPopup bigPlay, gameTile, (idx>=half)
           @__bigPlayQueue.push popup
           return
 
-    get_element: ->
+    element: ->
       return @__container
 
-    get_width: ->
+    width: ->
       return @__gameTable.width()
 
     observeChange: (object, changeType, changeData) ->

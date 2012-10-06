@@ -19,7 +19,7 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
       @__strip.addObserver this
       @__strip.initialize()
 
-      stripelement = @__strip.get_element()
+      stripelement = @__strip.element()
       stripelement.hide()
       @__contentDiv.append stripelement
 
@@ -127,6 +127,6 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
         switch changeType
           when 'widthchanged'
             if not @__hidden
-              @__strip.get_element().slideDown 'fast'
-              @__boundElement.animate width: (@__strip.get_width()+4)+'px', 'fast'
+              @__strip.element().slideDown 'fast'
+              @__boundElement.animate width: (@__strip.width()+4)+'px', 'fast'
       return
