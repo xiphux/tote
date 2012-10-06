@@ -1,4 +1,4 @@
-define(['jquery', 'cs!./scoretickerengine', './scoretickerstrip', 'cookies'], function($, ScoreTickerEngine, ScoreTickerStrip) {
+define(['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'], function($, ScoreTickerEngine, ScoreTickerStrip) {
 	
 	function ScoreTicker(element)
 	{
