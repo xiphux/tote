@@ -1,8 +1,8 @@
-define ->
+define ['cs!modules/utils/mixin', 'cs!modules/utils/observable'], (mixin, observable) ->
   
   class BigPlay
     constructor: ->
-      @__observers = []
+      mixin this, observable
       @__updates = {}
 
     get_eid: ->
@@ -67,19 +67,6 @@ define ->
       @__notify()
       return
 
-    addObserver: (observer) ->
-      return unless observer
-      return if observer in @__observers
-      @__observers.push observer
-      return
-
-    removeObserver: (observer) ->
-      return unless observer
-      for obs, i in @__observers
-        if obs is observer
-          @__observers.splice i, 1
-          return
-
     __queueUpdates: (updates) ->
       return unless updates
       modified = false
@@ -90,7 +77,7 @@ define ->
       return
 
     __notify: ->
-      return unless @__observers.length > 0
+      return unless @__hasObservers()
 
       modified = false
       for own key of @__updates
@@ -98,7 +85,7 @@ define ->
         break
       return unless modified
 
-      for observer in @__observers
-        observer.observeChange this, 'propertychanged', @__updates if typeof observer.observeChange is 'function'
+      @__notifyObservers 'propertychanged', @__updates
+      
       @__updates = {}
       return

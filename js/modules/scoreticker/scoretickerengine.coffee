@@ -1,11 +1,10 @@
-define ['jquery', 'cs!./game', 'cs!./bigplay'], ($, Game, BigPlay) ->
+define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!modules/utils/observable'], ($, Game, BigPlay, mixin, observable) ->
 
   class ScoreTickerEngine
     constructor: ->
+      mixin this, observable
       @__games = {}
       @__bigPlays = {}
-
-      @__observers = []
 
       @__updates = {}
       @__addedGames = []
@@ -176,21 +175,8 @@ define ['jquery', 'cs!./game', 'cs!./bigplay'], ($, Game, BigPlay) ->
         return true if game and game.active()
       return false
 
-    addObserver: (observer) ->
-      return unless observer
-      return if observer in @__observers
-      @__observers.push observer
-      return
-
-    removeObserver: (observer) ->
-      return unless observer
-      for obs, i in @__observers
-        if obs is observer
-          @__observers.splice i, 1
-          return
-
     __notify: (changeType) ->
-      return unless @__observers.length > 0
+      return unless @__hasObservers()
       changeData = null
       if changeType is 'propertychanged'
         modified = false
@@ -220,6 +206,5 @@ define ['jquery', 'cs!./game', 'cs!./bigplay'], ($, Game, BigPlay) ->
         @__addedBigPlays = []
         @__removedBigPlays = []
 
-      for observer in @__observers
-        observer.observeChange this, changeType, changeData if typeof observer.observeChange is 'function'
+      @__notifyObservers changeType, changeData
       return

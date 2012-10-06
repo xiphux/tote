@@ -1,12 +1,12 @@
-define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue'], ($, GameTile, BigPlayPopup, BigPlayQueue) ->
+define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs!modules/utils/mixin', 'cs!modules/utils/observable'], ($, GameTile, BigPlayPopup, BigPlayQueue, mixin, observable) ->
   
   class ScoreTickerStrip
     constructor: (engine) ->
+      mixin this, observable
       if engine
         @__engine = engine
         engine.addObserver this
       @__gameTiles = {}
-      @__observers = []
 
     initialize: ->
       @__initElements()
@@ -88,21 +88,7 @@ define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue'], ($
             else @__bigPlayQueue.stop()
       return
 
-    addObserver: (observer) ->
-      return unless observer
-      return if observer in @__observers
-      @__observers.push observer
-      return
-
-    removeObserver: (observer) ->
-      return unless observer
-      for obs, i in @__observers
-        if obs is observer
-          @__observers.splice i, 1
-          return
-
     __notify: (changeType) ->
-      return unless @__observers.length > 0
-      for observer in @__observers
-        observer.observeChange this, changeType if typeof observer.observeChange is 'function'
+      return unless @__hasObservers()
+      @__notifyObservers changeType
       return

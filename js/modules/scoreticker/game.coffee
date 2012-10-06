@@ -1,8 +1,8 @@
-define ['cs!./localstart'], (localStart) ->
+define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observable'], (localStart, mixin, observable) ->
   
   class Game
     constructor: ->
-      @__observers = []
+      mixin this, observable
       @__updates = {}
 
     get_year: ->
@@ -212,19 +212,6 @@ define ['cs!./localstart'], (localStart) ->
         when '1', '2', '3', '4' then return 'Q' + @__quarter + ' ' + @__clock
         else return 'OT ' + @__clock
 
-    addObserver: (observer) ->
-      return unless observer
-      return if observer in @__observers
-      @__observers.push observer
-      return
-
-    removeObserver: (observer) ->
-      return unless observer
-      for obs, i in @__observers
-        if obs is observer
-          @__observers.splice i, 1
-          return
-
     __queueUpdates: (updates) ->
       return unless updates
       modified = false
@@ -235,7 +222,7 @@ define ['cs!./localstart'], (localStart) ->
       return
 
     __notify: ->
-      return unless @__observers.length > 0
+      return unless @__hasObservers()
 
       modified = false
       for own key of @__updates
@@ -255,7 +242,7 @@ define ['cs!./localstart'], (localStart) ->
       @__updates.startTime or
       @__updates.clock
 
-      for observer in @__observers
-        observer.observeChange this, 'propertychanged', @__updates if typeof observer.observeChange is 'function'
+      @__notifyObservers 'propertychanged', @__updates
+
       @__updates = {}
       return
