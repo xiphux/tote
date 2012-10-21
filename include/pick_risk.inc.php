@@ -134,9 +134,11 @@ function pick_risk()
 			for ($j = 0; $j < $entrycount; ++$j) {
 				$pickcount = count($pooldata[$poolid]['entries'][$j]['picks']);
 				for ($k = 0; $k < $pickcount; ++$k) {
-					$week = $pooldata[$poolid]['entries'][$j]['picks'][$k]['week'];
-					if ($week == $i) {
-						unset($pooldata[$poolid]['entries'][$j]['picks'][$k]);
+					if (isset($pooldata[$poolid]['entries'][$j]['picks'][$k])) {
+						$week = $pooldata[$poolid]['entries'][$j]['picks'][$k]['week'];
+						if ($week == $i) {
+							unset($pooldata[$poolid]['entries'][$j]['picks'][$k]);
+						}
 					}
 				}
 			}
