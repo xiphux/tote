@@ -114,6 +114,10 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
       @__hidden = true
       return
 
+    __updateWidth: ->
+      @__boundElement.animate width: (@__strip.width()+4)+'px', 'fast'
+      return
+
     observeChange: (object, changeType, changeData) ->
       if object is @__engine
         switch changeType
@@ -121,6 +125,7 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
             for own key, value of changeData
               switch key
                 when 'weekString' then @__titleSpan.text value
+            @__updateWidth() if @__initialized
           when 'datarequested' then @__loaderImage.fadeTo 'slow', 1
           when 'datareceived' then @__loaderImage.fadeTo 'slow', 0
       else if object is @__strip
@@ -128,5 +133,6 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
           when 'widthchanged'
             if not @__hidden
               @__strip.element().slideDown 'fast'
-              @__boundElement.animate width: (@__strip.width()+4)+'px', 'fast'
+              @__updateWidth()
+              @__initialized = true
       return
