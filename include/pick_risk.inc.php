@@ -127,26 +127,29 @@ function pick_risk()
 				// everybody picked, ok to show
 				continue;
 			}
-			if ($openweek == 0)
-				$openweek = $i;
+			$openweek = $i;
+			break;
+		}
 
+		if (($openweek > 0) && ($openweek < 3)) {
+			// only one week of data to show - not useful
+			unset($pooldata[$poolid]);
+			continue;
+		}
+
+		if ($openweek > 0) {
 			$entrycount = count($pooldata[$poolid]['entries']);
 			for ($j = 0; $j < $entrycount; ++$j) {
 				$pickcount = count($pooldata[$poolid]['entries'][$j]['picks']);
 				for ($k = 0; $k < $pickcount; ++$k) {
-					if (isset($pooldata[$poolid]['entries'][$j]['picks'][$k])) {
+					if (isset($pooldata[$poolid]['entries'][$j]['picks'][$k]) && isset($pooldata[$poolid]['entries'][$j]['picks'][$k]['week'])) {
 						$week = $pooldata[$poolid]['entries'][$j]['picks'][$k]['week'];
-						if ($week == $i) {
+						if ($week >= $openweek) {
 							unset($pooldata[$poolid]['entries'][$j]['picks'][$k]);
 						}
 					}
 				}
 			}
-		}
-		if (($openweek > 0) && ($openweek < 3)) {
-			// only one week of data to show - not useful
-			unset($pooldata[$poolid]);
-			continue;
 		}
 
 		if (isset($pooldata[$poolid])) {
