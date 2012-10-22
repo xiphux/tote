@@ -214,20 +214,20 @@ div.selected {
 	background-color: yellow;
 }
 
-#linksDiv {
+#linksSection {
 	border: 1px solid #48e261;
 }
 
-#linksToggle {
+#linksSection .sectionHeader {
 	background-color: #48e261;
 }
 
-#lnkLinks {
+#linksSection .sectionHeader a {
 	background-color: #48e261;
 	text-decoration: none;
 }
 
-#lnkLinks:hover {
+#linksSection .sectionHeader a:hover {
 	background-color: #1aa931;
 }
 

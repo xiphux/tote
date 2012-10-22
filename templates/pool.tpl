@@ -216,13 +216,13 @@ Make a Pick
 {/if}
 
 {if $links}
-<div id="linksDiv" class="subSection rounded-top rounded-bottom subShadow">
+<div id="linksSection" class="subSection rounded-top rounded-bottom subShadow">
 
-<div id="linksToggle">
-<span id="spanLinks">Useful links:</span>
+<div class="sectionHeader">
+Useful links
 </div>
 
-<div id="linksList">
+<div class="sectionContent">
 <ul>
 {foreach from=$links item=url key=name}
 <li><a href="{$url}" target="_blank">{$name}</a></li>

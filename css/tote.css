@@ -198,23 +198,23 @@ div.poolActionsDiv {
 	overflow: auto;
 }
 
-#linksDiv {
+#linksSection {
 	margin-top: 10px;
 	text-align: left;
 }
 
-#lnkLinks {
+#linksSection .sectionHeader a {
 	display: block;
 	padding: 3px 0px 3px 12px;
 }
 
-#lnkLinks.linksOpen {
+#linksSection .sectionHeader a.sectionOpen {
 	background-image: url('../images/arrow_expand_down.gif');
 	background-repeat: no-repeat;
 	background-position: left center;
 }
 
-#lnkLinks.linksClosed {
+#linksSection .sectionHeader a.sectionClosed {
 	background-image: url('../images/arrow_expand_right.gif');
 	background-repeat: no-repeat;
 	background-position: left center;

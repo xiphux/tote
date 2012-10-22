@@ -72,6 +72,8 @@
 	paths: {ldelim}
 		{if "js/$jsmodule.min.js"|file_exists}
 		{$jsmodule}: '{$jsmodule}.min',
+    {elseif "js/$jsmodule.coffee"|file_exists}
+    {$jsmodule}: 'cs!{$jsmodule}',
 		{/if}
 		jquery: [
 			{if $googlejs}
