@@ -203,8 +203,13 @@ div.poolActionsDiv {
 	text-align: left;
 }
 
+#linksSection .sectionHeader {
+	padding: 3px 0px 3px 12px;
+}
+
 #linksSection .sectionHeader a {
 	display: block;
+	margin: -3px 0px -3px -12px;
 	padding: 3px 0px 3px 12px;
 }
 
