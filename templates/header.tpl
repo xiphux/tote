@@ -75,9 +75,9 @@
 		{/if}
 		jquery: [
 			{if $googlejs}
-			'http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min',
+			'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min',
 			{/if}
-			'ext/jquery-1.8.1.min'
+			'ext/jquery-1.8.2.min'
 		],
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min',
