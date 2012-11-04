@@ -114,7 +114,7 @@ function display_feed($format, $poolID)
 		$tpl->display('atom.tpl');
 	} else if ($format == 'rss') {
 		// display rss feed
-		header('Content-type: text/xml; charset=UTF-8');
+		header('Content-type: application/rss+xml; charset=UTF-8');
 		$tpl->display('rss.tpl');
 	} else if ($format == 'js') {
 		http_headers();
