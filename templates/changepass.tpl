@@ -11,10 +11,10 @@
 <form method="post" action="index.php?a=finishchangepass">
 <table class="formTable">
 <tr>
-<td><label for="oldpassword">Old password:</label></td><td><input type="password" name="oldpassword" autofocus /></td>
+<td><label for="oldpassword">Old password:</label></td><td><input type="password" name="oldpassword" id="oldpassword" autofocus /></td>
 </tr>
-<tr><td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword"></td>
-<tr><td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>
+<tr><td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" id="newpassword" /></td>
+<tr><td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2" id="newpassword2" /></td>
 <tr><td></td><td><input type="submit" value="Change" /></td></tr>
 </table>
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />

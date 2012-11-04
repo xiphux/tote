@@ -46,7 +46,7 @@ Games for week {$week}:
 
 <p>
 <form action="index.php?a=addbet" method="post" id="frmBet">
-<label for="t">Pick for week {$week}:</label>
+<label for="betSelect">Pick for week {$week}:</label>
 <select name="t" id="betSelect">
 <option value="">Choose a team...</option>
 {foreach from=$teams item=team}

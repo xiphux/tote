@@ -6,9 +6,9 @@
 <table class="formTable">
 {foreach from=$bets key=week item=bet}
 <tr>
-<td><label for="week[{$week}]">Week {$week}:</label></td>
+<td><label for="week{$week}">Week {$week}:</label></td>
 <td>
-<select name="week[{$week}]">
+<select name="week[{$week}]" id="week{$week}">
 <option value="">No pick</option>
 {foreach from=$teams item=team}
 <option value="{$team._id}" {if $team._id == $bet}selected="selected"{/if}>{$team.home} {$team.team}</option>
@@ -22,7 +22,7 @@
 <label for="comment">Comment:</label>
 </td>
 <td>
-<textarea name="comment" rows="3" cols="20">
+<textarea name="comment" id="comment" rows="3" cols="20">
 </textarea>
 </td>
 </tr>

@@ -13,7 +13,7 @@
 {if $availablestyles}
 <div>
 <label for="style">Style:</label>
-<select name="style">
+<select name="style" id="style">
 {foreach from=$availablestyles item=style}
 <option value="{$style}" {if ($style == $user.style) || (!$user.style && (($defaultstyle && ($style == $defaultstyle)) || (!$defaultstyle && ($style == 'Blue'))))}selected="selected"{/if}>{$style|replace:'_':' '}</option>
 {/foreach}
@@ -24,7 +24,7 @@
 
 <div>
 <label for="timezone">Timezone:</label>
-<select name="timezone">
+<select name="timezone" id="timezone">
 {foreach from=$availabletimezones key=tz item=readabletz}
 <option value="{$tz}" {if ($tz == $user.timezone) || (!$user.timezone && ($tz == $defaulttimezone))}selected="selected"{/if}>{$readabletz}</option>
 {/foreach}
@@ -33,14 +33,14 @@
 
 <br />
 <div>
-<input type="checkbox" name="resultnotification" value="1" {if $user.resultnotification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my pick when the game finishes</label>
+<input type="checkbox" name="resultnotification" id="resultnotification" value="1" {if $user.resultnotification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my pick when the game finishes</label>
 </div>
 
 {if $enablereminders}
 <br />
 <div>
-<input type="checkbox" name="reminder" value="1" {if $user.reminder}checked="checked"{/if} /><label for="reminder">Email me a reminder before the first game of the week</label><br />
-<label for="remindertime">How many hours beforehand:</label><input type="number" min="0" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
+<input type="checkbox" name="reminder" id="reminder" value="1" {if $user.reminder}checked="checked"{/if} /><label for="reminder">Email me a reminder before the first game of the week</label><br />
+<label for="remindertime">How many hours beforehand:</label><input type="number" min="0" id="remindertime" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
 </div>
 {/if}
 

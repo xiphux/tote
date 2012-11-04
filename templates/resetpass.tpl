@@ -11,10 +11,10 @@
 <form method="post" action="index.php?a=finishresetpass">
 <table class="formTable">
 <tr>
-<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" autofocus /></td>
+<td><label for="newpassword">New password:</label></td><td><input type="password" name="newpassword" id="newpassword" autofocus /></td>
 </tr>
 <tr>
-<td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2"></td>
+<td><label for="newpassword2">Confirm password:</label></td><td><input type="password" name="newpassword2" id="newpassword2" /></td>
 </tr>
 <tr><td></td><td><input type="submit" value="Change" name="login" /></td></tr>
 </table>

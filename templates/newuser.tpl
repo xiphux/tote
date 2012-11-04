@@ -12,19 +12,19 @@
 <table class="formTable">
   <tr>
     <td><label for="username">Username:</label></td>
-    <td><input type="text" name="username" {if $username}value="{$username}"{/if} autofocus /></td>
+    <td><input type="text" name="username" id="username" {if $username}value="{$username}"{/if} autofocus /></td>
   </tr>
   <tr>
     <td><label for="firstname">First name:</label></td>
-    <td><input type="text" name="firstname" {if $firstname}value="{$firstname}"{/if} /></td>
+    <td><input type="text" name="firstname" id="firstname" {if $firstname}value="{$firstname}"{/if} /></td>
   </tr>
   <tr>
     <td><label for="lastname">Last name:</label></td>
-    <td><input type="text" name="lastname" {if $lastname}value="{$lastname}"{/if} /></td>
+    <td><input type="text" name="lastname" id="lastname" {if $lastname}value="{$lastname}"{/if} /></td>
   </tr>
   <tr>
     <td><label for="email">Email:</label></td>
-    <td><input type="email" name="email" {if $email}value="{$email}"{/if} /></td>
+    <td><input type="email" name="email" id="email" {if $email}value="{$email}"{/if} /></td>
   </tr>
   <tr>
     <td><label for="password">Password:</label></td>

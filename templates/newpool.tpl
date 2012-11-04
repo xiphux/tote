@@ -12,15 +12,15 @@
 <table class="formTable">
   <tr>
     <td><label for="name">Pool name:</label></td>
-    <td><input type="text" name="name" {if $name}value="{$name}"{/if} autofocus /></td>
+    <td><input type="text" name="name" id="name" {if $name}value="{$name}"{/if} autofocus /></td>
   </tr>
   <tr>
     <td><label for="season">Season:</label></td>
-    <td><input type="text" name="season" value="{if $season}{$season}{else}{$smarty.now|date_format:"%Y"}{/if}" /></td>
+    <td><input type="text" name="season" id="season" value="{if $season}{$season}{else}{$smarty.now|date_format:"%Y"}{/if}" /></td>
   </tr>
   <tr>
     <td><label for="fee">Fee:</label></td>
-    <td>$<input type="text" name="fee" value="{if $fee}{$fee}{else}0.00{/if}" /></td>
+    <td>$<input type="text" name="fee" id="fee" value="{if $fee}{$fee}{else}0.00{/if}" /></td>
   </tr>
   <tr>
     <td></td>

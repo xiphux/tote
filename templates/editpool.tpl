@@ -7,7 +7,7 @@
 </div>
 <div class="right">
 <form action="{$SCRIPT_NAME}?a=setpoolname" method="post">
-<label for="poolname">Pool name:</label> <input type="text" name="poolname" id="poolName" value="{$pool.name}" /><input type="submit" value="Set" />
+<label for="poolName">Pool name:</label> <input type="text" name="poolname" id="poolName" value="{$pool.name}" /><input type="submit" value="Set" />
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>

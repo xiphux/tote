@@ -11,7 +11,7 @@
 {/if}
 
 <form method="post" action="index.php?a=finishrecoverpass">
-<label for="email">Email:</label> <input type="email" name="email" autofocus /><br />
+<label for="email">Email:</label> <input type="email" name="email" id="email" autofocus /><br />
 <input type="submit" value="Recover" name="login" />
 </form>
 
