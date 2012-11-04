@@ -2,7 +2,7 @@
 
 <p>Editing picks for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 
-<form action="index.php?a=savebets" method="post" />
+<form action="index.php?a=savebets" method="post">
 <table class="formTable">
 {foreach from=$bets key=week item=bet}
 <tr>
@@ -33,7 +33,6 @@
 </td>
 </tr>
 </table>
-<div>
 <input type="hidden" name="p" value="{$pool._id}" />
 <input type="hidden" name="u" value="{$entrant._id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
