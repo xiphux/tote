@@ -8,7 +8,7 @@
 
 <table class="displayTable infoTable subSection rounded-top rounded-bottom subShadow">
   <tr>
-    <th colspan="2">
+    <th>
     {if $allpools && (count($allpools) > 1)}
       <form action="index.php" method="get">
       <select id="poolNameSelect" name="p">
@@ -110,6 +110,7 @@ Make a Pick
 <table class="scoreTable displayTable">
 
 <thead>
+<tr>
 <th>Name</th>
 <th title="Wins">W</th>
 <th title="Losses">L</th>
@@ -119,11 +120,12 @@ Make a Pick
 
 {if !$mobile || $forcefull || (array_search($wknum,$mobileweeks) !== false)}
 
-<th{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}><a class="scheduleLink" title="View week {$wknum} schedule" href="{$SCRIPT_NAME}?a=schedule&y={$pool.season}&w={$wknum}">W{$wknum}</a></th>
+<th{if $wknum == $currentweek} class="currentweek"{elseif !$weeks.$wknum} class="weekclosed"{/if}><a class="scheduleLink" title="View week {$wknum} schedule" href="{$SCRIPT_NAME}?a=schedule&amp;y={$pool.season}&amp;w={$wknum}">W{$wknum}</a></th>
 
 {/if}
 
 {/foreach}
+</tr>
 </thead>
 
 <tbody>
@@ -153,7 +155,7 @@ Make a Pick
 {if $bet}
 <span 
 {if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{elseif $bet.result === 0}class="tie"{/if}
-{if $bet.game}title="{$bet.game.away_team.abbreviation}{if isset($bet.game.away_score)} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if isset($bet.game.home_score)} {$bet.game.home_score}{/if}"{/if}
+{if $bet.game} title="{$bet.game.away_team.abbreviation}{if isset($bet.game.away_score)} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if isset($bet.game.home_score)} {$bet.game.home_score}{/if}"{/if}
 >
 {if $bet.team.abbreviation}
 {$bet.team.abbreviation}
@@ -184,7 +186,7 @@ Make a Pick
 <div class="poolFooter">
 
 <div class="poolRules">
-	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&p={$pool._id}">Rules</a>
+	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&amp;p={$pool._id}">Rules</a>
 </div>
 
 {if !$mobile || $forcefull}
@@ -192,8 +194,8 @@ Make a Pick
 {/if}
 
 <div class="poolHistory">
-<a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&p={$pool._id}">History</a>
-<a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&p={$pool._id}"><img class="feedIcon" src="images/feed-icon-14x14.png" width="14" height="14" /></a>
+<a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&amp;p={$pool._id}">History</a>
+<a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&amp;p={$pool._id}"><img class="feedIcon" src="images/feed-icon-14x14.png" width="14" height="14" alt="Feed" /></a>
 </div>
 
 <div class="clear">
