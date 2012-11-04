@@ -8,12 +8,14 @@
 
 <table class="historyTable displayTable">
 <thead>
+<tr>
 <th>Timestamp</th>
 <th>User</th>
 <th>Admin</th>
 <th>Week</th>
 <th>Event</th>
 <th>Comment</th>
+</tr>
 </thead>
 {foreach from=$actions key=time item=timeactions}
 
