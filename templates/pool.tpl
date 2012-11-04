@@ -73,8 +73,8 @@ Make a Pick
 </div>
 <div id="poolPickContent">
 <form action="index.php" method="get">
-<label for="bet">Pick for week:</label> 
-<select name="w">
+<label for="weekPick">Pick for week:</label> 
+<select name="w" id="weekPick">
 {foreach from=$weeks key=wknum item=open}
   {if $open}
     <option value="{$wknum}">Week {$wknum}</option>
@@ -135,7 +135,7 @@ Make a Pick
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
 <td class="entrantName">
 {if $user.role == 1}
-<a href="index.php?a=editbets&p={$pool._id}&u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
+<a href="index.php?a=editbets&amp;p={$pool._id}&amp;u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
 {/if}
 {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}
 {if $user.role == 1}
@@ -166,7 +166,7 @@ Make a Pick
 </span>
 {elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
 <span>
-<a href="{$SCRIPT_NAME}?a=bet&p={$pool._id}&w={$betweek}" class="betLink">Pick</a>
+<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool._id}&amp;w={$betweek}" class="betLink">Pick</a>
 </span>
 {/if}
 
