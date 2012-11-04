@@ -16,7 +16,7 @@
 <label for="username">Username:</label>
 </td>
 <td>
-<input type="text" name="username" autofocus />
+<input type="text" name="username" id="username" autofocus />
 </td>
 </tr>
 <tr>
@@ -24,7 +24,7 @@
 <label for="password">Password:</label>
 </td>
 <td>
-<input type="password" name="password">
+<input type="password" name="password" id="password" />
 </td>
 </tr>
 <tr>
