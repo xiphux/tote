@@ -13,7 +13,7 @@
 
  {foreach from=$timeactions item=action}
    <entry>
-     <id>tag:{$domain},{$action.time->format('Y-m-d')}:{$pool._id}:{$time}:{$action.week}:{$action.user_name}</id>
+     <id>tag:{$domain},{$action.time->format('Y-m-d')}:{$pool._id}:{$time}:{$action.week}:{$action.user_name|escape:'url'}</id>
      <published>{$action.time->format('c')}</published>
      <updated>{$action.time->format('c')}</updated>
      {if $action.action == 'bet'}
@@ -55,6 +55,10 @@
        </content>
        {/if}
      {elseif $action.action == 'addentrant'}
+     	<author>
+	  <name>{$action.admin_name}</name>
+	  {if $action.admin.email}<email>{$action.admin.email}</email>{/if}
+	</author>
        <title>Edit: {$action.user_name} added to pool</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
@@ -62,6 +66,10 @@
 	 </div>
        </content>
      {elseif $action.action == 'removeentrant'}
+     	<author>
+	  <name>{$action.admin_name}</name>
+	  {if $action.admin.email}<email>{$action.admin.email}</email>{/if}
+	</author>
        <title>Edit: {$action.user_name} removed from pool</title>
        <content type="xhtml">
          <div xmlns="http://www.w3.org/1999/xhtml">
