@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
   <title>{$pool.name} [{$pool.season}-{$pool.season+1}]</title>
   <link>{$self}?p={$pool._id}</link>
+  <atom:link href="{$self}?a=rss&amp;p={$pool._id}" rel="self" type="application/rss+xml" />
   <description>{$pool.name} [{$pool.season}-{$pool.season+1}] recent actions</description>
   <language>en</language>
 
