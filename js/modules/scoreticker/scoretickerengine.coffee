@@ -41,7 +41,15 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
         @__timer = null
       @__notify 'datarequested'
 
-      $.get 'scoreticker.php', {}, $.proxy(@__updateSuccess, @), 'xml'
+      $.ajax 'scoreticker.php',
+        success: $.proxy(@__updateSuccess, @)
+        complete: $.proxy(@__updateComplete, @)
+        dataType: 'xml'
+      return
+
+    __updateComplete: ->
+      @__notify('datareceived')
+      @__timer = window.setTimeout $.proxy(@update, @), @__refreshInterval*1000 if @__started
       return
 
     __updateSuccess: (xml) ->
@@ -55,8 +63,6 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
       else
         @refreshInterval 300
       @__notify('propertychanged')
-      @__notify('datareceived')
-      @__timer = window.setTimeout $.proxy(@update, @), @__refreshInterval*1000 if @__started
       return
 
     __updateInfo: (year, week, type) ->
