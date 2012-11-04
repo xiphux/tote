@@ -283,3 +283,7 @@ ul.ruleList li {
 #graphControls {
 	padding-top: 20px;
 }
+
+div.pickSection {
+	padding: 10px 0px;
+}

@@ -3,12 +3,14 @@
 <span id="poolSeason" style="display:none;">{$pool.season}</span>
 
 {if $bets}
-<p>
+<div class="pickSection">
 Your other picks:
 <table class="betTable displayTable">
   <thead>
+    <tr>
     <th>Week</th>
     <th>Team</th>
+    </tr>
   </thead>
   <tbody>
     {foreach from=$bets key=wknum item=team}
@@ -19,15 +21,17 @@ Your other picks:
     {/foreach}
   </tbody>
 </table>
-</p>
+</div>
 {/if}
 
-<p>
+<div class="pickSection">
 Games for week {$week}:
 <table class="betTable displayTable">
   <thead>
+    <tr>
     <th>Teams</th>
     <th>Game time</th>
+    </tr>
   </thead>
   <tbody>
     {foreach from=$games item=game}
@@ -42,9 +46,9 @@ Games for week {$week}:
     {/foreach}
   </tbody>
 </table>
-</p>
+</div>
 
-<p>
+<div class="pickSection">
 <form action="index.php?a=addbet" method="post" id="frmBet">
 <label for="betSelect">Pick for week {$week}:</label>
 <select name="t" id="betSelect">
@@ -58,6 +62,6 @@ Games for week {$week}:
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 <input type="submit" value="Pick" />
 </form>
-</p>
+</div>
 
 {include file='footer.tpl'}
