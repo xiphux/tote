@@ -16,7 +16,7 @@
 {/if}
 </div>
 <div class="navTabs">
-<a href="{$SCRIPT_NAME}?a=schedule&y={$year}">By Week</a> | <span class="activeTab">By Team</span> | <a href="{$SCRIPT_NAME}?a=gridschedule&y={$year}">Grid</a>
+<a href="{$SCRIPT_NAME}?a=schedule&amp;y={$year}">By Week</a> | <span class="activeTab">By Team</span> | <a href="{$SCRIPT_NAME}?a=gridschedule&amp;y={$year}">Grid</a>
 </div>
 
 <table class="scheduleTable">
@@ -26,7 +26,7 @@
 <div class="scheduleTocContent">
 <ul>
 {foreach from=$games item=teamgames key=team}
-<li><a href="#{$team}">{$teamnames.$team}</li>
+<li><a href="#{$team}">{$teamnames.$team}</a></li>
 {/foreach}
 </ul>
 </div>
@@ -66,5 +66,9 @@ Bye
 </table>
 </div>
 {/foreach}
+
+</td>
+</tr>
+</table>
 
 {include file='footer.tpl'}
