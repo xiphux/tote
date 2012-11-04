@@ -7,4 +7,5 @@
 function http_headers()
 {
 	header('Content-Type: text/html; charset=UTF-8');
+	header('X-UA-Compatible: IE=edge');
 }
