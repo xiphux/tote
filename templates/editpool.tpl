@@ -24,7 +24,7 @@ Available users:
     <table>
       <tr>
         <td class="checkbox"><input type="checkbox" class="selectuser" /></td>
-	<td class="userinfo">
+	<td class="userinfo" colspan="2">
     <span class="username">{if $availableuser.first_name}{$availableuser.first_name}{if $availableuser.last_name} {$availableuser.last_name}{/if}{else}{$availableuser.username}{/if}</span>
     {if $availableuser.email}<br />{$availableuser.email}{/if}
     </td>
@@ -34,7 +34,6 @@ Available users:
       </td>
       <td><input type="checkbox" class="primaryadmin admincheckbox"><label>Pool administrator</label></td>
       <td><input type="checkbox" class="secondaryadmin admincheckbox"><label>Non-voting administrator</label></td>
-      </td>
     </tr>
     </table>
   </div>
@@ -46,7 +45,7 @@ Available users:
 <div>
 <input id="addButton" type="button" value="Add to pool &gt;" disabled="disabled" /><br />
 <input id="removeButton" type="button" value="&lt; Remove from pool" disabled="disabled" /><br />
-<img src="images/editpool-loader.gif" id="editSpinner" style="display: none;" />
+<img src="images/editpool-loader.gif" id="editSpinner" style="display: none;" alt="Loading..." />
 </div>
 </div>
 
@@ -62,15 +61,13 @@ Users in pool:
     <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span>
     {if $pooluser.email}<br />{$pooluser.email}{/if}
     </td>
-    {if $pooluser.hasbets}<td class="alert"><span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span></td>{/if}
-    </td>
+    <td class="alert">{if $pooluser.hasbets}<span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span>{/if}</td>
     </tr>
     <tr class="poolAdmin">
       <td>
       </td>
       <td><input type="checkbox" class="primaryadmin admincheckbox" {if $pooluser.primaryadmin}checked="checked"{/if}><label>Pool administrator</label></td>
       <td><input type="checkbox" class="secondaryadmin admincheckbox" {if $pooluser.secondaryadmin}checked="checked"{/if}><label>Non-voting administrator</label></td>
-      </td>
     </tr>
     </table>
   </div>
@@ -83,7 +80,7 @@ Users in pool:
 </div>
 
 <div class="poolActionsDiv">
-<a href="{$SCRIPT_NAME}?a=deletepool&p={$pool._id}&csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
+<a href="{$SCRIPT_NAME}?a=deletepool&amp;p={$pool._id}&amp;csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
 </div>
 
 {include file='footer.tpl'}
