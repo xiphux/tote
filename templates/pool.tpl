@@ -148,7 +148,7 @@ Make a Pick
 
 {if $bet}
 <span 
-{if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{/if}
+{if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{elseif $bet.result === 0}class="tie"{/if}
 {if $bet.game}title="{$bet.game.away_team.abbreviation}{if isset($bet.game.away_score)} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if isset($bet.game.home_score)} {$bet.game.home_score}{/if}"{/if}
 >
 {if $bet.team.abbreviation}

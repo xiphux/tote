@@ -150,6 +150,10 @@ table.displayTable td {
 	color: red;
 }
 
+.tie {
+	color: gray;
+}
+
 table.scoreTable tr.self {
 	background-color: lightgray;
 }
