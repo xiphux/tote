@@ -156,7 +156,7 @@ Make a Pick
 {elseif $bet.nopick}
 -NP-
 {/if}
- {if $bet.spread}({$bet.spread}){/if}
+ {if isset($bet.spread)}({$bet.spread}){/if}
 </span>
 {elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
 <span>
