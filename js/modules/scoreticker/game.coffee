@@ -193,7 +193,7 @@ define ['cs!./localstart', 'cs!modules/utils/mixin', 'cs!modules/utils/observabl
         when 'F' then return 'Final'
         when 'FO' then return 'Final OT'
         when 'H' then return 'Halftime'
-        when '1', '2', '3', '4' then return 'Q' + @__quarter + ' ' + @__clock
+        when '1', '2', '3', '4' then return 'Q' + @__quarter + ' ' + (@__clock ? '')
         else return 'OT ' + @__clock
 
     __queueUpdates: (updates) ->
