@@ -1,8 +1,7 @@
-define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs!modules/utils/mixin', 'cs!modules/utils/observable'], ($, GameTile, BigPlayPopup, BigPlayQueue, mixin, observable) ->
+define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue'], ($, GameTile, BigPlayPopup, BigPlayQueue) ->
   
   class ScoreTickerStrip
     constructor: (engine) ->
-      mixin this, observable
       if engine
         @__engine = engine
         engine.addObserver this
@@ -75,11 +74,9 @@ define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs
           when 'addedGames'
             for gameTile in value
               @__addGameTile gameTile
-            @__notify 'widthchanged'
           when 'removedGames'
             for gameTile in value
               @__removeGameTile gameTile
-            @__notify 'widthchanged'
           when 'addedBigPlays'
             for bigPlay in value
               @__addBigPlayPopup bigPlay
@@ -88,7 +85,3 @@ define ['jquery', 'cs!./gametile', 'cs!./bigplaypopup', 'cs!./bigplayqueue', 'cs
             else @__bigPlayQueue.stop()
       return
 
-    __notify: (changeType) ->
-      return unless @__hasObservers()
-      @__notifyObservers changeType
-      return

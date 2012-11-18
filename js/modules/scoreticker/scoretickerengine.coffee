@@ -49,6 +49,7 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
 
     __updateComplete: ->
       @__notify('datareceived')
+      @__notify('updatecomplete')
       @__timer = window.setTimeout $.proxy(@update, @), @__refreshInterval*1000 if @__started
       return
 
