@@ -98,48 +98,7 @@ function get_pool_record($poolid)
 			}
 		}
 
-		// do the calculations for the record for each bet game
-		foreach ($bets as $week => $bet) {
-
-			// get the game the user bet on
-			$gameobj = get_game_by_team($pool['season'], $week, $bet['team']);
-
-			if ($gameobj) {
-
-				// if game has scores (game has finished),
-				// do some math
-				if (isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
-					// first calculate the spread and winner as if user bet on the home team
-					// result > 0 is a win, result < 0 is a loss, result = 0 is a tie
-					$result = 0;
-					$gamespread = $gameobj['home_score'] - $gameobj['away_score'];
-					if ($gamespread > 0)
-						$result = 1;
-					else if ($gamespread < 0)
-						$result = -1;
-
-					// if the user bet on the away team, invert the result
-					if ($gameobj['away_team'] == $bet['team'])
-						$result *= -1;
-
-					// point spreads are displayed in absolute values (no negatives)
-					$gamespread = abs($gamespread);
-
-					$bets[$week]['result'] = $result;
-					$bets[$week]['spread'] = $gamespread;
-				}
-
-				// get the data on the teams for the game
-				$gameobj['home_team'] = get_team($gameobj['home_team']);
-				$gameobj['away_team'] = get_team($gameobj['away_team']);
-				$bets[$week]['game'] = $gameobj;
-			}
-		
-			// also load team data
-			$bets[$week]['team'] = get_team($bet['team']);
-		}
-
-		// now tabulate the full win/loss record,
+		// tabulate the full win/loss record,
 		// going through all weeks in the season
 		$wins = 0;
 		$losses = 0;
@@ -148,19 +107,54 @@ function get_pool_record($poolid)
 
 			if (isset($bets[$i])) {
 				// user bet on this week
+				$bet = $bets[$i];
 
-				if (isset($bets[$i]['result'])) {
-					// if we have a result for this bet (game finished)
-					if ($bets[$i]['result'] > 0) {
-						// user won this bet, add to wins and point spread
-						$wins++;
-						$pointspread += $bets[$i]['spread'];
-					} else if ($bets[$i]['result'] < 0) {
-						// user lost this bet, add to losses and substract from point spread
-						$losses++;
-						$pointspread -= $bets[$i]['spread'];
+				// get the game the user bet on
+				$gameobj = get_game_by_team($pool['season'], $i, $bet['team']);
+
+				if ($gameobj) {
+
+					// if game has scores (game has finished),
+					// do some math
+					if (isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
+						// first calculate the spread and winner as if user bet on the home team
+						// result > 0 is a win, result < 0 is a loss, result = 0 is a tie
+						$result = null;
+						$gamespread = $gameobj['home_score'] - $gameobj['away_score'];
+						if ($gamespread > 0)
+							$result = 1;
+						else if ($gamespread < 0)
+							$result = -1;
+
+						// if the user bet on the away team, invert the result
+						if ($gameobj['away_team'] == $bet['team'])
+							$result *= -1;
+
+						// point spreads are displayed in absolute values (no negatives)
+						$gamespread = abs($gamespread);
+
+						if ($result > 0) {
+							// user won this bet, add to wins and point spread
+							$wins++;
+							$pointspread += $gamespread;
+						} else if ($result < 0) {
+							// user lost this bet, add to losses and substract from point spread
+							$losses++;
+							$pointspread -= $gamespread;
+						}
+
+						$bets[$i]['result'] = $result;
+						$bets[$i]['spread'] = $gamespread;
 					}
+
+					// get the data on the teams for the game
+					$gameobj['home_team'] = get_team($gameobj['home_team']);
+					$gameobj['away_team'] = get_team($gameobj['away_team']);
+					$bets[$i]['game'] = $gameobj;
 				}
+			
+				// also load team data
+				$bets[$i]['team'] = get_team($bet['team']);
 
 			} else {
 				// no bet for this week
