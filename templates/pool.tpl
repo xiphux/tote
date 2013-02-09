@@ -114,6 +114,9 @@ Make a Pick
 <th>Name</th>
 <th title="Wins">W</th>
 <th title="Losses">L</th>
+{if $showties}
+<th title="Ties">T</th>
+{/if}
 <th title="Point Differential">PD</th>
 
 {foreach from=$weeks key=wknum item=open}
@@ -145,6 +148,9 @@ Make a Pick
 
 <td>{$entrant.wins}</td>
 <td>{$entrant.losses}</td>
+{if $showties}
+<td>{$entrant.ties}</td>
+{/if}
 <td>{$entrant.spread}</td>
 
 {foreach from=$entrant.bets key=betweek item=bet}

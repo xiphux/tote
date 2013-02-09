@@ -102,6 +102,7 @@ function get_pool_record($poolid)
 		// going through all weeks in the season
 		$wins = 0;
 		$losses = 0;
+		$ties = 0;
 		$pointspread = 0;
 		for ($i = 1; $i <= $weeks; ++$i) {
 
@@ -125,6 +126,8 @@ function get_pool_record($poolid)
 							$result = 1;
 						else if ($gamespread < 0)
 							$result = -1;
+						else if ($gamespread == 0)
+							$result = 0;
 
 						// if the user bet on the away team, invert the result
 						if ($gameobj['away_team'] == $bet['team'])
@@ -141,6 +144,9 @@ function get_pool_record($poolid)
 							// user lost this bet, add to losses and substract from point spread
 							$losses++;
 							$pointspread -= $gamespread;
+						} else if ($result === 0) {
+							// user tied, add to ties (no point spread)
+							$ties++;
 						}
 
 						$bets[$i]['result'] = $result;
@@ -184,6 +190,7 @@ function get_pool_record($poolid)
 		$record['bets'] = $bets;
 		$record['wins'] = $wins;
 		$record['losses'] = $losses;
+		$record['ties'] = $ties;
 		$record['spread'] = $pointspread;
 
 		$poolrecord[] = $record;

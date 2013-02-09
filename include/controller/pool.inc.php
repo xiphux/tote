@@ -104,6 +104,13 @@ function display_pool($poolID = null)
 	$poolopen = ($currentweek !== false);
 
 	$poolrecord = get_pool_record($poolobj['_id']);
+	$showties = false;
+	foreach ($poolrecord as $record) {
+		if (isset($record['ties']) && ($record['ties'] > 0)) {
+			$showties = true;
+			break;
+		}
+	}
 
 	// check if logged in user is entered in this pool
 	$entered = false;
@@ -171,6 +178,7 @@ function display_pool($poolID = null)
 		$tpl->assign('currentweek', $currentweek);
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
+	$tpl->assign('showties', $showties);
 	$tpl->assign('pool', $poolobj);
 	if ($pot)
 		$tpl->assign('pot', $pot);
