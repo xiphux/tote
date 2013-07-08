@@ -343,6 +343,7 @@ div.selected {
 	font-style: italic;
 	font-size: smaller;
 	font-family: Helvetica, Arial, sans-serif;
+	color: #54abe4;
 }
 
 #attrFooter a {
