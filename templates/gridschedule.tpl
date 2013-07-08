@@ -32,11 +32,31 @@
     {foreach from=$teamgames key=eachweek item=game}
      <td {if !$game.bye}class="gridGame" data-start="{$game.localstart->format('D M j, Y g:i a T')}" data-startstamp="{$game.localstart->format('Y-m-d\TH:i:sO')}" data-game="{$game.away_team.abbreviation}{if isset($game.away_score)} {$game.away_score}{/if} @ {$game.home_team.abbreviation}{if isset($game.home_score)} {$game.home_score}{/if}"{/if}>
      {if $game.bye}
-       Bye
+       <span class="gridBye">Bye</span>
      {elseif $game.away_team._id == $team}
-       @{$game.home_team.abbreviation}
+       {if isset($game.home_score) && isset($game.away_score)}
+         {if $game.away_score > $game.home_score}
+           <span class="gridWin">@{$game.home_team.abbreviation}</span>
+         {elseif $game.home_score > $game.away_score}
+           <span class="gridLoss">@{$game.home_team.abbreviation}</span>
+         {elseif $game.home_score == $game.away_score}
+           <span class="gridTie">@{$game.home_team.abbreviation}</span>
+         {/if}
+       {else}
+         @{$game.home_team.abbreviation}
+       {/if}
      {else}
-      {$game.away_team.abbreviation}
+       {if isset($game.home_score) && isset($game.away_score)}
+         {if $game.home_score > $game.away_score}
+           <span class="gridWin">{$game.away_team.abbreviation}</span>
+         {elseif $game.away_score > $game.home_score}
+           <span class="gridLoss">{$game.away_team.abbreviation}</span>
+         {elseif $game.home_score == $game.away_score}
+           <span class="gridTie">{$game.away_team.abbreviation}</span>
+         {/if}
+       {else}
+         {$game.away_team.abbreviation}
+       {/if}
      {/if}
      </td>
     {/foreach}

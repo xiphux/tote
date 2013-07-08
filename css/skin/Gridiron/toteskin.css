@@ -353,3 +353,20 @@ div.selected {
 #attrFooter a:hover {
 	text-decoration: underline;
 }
+
+@media screen {
+	.gridWin {
+		color: blue;
+	}
+
+	.gridLoss {
+		color: red;
+	}
+
+	.gridTie {
+		color: gray;
+	}
+	.gridBye {
+		color: gray;
+	}
+}
