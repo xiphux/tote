@@ -114,7 +114,7 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
       return
 
     __updateWidth: ->
-      targetWidth = @__strip.width()+4
+      targetWidth = Math.max(@__strip.width(), (@__titleSpan.width()+@__loaderImage.width()*2))+4
       if @__boundElement.width() isnt targetWidth
         @__boundElement.animate width: targetWidth+'px', 'fast'
       return
