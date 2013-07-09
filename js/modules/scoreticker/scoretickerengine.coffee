@@ -175,7 +175,7 @@ define ['jquery', 'cs!./game', 'cs!./bigplay', 'cs!modules/utils/mixin', 'cs!mod
       return @
 
     weekString: ->
-      return @__year + '-' + (@__year*1+1) + ' ' + (if @__type is 'P' then 'preseason' else '') + 'week ' + @__week
+      return @__year + '-' + (@__year*1+1) + ' ' + (if @__type is 'P' then 'preseason ' else '') + 'week ' + @__week
 
     hasActiveGames: ->
       for own gsis, game of @__games
