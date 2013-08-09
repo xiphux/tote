@@ -75,7 +75,7 @@
 		{/if}
 		jquery: [
 			{if $googlejs}
-			'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min',
+			'//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min',
 			{/if}
 			'ext/jquery-1.8.2.min'
 		],
