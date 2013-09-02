@@ -30,9 +30,9 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 	// create MongoDB connection
 	$connection = null;
 	if (!empty($tote_conf['connectionString']))
-		$connection = new Mongo($tote_conf['connectionString'], array('persist' => 'tote'));
+		$connection = new Mongo($tote_conf['connectionString']);
 	else
-		$connection = new Mongo('mongodb://localhost:27017', array('persist' => 'tote'));
+		$connection = new Mongo('mongodb://localhost:27017');
 	$db = $connection->selectDB($tote_conf['database']);
 
 	require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
