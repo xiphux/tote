@@ -24,14 +24,15 @@ function teamcmp($a, $b)
 }
 
 /**
- * teamschedule controller
+ * teamsingleschedule controller
  *
- * displays the game schedule by team
+ * displays the game schedule for a given team
  *
  * @param string $year season year
+ * @param string $team team id
  * @param string $output output format
  */
-function display_teamschedule($season, $output = 'html')
+function display_teamsingleschedule($season, $team, $output = 'html', $week = null)
 {
 	global $tpl;
 
@@ -52,6 +53,10 @@ function display_teamschedule($season, $output = 'html')
 	$search = array(
 		'season' => (int)$season
 	);
+	$search['$or'] = array(
+		array('home_team' => new MongoId($team)),
+		array('away_team' => new MongoId($team))
+	);
 
 	$gameobjs = $games->find(
 		$search,
@@ -61,32 +66,23 @@ function display_teamschedule($season, $output = 'html')
 	$seasonweeks = get_season_weeks($season);
 
 	$teamgames = array();
-	$teammapped = array();
-	$teamnames = array();
 	foreach ($gameobjs as $i => $gameobj) {
 		$gameobj['home_team'] = get_team($gameobj['home_team']);
 		$gameobj['away_team'] = get_team($gameobj['away_team']);
 		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
-		$teammapped[(string)$gameobj['home_team']['_id']][$gameobj['week']] = $gameobj;
-		$teammapped[(string)$gameobj['away_team']['_id']][$gameobj['week']] = $gameobj;
+		$teamgames[$gameobj['week']] = $gameobj;
 	}
-	foreach ($teammapped as $eachteam => $teamsched) {
-		for ($i = 1; $i <= $seasonweeks; $i++) {
-			if (!isset($teamsched[$i])) {
-				$teammapped[$eachteam][$i] = array('bye' => true);
-			}
-		}
-		ksort($teammapped[$eachteam]);
 
-		$teamobj = get_team($eachteam);
-		$teamnames[$eachteam] = $teamobj['home'] . ' ' . $teamobj['team'];
+	for ($i = 1; $i <= $seasonweeks; $i++) {
+		if (!isset($teamgames[$i])) {
+			$teamgames[$i] = array('bye' => true);
+		}
 	}
-	uksort($teammapped, 'teamcmp');
-	$teamgames = $teammapped;
-	$tpl->assign('teamnames', $teamnames);
+	ksort($teamgames);
 
 	http_headers();
 
+	$tpl->assign('team', get_team($team));
 	if (empty($week)) {
 		$tpl->assign('allseasons', array_reverse(get_seasons()));
 	}
@@ -103,5 +99,5 @@ function display_teamschedule($season, $output = 'html')
 	if ($output == 'js')
 		$tpl->assign('js', true);
 
-	$tpl->display('teamschedule.tpl');
+	$tpl->display('teamsingleschedule.tpl');
 }

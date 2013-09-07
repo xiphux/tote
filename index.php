@@ -400,13 +400,21 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 
 	// teamschedule - display the season schedule for a team
 	case 'teamschedule':
-		require_once(TOTE_CONTROLLERDIR . 'teamschedule.inc.php');
-		display_teamschedule(
-			(empty($_GET['y']) ? null : $_GET['y']),
-			(empty($_GET['t']) ? null : $_GET['t']),
-			(empty($_GET['o']) ? 'html' : $_GET['o']),
-			(empty($_GET['w']) ? null : $_GET['w'])
-		);
+		if (!empty($_GET['t'])) {
+			require_once(TOTE_CONTROLLERDIR . 'teamsingleschedule.inc.php');
+			display_teamsingleschedule(
+				(empty($_GET['y']) ? null : $_GET['y']),
+				$_GET['t'],
+				(empty($_GET['o']) ? 'html' : $_GET['o']),
+				(empty($_GET['w']) ? null : $_GET['w'])
+			);
+		} else {
+			require_once(TOTE_CONTROLLERDIR . 'teamschedule.inc.php');
+			display_teamschedule(
+				(empty($_GET['y']) ? null : $_GET['y']),
+				(empty($_GET['o']) ? 'html' : $_GET['o'])
+			);
+		}
 		break;
 
 	// gridschedule - display the season schedule as a grid
