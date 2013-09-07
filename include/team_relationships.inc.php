@@ -21,7 +21,7 @@ function team_relationships()
 		++$teamcount;
 	}
 
-	$teamresults->free();
+	$teamresults->close();
 
 	$gameresults = $mysqldb->query('SELECT games.home_team_id, games.away_team_id, games.home_score, games.away_score, seasons.year AS season FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE games.home_score IS NOT NULL OR games.away_score IS NOT NULL ORDER BY seasons.year DESC');
 
@@ -44,7 +44,7 @@ function team_relationships()
 		}
 	}
 
-	$gameresults->free();
+	$gameresults->close();
 
 	return array( 'teams' => $teamdata, 'games' => $gamedata );
 }

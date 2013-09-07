@@ -29,5 +29,7 @@ function pick_distribution()
 		$distdata[$poolidx]['picks'][$dist['team']] = (int)$dist['count'];
 	}
 
+	$distresult->close();
+
 	return $distdata;
 }

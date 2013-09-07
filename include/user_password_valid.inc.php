@@ -26,12 +26,16 @@ function user_password_valid($username, $password, $salt = '', $passwordHash = '
 		$userstmt->bind_param('s', $username);
 		$userstmt->bind_result($salt, $passwordHash);
 		if (!$userstmt->execute()) {
+			$userstmt->close();
 			return false;
 		}
 		if (!$userstmt->fetch()) {
+			$userstmt->close();
 			return false;
 		}
 	}
+
+	$userstmt->close();
 
 	return (md5($salt . $username . md5($username . ':' . $password)) == $passwordHash);
 }
