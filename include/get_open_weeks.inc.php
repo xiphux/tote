@@ -28,5 +28,8 @@ function get_open_weeks($season)
 		$openweeks[(int)$week['week']] = true;
 	}
 
+	$weeksresult->close();
+	$weeksstmt->close();
+
 	return $openweeks;
 }
