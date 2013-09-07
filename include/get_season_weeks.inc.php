@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * Gets the number of weeks in a season
  *
