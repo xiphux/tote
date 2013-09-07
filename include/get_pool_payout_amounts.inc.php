@@ -13,21 +13,23 @@ require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
  */
 function get_pool_payout_amounts($poolid)
 {
+	global $mysqldb;
+
 	if (empty($poolid))
 		return null;
 
-	if (is_string($poolid))
-		$poolid = new MongoId($poolid);
+	$fee = null;
+	$feestmt = $mysqldb->prepare('SELECT fee FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
+	$feestmt->bind_param('i', $poolid);
+	$feestmt->bind_result($fee);
+	$feestmt->execute();
+	$found = $feestmt->fetch();
+	$feestmt->close();
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$pool = $pools->findOne(
-		array('_id' => $poolid),
-		array('fee', 'entries')
-	);
-
-	if (!$pool)
+	if (!$found)
 		return null;
+
+	$fee = (float)$fee;
 
 	$percents = get_pool_payout_percents($poolid);
 	if (count($percents) <= 0)
@@ -41,8 +43,8 @@ function get_pool_payout_amounts($poolid)
 
 	$entryfeeplace = array_search(0, $percents);
 	if ($entryfeeplace !== false) {
-		$payout[$entryfeeplace] = $pool['fee'];
-		$pot -= $pool['fee'];
+		$payout[$entryfeeplace] = $fee;
+		$pot -= $fee;
 	}
 
 	foreach ($percents as $place => $percent) {
