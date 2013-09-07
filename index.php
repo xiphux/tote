@@ -30,6 +30,15 @@ else
 	$connection = new Mongo('mongodb://localhost:27017');
 $db = $connection->selectDB($tote_conf['database']);
 
+// create MySQL connection
+$mysqldb = new mysqli(
+	isset($tote_conf['hostname']) ? $tote_conf['hostname'] : null,
+	isset($tote_conf['username']) ? $tote_conf['username'] : null,
+	isset($tote_conf['password']) ? $tote_conf['password'] : null,
+	isset($tote_conf['sql_database']) ? $tote_conf['sql_database'] : null,
+	isset($tote_conf['port']) ? $tote_conf['port'] : null
+);
+
 // create Smarty
 require_once($tote_conf['smarty'] . 'Smarty.class.php');
 $tpl = new Smarty();
