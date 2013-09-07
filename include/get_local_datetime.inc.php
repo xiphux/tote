@@ -9,13 +9,13 @@ define('TOTE_DEFAULT_TIMEZONE', 'America/New_York');
  *
  * @param object mongo date object
  */
-function get_local_datetime($mongodate)
+function get_local_datetime($mongodate, $timestamp = null)
 {
-	if (!$mongodate) {
+	if (($mongodate == null) && ($timestamp < 1)) {
 		return null;
 	}
 
-	$local = new DateTime('@' . $mongodate->sec);
+	$local = new DateTime('@' . ($timestamp > 0 ? $timestamp : $mongodate->sec));
 	$local->setTimezone(new DateTimeZone(TOTE_DEFAULT_TIMEZONE));
 	$user = user_logged_in();
 	if ($user && isset($user['timezone'])) {
