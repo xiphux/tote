@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * Tests if user is entered in a pool
  *
@@ -11,24 +9,21 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function user_in_pool($user, $pool)
 {
+	global $mysqldb;
+
 	if (empty($user) || empty($pool))
 		return false;
 
-	if (is_string($user))
-		$user = new MongoId($user);
+	$entryid = null;
+	$userpoolstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?');
+	$userpoolstmt->bind_param('ii', $user, $pool);
+	$userpoolstmt->bind_result($entryid);
+	$found = $userpoolstmt->fetch();
 
-	if (is_string($pool))
-		$pool = new MongoId($pool);
+	$userpoolstmt->close();
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	if ($found && !empty($entryid))
+		return true;
 
-	$poolobj = $pools->findOne(
-		array(
-			'_id' => $pool,
-			'entries.user' => $user
-		),
-		array('name')
-	);
-
-	return ($poolobj != null);
+	return false;
 }
