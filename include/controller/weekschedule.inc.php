@@ -1,13 +1,8 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
@@ -24,7 +19,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  */
 function display_weekschedule($season, $week, $output = 'html')
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	if (empty($season)) {
 		// default to this year
@@ -38,36 +33,31 @@ function display_weekschedule($season, $week, $output = 'html')
 		return;
 	}
 
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$gamesstmt = $mysqldb->prepare('SELECT games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND games.week=? ORDER BY games.start');
+	$gamesstmt->bind_param('ii', $season, $week);
+	$gamesstmt->execute();
+	$gamesresult = $gamesstmt->get_result();
 
-	$search = null;
-	$sort = null;
-	$search = array(
-		'season' => (int)$season,
-		'week' => (int)$week
-	);
-	$sort = array(
-		'start' => 1
-	);
+	$tz = date_default_timezone_get();
+	date_default_timezone_set('UTC');
 
-	$gameobjs = $games->find(
-		$search,
-		array('home_team', 'away_team', 'home_score', 'away_score', 'start', 'week')
-	)->sort($sort);
-
-	$allgames = array();
-	foreach ($gameobjs as $i => $gameobj) {
-		$gameobj['home_team'] = get_team($gameobj['home_team']);
-		$gameobj['away_team'] = get_team($gameobj['away_team']);
-		$gameobj['localstart'] = get_local_datetime($gameobj['start']);
-		$allgames[] = $gameobj;
+	$games = array();
+	while ($game = $gamesresult->fetch_assoc()) {
+		$game['start'] = strtotime($game['start']);
+		$game['localstart'] = get_local_datetime(null, $game['start']);
+		$games[] = $game;
 	}
+
+	date_default_timezone_set($tz);
+
+	$gamesresult->close();
+	$gamesstmt->close();
 
 	http_headers();
 
 	$tpl->assign('year', $season);
 	$tpl->assign('week', $week);
-	$tpl->assign('games', $allgames);
+	$tpl->assign('games', $games);
 
 	$mobile = mobile_browser();
 	if ($mobile) {

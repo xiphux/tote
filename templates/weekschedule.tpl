@@ -11,7 +11,7 @@ Games for {$year}-{$year+1} week {$week}:
 <div class="divScheduleDay">
 <time datetime="{$game.localstart->format('Y-m-d')}">{$day}</time>:
 {assign var=lastday value=$day}{/if}
-<br /><span {if $game.start->sec < $smarty.now}class="gamestarted"{/if}>{$game.away_team.abbreviation} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team.abbreviation} {if isset($game.home_score)}{$game.home_score}{/if} at <time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('g:i a T')}</time></span>
+<br /><span {if $game.start < $smarty.now}class="gamestarted"{/if}>{$game.away_abbr} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_abbr} {if isset($game.home_score)}{$game.home_score}{/if} at <time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('g:i a T')}</time></span>
 {/foreach}
 </div>
 </div>
