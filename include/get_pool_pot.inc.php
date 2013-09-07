@@ -10,28 +10,21 @@
  */
 function get_pool_pot($poolid)
 {
+	global $mysqldb;
+
 	if (empty($poolid))
 		return null;
 
-	if (is_string($poolid))
-		$poolid = new MongoId($poolid);
+	$pot = null;
+	$potstmt = $mysqldb->prepare('SELECT COUNT(pool_entries.id)*pools.fee AS pot FROM ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries LEFT JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_entries.pool_id=pools.id WHERE pool_entries.pool_id=?');
+	$potstmt->bind_param('i', $poolid);
+	$potstmt->bind_result($pot);
+	$potstmt->execute();
+	$found = $potstmt->fetch();
+	$potstmt->close();
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	if ($found)
+		return $pot;
 
-	$pool = $pools->findOne(
-		array('_id' => $poolid),
-		array('fee', 'entries')
-	);
-
-	if (!$pool)
-		return null;
-
-	if (empty($pool['fee']) || ($pool['fee'] <= 0))
-		return null;
-
-	if (empty($pool['entries']))
-		return null;
-
-	$entrantcount = count($pool['entries']);
-	return $entrantcount * $pool['fee'];
+	return null;
 }
