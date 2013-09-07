@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 
 /**
@@ -12,7 +11,7 @@ require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
  */
 function get_open_weeks($season)
 {
-	global $db;
+	global $mysqldb;
 
 	if (empty($season))
 		return null;
@@ -20,25 +19,13 @@ function get_open_weeks($season)
 	$weeks = get_season_weeks($season);
 	$openweeks = array_fill(1, $weeks, false);
 
-	$weekdata = $db->command(
-		array(
-			'distinct' => TOTE_COLLECTION_GAMES,
-			'key' => 'week',
-			'query' => array(
-				'season' => (int)$season,
-				'start' => array(
-					'$gt' => new MongoDate(time())
-				)
-			)
-		)
-	);
+	$weeksstmt = $mysqldb->prepare('SELECT DISTINCT week FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=? AND games.start>UTC_TIMESTAMP()');
+	$weeksstmt->bind_param('i', $season);
+	$weeksstmt->execute();
+	$weeksresult = $weeksstmt->get_result();
 
-	if (isset($weekdata['values'])) {
-		for ($i = 0; $i < count($weekdata['values']); $i++) {
-			if ($weekdata['values'][$i] > 0) {
-				$openweeks[$weekdata['values'][$i]] = true;
-			}
-		}
+	while ($week = $weeksresult->fetch_assoc()) {
+		$openweeks[(int)$week['week']] = true;
 	}
 
 	return $openweeks;
