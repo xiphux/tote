@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * Tests if user's password is valid
  *
@@ -12,19 +10,27 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function user_password_valid($username, $password, $salt = '', $passwordHash = '')
 {
+	global $mysqldb;
+
 	if (empty($username) || empty($password))
 		return false;
 
 	if (empty($salt) || empty($passwordHash)) {
 		// if we weren't provided with salt and hash,
 		// load it from the database
-		$users = get_collection(TOTE_COLLECTION_USERS);
-		$user = $users->findOne(array('username' => $username), array('salt', 'password'));
-		if (!$user)
+
+		$userstmt = $mysqldb->prepare('SELECT salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+		if (!$userstmt)
 			return false;
 
-		$salt = $user['salt'];
-		$passwordHash = $user['password'];
+		$userstmt->bind_param('s', $username);
+		$userstmt->bind_result($salt, $passwordHash);
+		if (!$userstmt->execute()) {
+			return false;
+		}
+		if (!$userstmt->fetch()) {
+			return false;
+		}
 	}
 
 	return (md5($salt . $username . md5($username . ':' . $password)) == $passwordHash);
