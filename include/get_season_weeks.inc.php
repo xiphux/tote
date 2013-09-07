@@ -10,21 +10,23 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function get_season_weeks($season)
 {
+	global $mysqldb;
+
 	if (empty($season))
 		return null;
 
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$maxweekstmt = $mysqldb->prepare('SELECT MAX(games.week) AS weeks FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=?');
 
-	$lastgame = $games->find(
-		array(
-			'season' => (int)$season
-		),
-		array('week')
-	)->sort(array('week' => -1))->getNext();
+	$maxweekstmt->bind_param('i', $season);
 
-	if ($lastgame) {
-		return (int)$lastgame['week'];
-	}
+	$weeks = null;
+	$maxweekstmt->bind_result($weeks);
+	$maxweekstmt->execute();
+	$maxweekstmt->fetch();
+	$maxweekstmt->close();
+
+	if ($weeks > 0)
+		return $weeks;
 
 	// default to 17 if no schedule imported
 	return 17;
