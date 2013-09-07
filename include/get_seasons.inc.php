@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * Find all season years in the system
  *
@@ -9,21 +7,20 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function get_seasons()
 {
-	global $db;
+	global $mysqldb;
 
-	$seasondata = $db->command(
-		array(
-			'distinct' => TOTE_COLLECTION_GAMES,
-			'key' => 'season'
-		)
-	);
+	$seasonsresult = $mysqldb->query('SELECT DISTINCT year FROM ' . TOTE_TABLE_SEASONS);
 
 	$seasons = array();
 
-	if (isset($seasondata['values'])) {
-		$seasons = $seasondata['values'];
-		sort($seasons);
+	while ($season = $seasonsresult->fetch_assoc()) {
+		$seasons[] = (int)$season['year'];
 	}
+
+	$seasonsresult->close();
+
+	if (count($seasons) > 0)
+		sort($seasons);
 
 	return $seasons;
 }
