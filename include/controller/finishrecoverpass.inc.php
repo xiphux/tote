@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
@@ -13,28 +12,36 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishrecoverpass($email)
 {
-	global $tpl, $tote_conf;
+	global $tpl, $tote_conf, $mysqldb;
 
 	$key = '';
 	$username = '';
+	$userid = null;
 	$errors = array();
 
 	if (empty($email)) {
 		// need the email
 		$errors[] = 'Email is required';
 	} else {
-		$users = get_collection(TOTE_COLLECTION_USERS);
 
-		$userobj = $users->findOne(array('email' => $email));
-		if ($userobj) {
+		$userstmt = $mysqldb->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE email=?');
+		$userstmt->bind_param('s', $email);
+		$userstmt->bind_result($userid, $username);
+		$userstmt->execute();
+		$found = $userstmt->fetch();
+		$userstmt->close();
+
+		if ($found) {
+
 			// generate a unique recovery key and store it
 			// for the user
 			$key = generate_salt();
-			$users->update(
-				array('_id' => $userobj['_id']),
-				array('$set' => array('recoverykey' => $key))
-			);
-			$username = $userobj['username'];
+			
+			$setkeystmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET recovery_key=? WHERE id=?');
+			$setkeystmt->bind_param('si', $key, $userid);
+			$setkeystmt->execute();
+			$setkeystmt->close();
+
 		} else {
 			// can't find that email in the database
 			$errors[] = 'That email was not found in the system';

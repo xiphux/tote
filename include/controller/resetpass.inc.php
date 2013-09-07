@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
 /**
@@ -13,7 +12,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_resetpass($key)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$errors = array();
 
@@ -21,12 +20,15 @@ function display_resetpass($key)
 		// need the key
 		$errors[] = 'A recovery key is required';
 	} else {
-		$users = get_collection(TOTE_COLLECTION_USERS);
-		$userobj = $users->findOne(array('recoverykey' => $key));
-		if (!$userobj) {
+		
+		$keystmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=?');
+		$keystmt->bind_param('s', $key);
+		$keystmt->execute();
+		if (!$keystmt->fetch()) {
 			// the key has to be active and valid
 			$errors[] = 'Invalid key.  It may have been used already.';
 		}
+		$keystmt->close();
 	}
 
 	http_headers();

@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 
@@ -15,7 +14,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishresetpass($key, $newpassword, $newpassword2)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$errors = array();
 
@@ -37,26 +36,27 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 	if (!(empty($key) || empty($newpassword) || empty($newpassword2))) {
 		if ($newpassword == $newpassword2) {
 
-			$users = get_collection(TOTE_COLLECTION_USERS);
+			$userid = null;
+			$username = null;
+			$keystmt = $mysqldb->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=?');
+			$keystmt->bind_param('s', $key);
+			$keystmt->bind_result($userid, $username);
+			$keystmt->execute();
+			$found = $keystmt->fetch();
+			$keystmt->close();
 
-			$userobj = $users->findOne(array('recoverykey' => $key));
-			if ($userobj) {
+			if ($found) {
+				
 				// hash the new password
-				$hashdata = generate_password_hash($userobj['username'], $newpassword);
+				$hashdata = generate_password_hash($username, $newpassword);
 				
 				// set the new password for the user and delete the recovery key
 				// (since it was used once we don't want it to be used again)
-				$users->update(
-					array('_id' => $userobj['_id']),
-					array('$set' => array(
-						'salt' => $hashdata['salt'],
-						'password' => $hashdata['passwordhash'],
-						'lastpasswordchange' => new MongoDate()),
-					      '$unset' => array(
-						'recoverykey' => 1
-						)
-					)
-				);
+				$resetstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP(), recovery_key=NULL WHERE id=?');
+				$resetstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $userid);
+				$resetstmt->execute();
+				$resetstmt->close();
+
 			} else {
 				// recovery key has to exist in the database to be valid
 				$errors[] = 'Invalid key.  It may have been used already.';
