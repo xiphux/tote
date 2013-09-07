@@ -82,7 +82,7 @@ define ['jquery', 'cs!./scoretickerengine', 'cs!./scoretickerstrip', 'cookies'],
 
     show: ->
       return unless @__hidden
-      @__toggleLink.text 'Score ticker...'
+      @__toggleLink.text 'Score ticker'
       @__toggleLink.removeClass 'tickerClosed'
       @__toggleLink.addClass 'tickerOpen'
       @__boundElement.removeClass 'rounded-bottom'
