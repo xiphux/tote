@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-
 /**
  * Gets team relationships
  *
@@ -10,39 +7,35 @@ require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
  */
 function team_relationships()
 {
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	global $mysqldb;
 
-	$teamobjects = $teams->find(
-		array(),
-		array('team', 'home', 'conference', 'division', 'abbreviation')
-	)->sort(array('conference' => 1, 'division' => 1));
-	$js = 'function() { return this.home_score != null || this.away_score != null; }';
-	$gameobjects = $games->find(
-		array('$where' => $js),
-		array('home_team', 'away_team', 'home_score', 'away_score', 'season')
-	)->sort(array('season' => -1));
+	$teamresults = $mysqldb->query('SELECT teams.id, teams.team, teams.home, teams.abbreviation, divisions.division, conferences.abbreviation AS conference FROM ' . TOTE_TABLE_TEAMS . ' AS teams LEFT JOIN ' . TOTE_TABLE_DIVISIONS . ' AS divisions ON teams.division_id=divisions.id LEFT JOIN ' . TOTE_TABLE_CONFERENCES . ' AS conferences ON divisions.conference_id=conferences.id ORDER BY conferences.abbreviation, divisions.division');
 
 	$teamdata = array();
 	$teamindex = array();
-	$gamedata = array();
 
-	$count = 0;
-	foreach ($teamobjects as $team) {
-		$teamdata[$count] = $team;
-		$teamindex[(string)$team['_id']] = $count;
-		$count++;
+	$teamcount = 0;
+	while ($team = $teamresults->fetch_assoc()) {
+		$teamdata[$teamcount] = $team;
+		$teamindex[$team['id']] = $teamcount;
+		++$teamcount;
 	}
 
-	foreach ($gameobjects as $game) {
+	$teamresults->free();
+
+	$gameresults = $mysqldb->query('SELECT games.home_team_id, games.away_team_id, games.home_score, games.away_score, seasons.year AS season FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE games.home_score IS NOT NULL OR games.away_score IS NOT NULL ORDER BY seasons.year DESC');
+
+	$gamedata = array();
+
+	while ($game = $gameresults->fetch_assoc()) {
 		if (!isset($gamedata[$game['season']])) {
-			for ($i = 0; $i < $count; $i++) {
-				$gamedata[$game['season']][$i] = array_fill(0, $count, 0);
+			for ($i = 0; $i < $teamcount; $i++) {
+				$gamedata[$game['season']][$i] = array_fill(0, $teamcount, 0);
 			}
 		}
 
-		$homeindex = $teamindex[(string)$game['home_team']];
-		$awayindex = $teamindex[(string)$game['away_team']];
+		$homeindex = $teamindex[$game['home_team_id']];
+		$awayindex = $teamindex[$game['away_team_id']];
 
 		if ($game['home_score'] > $game['away_score']) {
 			$gamedata[$game['season']][$homeindex][$awayindex] += 1;
@@ -50,6 +43,8 @@ function team_relationships()
 			$gamedata[$game['season']][$awayindex][$homeindex] += 1;
 		}
 	}
+
+	$gameresults->free();
 
 	return array( 'teams' => $teamdata, 'games' => $gamedata );
 }
