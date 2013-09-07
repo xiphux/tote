@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-
 /**
  * Gets pick distribution across pools
  *
@@ -10,55 +7,26 @@ require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
  */
 function pick_distribution()
 {
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	global $mysqldb;
 
-	$poolobjects = $pools->find(
-		array(),
-		array('entries', 'name', 'season')
-	)->sort(array('season' => -1, 'name' => 1));
+	$distresult = $mysqldb->query('SELECT pools.id AS pool_id, pools.name AS name, seasons.year AS season, teams.abbreviation AS team, COUNT(pool_entries.user_id) AS count FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entry_picks.pool_entry_id=pool_entries.id LEFT JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_entries.pool_id=pools.id LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS teams ON pool_entry_picks.team_id=teams.id GROUP BY pools.id, teams.id ORDER BY seasons.year DESC, pools.name');
 
 	$distdata = array();
 
-	foreach ($poolobjects as $pool) {
-		if (empty($pool['entries']) || (count($pool['entries']) < 1))
-			continue;
-
-		$poolid = (string)$pool['_id'];
-
-		foreach ($pool['entries'] as $entrant) {
-
-			if (empty($entrant['bets']) || (count($entrant['bets']) < 1))
-				continue;
-
-			if (!isset($distdata[$poolid])) {
-				$distdata[$poolid] = array(
-					'name' => $pool['name'],
-					'season' => $pool['season'],
-					'picks' => array()
-				);
-			}
-
-			foreach ($entrant['bets'] as $bet) {
-				if (empty($bet['team']))
-					continue;
-
-				$team = get_team($bet['team']);
-				if (!$team)
-					continue;
-
-				$abbr = $team['abbreviation'];
-				if (!$abbr)
-					continue;
-
-				if (empty($distdata[$poolid]['picks'][$abbr]))
-					$distdata[$poolid]['picks'][$abbr] = 1;
-				else
-					$distdata[$poolid]['picks'][$abbr] += 1;
-			
-			}
-
+	$poolidx = 0;
+	$lastpoolid = -1;
+	while ($dist = $distresult->fetch_assoc()) {
+		if ($lastpoolid != $dist['pool_id']) {
+			++$poolidx;
+			$distdata[$poolidx] = array(
+				'name' => $dist['name'],
+				'season' => (int)$dist['season'],
+				'picks' => array()
+			);
+			$lastpoolid = $dist['pool_id'];
 		}
 
+		$distdata[$poolidx]['picks'][$dist['team']] = (int)$dist['count'];
 	}
 
 	return $distdata;
