@@ -12,6 +12,8 @@
 
 require_once(dirname(__FILE__) . '/../config/tote.conf.php');
 
+date_default_timezone_set('UTC');
+
 // create MongoDB connection
 $mongoconnection = null;
 if (!empty($tote_conf['connectionString']))
@@ -26,20 +28,34 @@ if (!isset($tote_conf['prefix']))
 	$tote_conf['prefix'] = '';
 
 // clear data
+echo "\nClearing data...\n";
 $mysqldb->query('SET FOREIGN_KEY_CHECKS=0');
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'conferences');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'divisions');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'teams');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'seasons');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'games');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'users');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pools');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_entries');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_entry_picks');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_actions');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_payouts');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_payout_percents');
+echo ".";
 $mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_administrators');
+echo ".";
 $mysqldb->query('SET FOREIGN_KEY_CHECKS=1');
 
 // id mapping arrays
@@ -52,6 +68,7 @@ $useridmap = array();
 $poolidmap = array();
 
 // import teams
+echo "\nImporting teams...\n";
 $teamcollection = null;
 if (!empty($tote_conf['namespace']))
 	$teamcollection = $mongodb->selectCollection($tote_conf['namespace'] . '.' . 'teams');
@@ -112,9 +129,11 @@ foreach ($teams as $team) {
 
 	$teamidmap[(string)$team['_id']] = $mysqldb->insert_id;
 
+	echo ".";
 }
 
 // import games
+echo "\nImporting games...\n";
 $gamecollection = null;
 if (!empty($tote_conf['namespace']))
 	$gamecollection = $mongodb->selectCollection($tote_conf['namespace'] . '.' . 'games');
@@ -127,7 +146,7 @@ if (!$newseasonstmt) {
 	echo $mysqldb->error . "\n";
 	exit;
 }
-$newgamestmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'games (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (?, ?, ?, ?, FROM_UNIXTIME(?), ?, ? , ?, ?)');
+$newgamestmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'games (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?)');
 if (!$newgamestmt) {
 	echo $mysqldb->error . "\n";
 	exit;
@@ -147,17 +166,17 @@ foreach ($games as $game) {
 	$awayscore = isset($game['away_score']) ? $game['away_score'] : null;
 	$favorite = isset($game['favorite']) ? $teamidmap[(string)$game['favorite']] : null;
 	$pointspread = isset($game['point_spread']) ? $game['point_spread'] : null;
+	$start = date('Y-m-d H:i:s', $game['start']->sec);
 
-	$newgamestmt->bind_param('iiiiiiiid', $seasonid, $game['week'], $teamidmap[(string)$game['home_team']], $teamidmap[(string)$game['away_team']], $game['start']->sec, $homescore, $awayscore, $favorite, $pointspread);
+	$newgamestmt->bind_param('iiiisiiid', $seasonid, $game['week'], $teamidmap[(string)$game['home_team']], $teamidmap[(string)$game['away_team']], $start, $homescore, $awayscore, $favorite, $pointspread);
 	$newgamestmt->execute();
 
 	$gameidmap[(string)$game['_id']] = $mysqldb->insert_id;
+	echo ".";
 }
 
 // import users
-
-date_default_timezone_set('UTC');
-
+echo "\nImporting users...\n";
 $usercollection = null;
 if (!empty($tote_conf['namespace']))
 	$usercollection = $mongodb->selectCollection($tote_conf['namespace'] . '.' . 'users');
@@ -195,10 +214,11 @@ foreach ($users as $user) {
 	$newuserstmt->execute();
 
 	$useridmap[(string)$user['_id']] = $mysqldb->insert_id;
+	echo ".";
 }
 
 // import pools
-
+echo "\nImporting pools...\n";
 $poolcollection = null;
 if (!empty($tote_conf['namespace']))
 	$poolcollection = $mongodb->selectCollection($tote_conf['namespace'] . '.' . 'pools');
@@ -221,7 +241,7 @@ if (!$newpickstmt) {
 	echo $mysqldb->error . "\n";
 	exit;
 }
-$newactionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_actions (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type) VALUES (?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+$newactionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_actions (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 if (!$newactionstmt) {
 	echo $mysqldb->error . "\n";
 	exit;
@@ -260,6 +280,7 @@ foreach ($pools as $pool) {
 			$newentrystmt->bind_param('ii', $poolid, $useridmap[(string)$entry['user']]);
 			$newentrystmt->execute();
 			$entryid = $mysqldb->insert_id;
+			echo ".";
 
 			if (isset($entry['bets'])) {
 				
@@ -272,6 +293,7 @@ foreach ($pools as $pool) {
 
 					$newpickstmt->bind_param('iiiss', $entryid, $week, $team, $placed, $edited);
 					$newpickstmt->execute();
+					echo ".";
 
 				}
 
@@ -291,7 +313,7 @@ foreach ($pools as $pool) {
 			$admintype = null;
 			$oldadmintype = null;
 
-			$time = $action['time']->sec;
+			$time = date('Y-m-d H:i:s', $action['time']->sec);
 			$userid = $useridmap[(string)$action['user']];
 			$username = $action['user_name'];
 
@@ -338,8 +360,9 @@ foreach ($pools as $pool) {
 					continue;
 			}
 
-			$newactionstmt->bind_param('iiiisisiiiii', $poolid, $actionnum, $time, $userid, $username, $adminid, $adminusername, $week, $teamid, $oldteamid, $admintype, $oldadmintype);
+			$newactionstmt->bind_param('iisisisiiiii', $poolid, $actionnum, $time, $userid, $username, $adminid, $adminusername, $week, $teamid, $oldteamid, $admintype, $oldadmintype);
 			$newactionstmt->execute();
+			echo ".";
 		}
 	}
 
@@ -364,6 +387,7 @@ foreach ($pools as $pool) {
 				$newpercentstmt->bind_param('iid', $payoutid, $place, $percent);
 				$newpercentstmt->execute();
 
+				echo ".";
 			}
 
 		}
@@ -379,9 +403,13 @@ foreach ($pools as $pool) {
 			$newadminstmt->bind_param('iisi', $poolid, $userid, $name, $admintype);
 			$newadminstmt->execute();
 
+			echo ".";
 		}
 	}
+	echo ".";
 }
+
+echo "\n";
 
 
 $mysqldb->close();
