@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
-
 /**
  * get_pool_administrators
  *
@@ -13,47 +10,28 @@ require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
  */
 function get_pool_administrators($poolid)
 {
+	global $mysqldb;
+
 	if (empty($poolid))
 		return null;
 
-	if (is_string($poolid))
-		$poolid = new MongoId($poolid);
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$pool = $pools->findOne(
-		array('_id' => $poolid),
-		array('administrators')
-	);
-
-	if (!$pool)
-		return null;
-
-	if (empty($pool['administrators']))
-		return null;
+	$adminstmt = $mysqldb->prepare('SELECT pool_administrators.user_id, pool_administrators.name, pool_administrators.admin_type, users.first_name, users.last_name, users.username FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' AS pool_administrators LEFT JOIN ' . TOTE_TABLE_USERS . ' AS users ON pool_administrators.user_id=users.id WHERE pool_administrators.pool_id=?');
+	$adminstmt->bind_param('i', $poolid);
+	$adminstmt->execute();
+	$adminresult = $adminstmt->get_result();
 
 	$admins = array();
-	foreach ($pool['administrators'] as $admin) {
-		$user = null;
-		if (!empty($admin['user'])) {
-			$user = get_user($admin['user']);
-		}
-		if ((!$user || (count($user) < 1)) && (!empty($admin['name']))) {
-			// if user doesn't exist (was deleted), use the stored user name for historical purposes
-			$user = $admin['name'];
-		}
 
-		if (empty($user)) {
-			// no name and no user - assume this is bad data and skip it
-			continue;
-		}
-
-		if (isset($admin['secondary']) && ($admin['secondary'] === true)) {
-			$admins['secondary'][] = $user;
-		} else {
-			$admins['primary'][] = $user;
+	while ($admin = $adminresult->fetch_assoc()) {
+		if ($admin['admin_type'] == 2) {
+			$admins['secondary'][] = $admin;
+		} else if ($admin['admin_type'] == 1) {
+			$admins['primary'][] = $admin;
 		}
 	}
+
+	$adminresult->close();
+	$adminstmt->close();
 
 	if (count($admins) > 0)
 		return $admins;

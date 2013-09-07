@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * get_pool_payout_percents
  *
@@ -12,54 +10,32 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function get_pool_payout_percents($poolid)
 {
+	global $mysqldb;
+
 	if (empty($poolid))
 		return null;
 
-	if (is_string($poolid))
-		$poolid = new MongoId($poolid);
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$pool = $pools->findOne(
-		array('_id' => $poolid),
-		array('payout', 'entries')
-	);
-
-	if (!$pool)
-		return null;
-
-	if (empty($pool['payout']))
-		return null;
-
 	$entrantcount = 0;
+	$entrantcountstmt = $mysqldb->prepare('SELECT COUNT(id) FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=?');
+	$entrantcountstmt->bind_param('i', $poolid);
+	$entrantcountstmt->bind_result($entrantcount);
+	$entrantcountstmt->execute();
+	$entrantcountstmt->fetch();
+	$entrantcountstmt->close();
 
-	if (isset($pool['entries'])) {
-		$entrantcount = count($pool['entries']);
+	$percents = array();
+
+	$percentstmt = $mysqldb->prepare('SELECT place, percent FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' WHERE payout_id=(SELECT id FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE ((minimum IS NULL) OR (minimum<=?)) AND ((maximum IS NULL) OR (maximum>=?)) AND pool_id=?)');
+	$percentstmt->bind_param('iii', $entrantcount, $entrantcount, $poolid);
+	$percentstmt->execute();
+	$percentresult = $percentstmt->get_result();
+
+	while ($place = $percentresult->fetch_assoc()) {
+		$percents[(int)$place['place']] = (float)$place['percent'];
 	}
 
-	foreach ($pool['payout'] as $payoutrule) {
-		// match against payout rules based on number of entrants
-		if ((!empty($payoutrule['min'])) && ($payoutrule['min'] > $entrantcount)) {
-			// less than the min number of entrants for this rule, skip it
-			continue;
-		}
-		if ((!empty($payoutrule['max'])) && ($payoutrule['max'] < $entrantcount)) {
-			// more than the max number of entrants for this rule, skip it
-			continue;
-		}
+	$percentresult->close();
+	$percentstmt->close();
 
-		// passed both min and max criteria, use this rule
-		if ((!empty($payoutrule['percents'])) && (count($payoutrule['percents']) > 0)) {
-			$place = 1;
-			$percents = array();
-			foreach ($payoutrule['percents'] as $percent) {
-				// remap according to place - 1st, 2nd, etc
-				$percents[$place++] = $percent;
-			}
-			return $percents;
-		}
-		break;
-	}
-
-	return null;
+	return $percents;
 }
