@@ -24,7 +24,7 @@ function get_pool_pot($poolid)
 	$potstmt->close();
 
 	if ($found)
-		return $pot;
+		return (float)$pot;
 
 	return null;
 }
