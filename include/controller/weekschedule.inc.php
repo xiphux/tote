@@ -14,14 +14,15 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
 /**
- * schedule controller
+ * week schedule controller
  *
- * displays the game schedule for a given season
+ * displays the game schedule for a given season and week
  *
  * @param string $year season year
+ * @param string $week week
  * @param string $output output format
  */
-function display_schedule($season, $output = 'html')
+function display_weekschedule($season, $week, $output = 'html')
 {
 	global $tpl;
 
@@ -42,10 +43,10 @@ function display_schedule($season, $output = 'html')
 	$search = null;
 	$sort = null;
 	$search = array(
-		'season' => (int)$season
+		'season' => (int)$season,
+		'week' => (int)$week
 	);
 	$sort = array(
-		'week' => 1,
 		'start' => 1
 	);
 
@@ -64,17 +65,8 @@ function display_schedule($season, $output = 'html')
 
 	http_headers();
 
-	$weekmapped = array();
-	foreach ($allgames as $i => $gameobj) {
-		if (isset($gameobj['week'])) {
-			$weekmapped[$gameobj['week']][] = $gameobj;
-		}
-	}
-	$allgames = $weekmapped;
-
-	$tpl->assign('allseasons', array_reverse(get_seasons()));
-
 	$tpl->assign('year', $season);
+	$tpl->assign('week', $week);
 	$tpl->assign('games', $allgames);
 
 	$mobile = mobile_browser();
@@ -85,5 +77,5 @@ function display_schedule($season, $output = 'html')
 	if ($output == 'js')
 		$tpl->assign('js', true);
 
-	$tpl->display('schedule.tpl');
+	$tpl->display('weekschedule.tpl');
 }

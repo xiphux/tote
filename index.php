@@ -382,12 +382,20 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 	
 	// schedule - display the game schedule for a week
 	case 'schedule':
-		require_once(TOTE_CONTROLLERDIR . 'schedule.inc.php');
-		display_schedule(
-			(empty($_GET['y']) ? null : $_GET['y']),
-			(empty($_GET['w']) ? null : $_GET['w']),
-			(empty($_GET['o']) ? 'html' : $_GET['o'])
-		);
+		if (!empty($_GET['w'])) {
+			require_once(TOTE_CONTROLLERDIR . 'weekschedule.inc.php');
+			display_weekschedule(
+				(empty($_GET['y']) ? null : $_GET['y']),
+				$_GET['w'],
+				(empty($_GET['o']) ? 'html' : $_GET['o'])
+			);
+		} else {
+			require_once(TOTE_CONTROLLERDIR . 'schedule.inc.php');
+			display_schedule(
+				(empty($_GET['y']) ? null : $_GET['y']),
+				(empty($_GET['o']) ? 'html' : $_GET['o'])
+			);
+		}
 		break;
 
 	// teamschedule - display the season schedule for a team
