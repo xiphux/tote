@@ -81,11 +81,11 @@ Last Password Change
  User
  {/if}
  </td>
- <td>{if $eachuser.createdlocal}<time datetime="{$eachuser.createdlocal->format('Y-m-d\TH:i:sO')}">{$eachuser.createdlocal->format('c')}</time>{else}<span class="nodata">Unknown</span>{/if}</td>
- <td>{if $eachuser.lastloginlocal}<time datetime="{$eachuser.lastloginlocal->format('Y-m-d\TH:i:sO')}">{$eachuser.lastloginlocal->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
- <td>{if $eachuser.lastpasswordchangelocal}<time datetime="{$eachuser.lastpasswordchangelocal->format('Y-m-d\TH:i:sO')}">{$eachuser.lastpasswordchangelocal->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
+ <td>{if $eachuser.created_local}<time datetime="{$eachuser.created_local->format('Y-m-d\TH:i:sO')}">{$eachuser.created_local->format('c')}</time>{else}<span class="nodata">Unknown</span>{/if}</td>
+ <td>{if $eachuser.last_login_local}<time datetime="{$eachuser.last_login_local->format('Y-m-d\TH:i:sO')}">{$eachuser.last_login_local->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
+ <td>{if $eachuser.last_password_change_local}<time datetime="{$eachuser.last_password_change_local->format('Y-m-d\TH:i:sO')}">{$eachuser.last_password_change_local->format('c')}</time>{else}<span class="nodata">Never</span>{/if}</td>
  {if $user.role == 1}
- <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&amp;u={$eachuser._id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&amp;u={$eachuser._id}&amp;csrftoken={$csrftoken}" class="deleteLink">Delete</a></td>
+ <td class="action"><a href="{$SCRIPT_NAME}?a=edituser&amp;u={$eachuser.id}">Edit</a> <a href="{$SCRIPT_NAME}?a=deleteuser&amp;u={$eachuser.id}&amp;csrftoken={$csrftoken}" class="deleteLink">Delete</a></td>
  {/if}
 </tr>
 {/foreach}

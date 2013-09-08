@@ -1,8 +1,6 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_manager.inc.php');
@@ -55,44 +53,53 @@ function sort_created($a, $b)
 	if (!isset($b['created']))
 		return -1;
 
-	if ($a['created']->sec == $b['created']->sec)
+	$atime = strtotime($a['created']);
+	$btime = strtotime($b['created']);
+
+	if ($atime == $btime)
 		return 0;
 
-	return $a['created']->sec < $b['created']->sec ? 1 : -1;
+	return $atime < $btime ? 1 : -1;
 }
 
 function sort_login($a, $b)
 {
-	if (!isset($a['lastlogin']) && !isset($b['lastlogin']))
+	if (!isset($a['last_login']) && !isset($b['last_login']))
 		return 0;
 
-	if (!isset($a['lastlogin']))
+	if (!isset($a['last_login']))
 		return 1;
 
-	if (!isset($b['lastlogin']))
+	if (!isset($b['last_login']))
 		return -1;
 
-	if ($a['lastlogin']->sec == $b['lastlogin']->sec)
+	$atime = strtotime($a['last_login']);
+	$btime = strtotime($b['last_login']);
+
+	if ($atime == $btime)
 		return 0;
 
-	return $a['lastlogin']->sec < $b['lastlogin']->sec ? 1 : -1;
+	return $atime < $btime ? 1 : -1;
 }
 
 function sort_passwordchange($a, $b)
 {
-	if (!isset($a['lastpasswordchange']) && !isset($b['lastpasswordchange']))
+	if (!isset($a['last_password_change']) && !isset($b['last_password_change']))
 		return 0;
 
-	if (!isset($a['lastpasswordchange']))
+	if (!isset($a['last_password_change']))
 		return 1;
 
-	if (!isset($b['lastpasswordchange']))
+	if (!isset($b['last_password_change']))
 		return -1;
 
-	if ($a['lastpasswordchange']->sec == $b['lastpasswordchange']->sec)
+	$atime = strtotime($a['last_password_change']);
+	$btime = strtotime($b['last_password_change']);
+
+	if ($atime == $btime)
 		return 0;
 
-	return $a['lastpasswordchange']->sec < $b['lastpasswordchange']->sec ? 1 : -1;
+	return $atime < $btime ? 1 : -1;
 }
 
 /**
@@ -102,7 +109,7 @@ function sort_passwordchange($a, $b)
  */
 function display_editusers($order = 'name')
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -116,22 +123,26 @@ function display_editusers($order = 'name')
 	}
 
 	// get all users
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$allusers = $users->find(array(), array('username', 'first_name', 'last_name', 'email', 'role', 'created', 'lastlogin', 'lastpasswordchange'));
+	$usersresult = $mysqldb->query('SELECT id, username, first_name, last_name, email, role, created, last_login, last_password_change FROM ' . TOTE_TABLE_USERS);
 	$userarray = array();
-	foreach ($allusers as $u) {
-		if (isset($u['created'])) {
-			$u['createdlocal'] = get_local_datetime($u['created']);
+	$tz = date_default_timezone_get();
+	date_default_timezone_set('UTC');
+	while ($u = $usersresult->fetch_assoc()) {
+		if (!empty($u['created'])) {
+			$u['created_local'] = get_local_datetime(null, strtotime($u['created']));
 		}
-		if (isset($u['lastlogin'])) {
-			$u['lastloginlocal'] = get_local_datetime($u['lastlogin']);
+		if (!empty($u['last_login'])) {
+			$u['last_login_local'] = get_local_datetime(null, strtotime($u['last_login']));
 		}
-		if (isset($u['lastpasswordchange'])) {
-			$u['lastpasswordchangelocal'] = get_local_datetime($u['lastpasswordchange']);
+		if (!empty($u['last_password_change'])) {
+			$u['last_password_change_local'] = get_local_datetime(null, strtotime($u['last_password_change']));
 		}
 		$u['readable_name'] = user_readable_name($u);
 		$userarray[] = $u;
 	}
+	date_default_timezone_set($tz);
+
+	$usersresult->close();
 
 	// sort
 	switch ($order) {
