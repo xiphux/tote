@@ -1,11 +1,8 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
+require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 /**
  * sort_poolentrant
@@ -41,7 +38,7 @@ function sort_poolentrant($a, $b)
  */
 function get_pool_record($poolid)
 {
-	global $tote_conf;
+	global $tote_conf, $mysqldb;
 
 	if (empty($poolid))
 		return null;
@@ -58,142 +55,195 @@ function get_pool_record($poolid)
 		}
 	}
 
-	if (is_string($poolid))
-		$poolid = new MongoId($poolid);
-	
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$season = null;
+	$seasonstmt = $mysqldb->prepare('SELECT seasons.year FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=?');
+	$seasonstmt->bind_param('i', $poolid);
+	$seasonstmt->bind_result($season);
+	$seasonstmt->execute();
+	$found = $seasonstmt->fetch();
+	$seasonstmt->close();
 
-	$pool = $pools->findOne(
-		array('_id' => $poolid),
-		array('season', 'entries')
-	);
-
-	if (!$pool)
+	if (!$found)
 		return null;
 
 	// Find number of weeks in season
-	$weeks = get_season_weeks($pool['season']);
+	$weeks = get_season_weeks($season);
 	// Find weeks that are open for betting
-	$openweeks = get_open_weeks($pool['season']);
+	$openweeks = get_open_weeks($season);
 
-	if (empty($pool['entries']))
-		return array();
+	// get all picks this season, as well as user, game, and team info
+	// TODO: can we make this perform better?
+	$pickquery = <<<EOQ
+SELECT
+users.id AS user_id,
+users.username,
+users.first_name AS first_name,
+users.last_name AS last_name,
+pool_entry_picks.team_id AS pick_team_id,
+pick_teams.abbreviation AS pick_team_abbr,
+pool_entry_picks.week AS week,
+home_teams.id AS home_team_id,
+home_teams.abbreviation AS home_team_abbr,
+away_teams.id AS away_team_id,
+away_teams.abbreviation AS away_team_abbr,
+games.home_score AS home_score,
+games.away_score AS away_score
+FROM %s AS pool_entry_picks
+LEFT JOIN %s AS pool_entries
+ON pool_entry_picks.pool_entry_id=pool_entries.id
+LEFT JOIN %s AS pick_teams
+ON pool_entry_picks.team_id=pick_teams.id
+LEFT JOIN %s AS users
+ON pool_entries.user_id=users.id
+LEFT JOIN %s AS pools
+ON pool_entries.pool_id=pools.id
+LEFT JOIN %s AS games
+ON pools.season_id=games.season_id AND pool_entry_picks.week=games.week AND (pool_entry_picks.team_id=games.away_team_id OR pool_entry_picks.team_id=games.home_team_id)
+LEFT JOIN %s AS home_teams
+ON games.home_team_id=home_teams.id
+LEFT JOIN %s AS away_teams
+ON games.away_team_id=away_teams.id
+WHERE pool_entries.pool_id=?
+ORDER BY users.username, pool_entry_picks.week
+EOQ;
+	$pickquery = sprintf($pickquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_TEAMS, TOTE_TABLE_USERS, TOTE_TABLE_POOLS, TOTE_TABLE_GAMES, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
+	$pickstmt = $mysqldb->prepare($pickquery);
+	$pickstmt->bind_param('i', $poolid);
+	$pickstmt->execute();
+	$pickresult = $pickstmt->get_result();
 
 	// go through each pool entrant
 	$poolrecord = array();
 
-	foreach ($pool['entries'] as $entrant) {
-	
-		// get the user record
-		$record = array();
-		$record['user'] = get_user($entrant['user']);
+	$lastuserid = null;
+	$lastidx = -1;
+	while ($pick = $pickresult->fetch_assoc()) {
+		if ($pick['user_id'] != $lastuserid) {
+			// bootstrap user entry
+			++$lastidx;
+			$poolrecord[$lastidx] = array(
+				'user' => array(
+					'id' => $pick['user_id'],
+					'username' => $pick['username'],
+					'first_name' => $pick['first_name'],
+					'last_name' => $pick['last_name']
+				),
+				'wins' => 0,
+				'losses' => 0,
+				'ties' => 0,
+				'spread' => 0
+			);
+			$lastuserid = $pick['user_id'];
+		}
 
-		// map the user's bet indexed by week
-		$bets = array();
-		if (!empty($entrant['bets'])) {
-			foreach ($entrant['bets'] as $bet) {
-				$week = $bet['week'];
-				if (!empty($week))
-					$bets[(int)$week] = array('team' => $bet['team']);
+		// if game has scores (game has finished),
+		// do some math
+		if (isset($pick['home_score']) && isset($pick['away_score'])) {
+			// first calculate the spread and winner as if user picked the home team
+			// result > 0 is a win, result < 0 is a loss, result = 0 is a tie
+			$result = null;
+			$gamespread = (int)$pick['home_score'] - (int)$pick['away_score'];
+			if ($gamespread > 0)
+				$result = 1;
+			else if ($gamespread < 0)
+				$result = -1;
+			else if ($gamespread == 0)
+				$result = 0;
+
+			// if the user picked the away team, invert the result
+			if ($pick['pick_team_id'] == $pick['away_team_id'])
+				$result *= -1;
+
+			// point spreads are always positive
+			$gamespread = abs($gamespread);
+
+			if ($result !== null)
+				$pick['result'] = $result;
+			$pick['spread'] = $gamespread;
+
+			if ($result > 0) {
+				// user won this pick, add to wins and point spread
+				$poolrecord[$lastidx]['wins']++;
+				$poolrecord[$lastidx]['spread'] += $gamespread;
+			} else if ($result < 0) {
+				// user lost this pick, add to losses and subtract from point spread
+				$poolrecord[$lastidx]['losses']++;
+				$poolrecord[$lastidx]['spread'] -= $gamespread;
+			} else if ($result === 0) {
+				// user tied, add to ties (no point spread)
+				$poolrecord[$lastidx]['ties']++;
 			}
 		}
 
-		// tabulate the full win/loss record,
-		// going through all weeks in the season
-		$wins = 0;
-		$losses = 0;
-		$ties = 0;
-		$pointspread = 0;
+		$pickdata = array(
+			'team' => array(
+				'id' => $pick['pick_team_id'],
+				'abbreviation' => $pick['pick_team_abbr']
+			),
+			'game' => array(
+				'home_team' => array(
+					'id' => $pick['home_team_id'],
+					'abbreviation' => $pick['home_team_abbr']
+				),
+				'away_team' => array(
+					'id' => $pick['away_team_id'],
+					'abbreviation' => $pick['away_team_abbr']
+				)
+			)
+		);
+		
+		if (isset($pick['home_score']) && ($pick['home_score'] !== null))
+			$pickdata['game']['home_score'] = $pick['home_score'];
+		if (isset($pick['away_score']) && ($pick['away_score'] !== null))
+			$pickdata['game']['away_score'] = $pick['away_score'];
+
+		if (isset($pick['result']))
+			$pickdata['result'] = $pick['result'];
+		if (isset($pick['spread']))
+			$pickdata['spread'] = $pick['spread'];
+
+		$poolrecord[$lastidx]['bets'][(int)$pick['week']] = $pickdata;
+				
+	}
+
+	$pickresult->close();
+	$pickstmt->close();
+
+	foreach ($poolrecord as $useridx => $user) {
+
+		$modified = false;
+
+		// check for no pick weeks
 		for ($i = 1; $i <= $weeks; ++$i) {
 
-			if (isset($bets[$i])) {
-				// user bet on this week
-				$bet = $bets[$i];
+			if (!isset($poolrecord[$useridx]['bets'][$i])) {
+				
+				$modified = true;
 
-				// get the game the user bet on
-				$gameobj = get_game_by_team($pool['season'], $i, $bet['team']);
-
-				if ($gameobj) {
-
-					// if game has scores (game has finished),
-					// do some math
-					if (isset($gameobj['home_score']) && isset($gameobj['away_score'])) {
-						// first calculate the spread and winner as if user bet on the home team
-						// result > 0 is a win, result < 0 is a loss, result = 0 is a tie
-						$result = null;
-						$gamespread = $gameobj['home_score'] - $gameobj['away_score'];
-						if ($gamespread > 0)
-							$result = 1;
-						else if ($gamespread < 0)
-							$result = -1;
-						else if ($gamespread == 0)
-							$result = 0;
-
-						// if the user bet on the away team, invert the result
-						if ($gameobj['away_team'] == $bet['team'])
-							$result *= -1;
-
-						// point spreads are displayed in absolute values (no negatives)
-						$gamespread = abs($gamespread);
-
-						if ($result > 0) {
-							// user won this bet, add to wins and point spread
-							$wins++;
-							$pointspread += $gamespread;
-						} else if ($result < 0) {
-							// user lost this bet, add to losses and substract from point spread
-							$losses++;
-							$pointspread -= $gamespread;
-						} else if ($result === 0) {
-							// user tied, add to ties (no point spread)
-							$ties++;
-						}
-
-						$bets[$i]['result'] = $result;
-						$bets[$i]['spread'] = $gamespread;
-					}
-
-					// get the data on the teams for the game
-					$gameobj['home_team'] = get_team($gameobj['home_team']);
-					$gameobj['away_team'] = get_team($gameobj['away_team']);
-					$bets[$i]['game'] = $gameobj;
-				}
-			
-				// also load team data
-				$bets[$i]['team'] = get_team($bet['team']);
-
-			} else {
-				// no bet for this week
-
-				// enter a placeholder for this week
-				$bets[$i] = array();
+				$poolrecord[$useridx][$i] = array();
 
 				if (!$openweeks[$i]) {
 					// if this week has no open games, week is closed
 					// and user is a no pick (loss) for this week
-					$bets[$i]['nopick'] = true;
-					$bets[$i]['result'] = -1;
-					$losses++;
+					$poolrecord[$useridx]['bets'][$i] = array(
+						'nopick' => true,
+						'result' => -1
+					);
+					$poolrecord[$useridx]['losses'] += 1;
 
 					if (($weeks - $i) < 4) {
 						// no pick in last 4 weeks is 10 point penalty
-						$bets[$i]['spread'] = 10;
-						$pointspread -= 10;
+						$poolrecord[$useridx]['bets'][$i]['spread'] = 10;
+						$poolrecord[$useridx]['spread'] -= 10;
 					}
 				}
 			}
 		}
 
-		// sort bets in week order
-		ksort($bets);
-
-		$record['bets'] = $bets;
-		$record['wins'] = $wins;
-		$record['losses'] = $losses;
-		$record['ties'] = $ties;
-		$record['spread'] = $pointspread;
-
-		$poolrecord[] = $record;
+		if ($modified) {
+			// ensure bets are in week order after manipulation
+			ksort($poolrecord[$useridx]['bets']);
+		}
 	}
 
 	// sort pool according to status
@@ -203,7 +253,6 @@ function get_pool_record($poolid)
 		// if cache is enabled, store calculated record into the cache
 		// so we don't have to recalculate it
 	
-		$games = get_collection(TOTE_COLLECTION_GAMES);
 		$currentweek = array_search(true, $openweeks, true);
 		if ($currentweek === false) {
 			// season is over, no need to have cache expire
@@ -212,8 +261,18 @@ function get_pool_record($poolid)
 			// set cache to expire as soon as the last game of the
 			// week starts
 			// (so we can recalculate 'No Pick' players)
-			$lastgame = $games->find(array('week' => $currentweek), array('start'))->sort(array('start' => -1))->getNext();
-			$cachetpl->cache_lifetime = $lastgame['start']->sec - time();
+			$laststart = null;
+			$laststartstmt = $mysqldb->prepare('SELECT MAX(games.start) FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=? AND games.week=?');
+			$laststartstmt->bind_param('ii', $season, $currentweek);
+			$laststartstmt->bind_result($laststart);
+			$laststartstmt->execute();
+			$laststartstmt->fetch();
+			$laststartstmt->close();
+
+			$tz = date_default_timezone_get();
+			date_default_timezone_set('UTC');
+			$cachetpl->cache_lifetime = strtotime($laststart) - time();
+			date_default_timezone_set($tz);
 		}
 		$cachetpl->assign('data', serialize($poolrecord));
 		

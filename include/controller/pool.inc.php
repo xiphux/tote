@@ -1,8 +1,6 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
-require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
@@ -13,83 +11,34 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
- * sort_pools
- *
- * sort pools
- *
- * @param array $a first sort pool
- * @param array $b second sort pool
- */
-function sort_pool($a, $b)
-{
-	// first sort by year descending
-	if ($a['season'] != $b['season'])
-		return ($a['season'] > $b['season'] ? -1 : 1);
-
-	// then fall back on alphabetical name
-	return strcasecmp($a['name'], $b['name']);
-}
-
-/**
  * pool controller
  *
  * display a pool record
  *
- * @param string $poolID pool id
+ * @param string $poolid pool id
  */
-function display_pool($poolID = null)
+function display_pool($poolid = null)
 {
-	global $tpl, $tote_conf;
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);;
+	global $tpl, $tote_conf, $mysqldb;
 
 	$user = user_logged_in();
 
+	// get list of all pools
+	$poolsresult = $mysqldb->query('SELECT pools.id, pools.name, pools.fee, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id ORDER BY seasons.year DESC, name');
+	$pools = $poolsresult->fetch_all(MYSQLI_ASSOC);
+
 	$poolobj = null;
-	if (empty($poolID)) {
-		// no pool specified - try to find the most sensible pool
-		$allpools = $pools->find(
-			array(),
-			array('name', 'season', 'fee')
-		)->sort(
-			array('season' => -1, 'name' => 1)
-		);
-
-		if ($user) {
-			$newestseason = null;
-			foreach ($allpools as $eachpool) {
-
-				if ($newestseason == null) {
-					// because of the sort order the very first
-					// pool has the most recent available season
-					$newestseason = $eachpool['season'];
-				}
-				if ($newestseason != $eachpool['season']) {
-					// this is a pool older than the most recent
-					// season - stop searching
-					break;
-				}
-				if (user_in_pool($user['_id'], $eachpool['_id'])) {
-					// the user is in this pool
-					// default to showing this one
-					$poolobj = $eachpool;
-					break;
-				}
+	if (empty($poolid)) {
+		// most recent pool
+		$poolobj = $pools[0];
+	} else {
+		// specified pool
+		foreach ($pools as $pool) {
+			if ($pool['id'] == $poolid) {
+				$poolobj = $pool;
+				break;
 			}
 		}
-
-		if ($poolobj == null) {
-			// didn't find anything - default to first pool in sort order
-			$allpools->reset();
-			$poolobj = $allpools->getNext();
-		}
-	} else {
-		// we specified a pool
-		$poolobj = $pools->findOne(
-			array('_id' => new MongoId($poolID)),
-			array('name', 'season', 'fee')
-		);
 	}
 
 	if (!$poolobj) {
@@ -103,7 +52,7 @@ function display_pool($poolID = null)
 	$currentweek = array_search(true, $openweeks, true);
 	$poolopen = ($currentweek !== false);
 
-	$poolrecord = get_pool_record($poolobj['_id']);
+	$poolrecord = get_pool_record($poolobj['id']);
 	$showties = false;
 	foreach ($poolrecord as $record) {
 		if (isset($record['ties']) && ($record['ties'] > 0)) {
@@ -114,20 +63,11 @@ function display_pool($poolID = null)
 
 	// check if logged in user is entered in this pool
 	$entered = false;
-	if ($user && user_in_pool($user['_id'], $poolobj['_id']))
+	if ($user && user_in_pool($user['_id'], $poolobj['id']))
 		$entered = true;
 
-	// get list of all pools
-	$allpoolcollect = $pools->find(array(), array('season', 'name'));
-	$allpools = array();
-	foreach ($allpoolcollect as $p) {
-		$allpools[] = $p;
-	}
-	// and sort them
-	usort($allpools, 'sort_pool');
-
-	$pot = get_pool_pot($poolobj['_id']);
-	$payoutamounts = get_pool_payout_amounts($poolobj['_id']);
+	$pot = get_pool_pot($poolobj['id']);
+	$payoutamounts = get_pool_payout_amounts($poolobj['id']);
 
 	// set data and display
 	$mobile = mobile_browser();
@@ -172,8 +112,8 @@ function display_pool($poolID = null)
 
 	http_headers();
 
-	if (count($allpools) > 1)
-		$tpl->assign('allpools', $allpools);
+	if (count($pools) > 1)
+		$tpl->assign('allpools', $pools);
 	if ($currentweek != false)
 		$tpl->assign('currentweek', $currentweek);
 	$tpl->assign('weeks', $openweeks);

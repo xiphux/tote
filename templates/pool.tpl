@@ -13,7 +13,7 @@
       <form action="index.php" method="get">
       <select id="poolNameSelect" name="p">
       {foreach from=$allpools item=eachpool}
-        <option value="{$eachpool._id}" {if $eachpool._id == $pool._id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
+        <option value="{$eachpool.id}" {if $eachpool.id == $pool.id}selected="selected"{/if}>{$eachpool.name} [{$eachpool.season}-{$eachpool.season+1}]</option>
       {/foreach}
       </select>
       <input type="submit" value="Go" id="poolNameSubmit" />
@@ -82,7 +82,7 @@ Make a Pick
 {/foreach}
 </select>
 <input type="hidden" name="a" value="bet" />
-<input type="hidden" name="p" value="{$pool._id}" />
+<input type="hidden" name="p" value="{$pool.id}" />
 <input value="Pick" type="submit" />
 </form>
 </div>
@@ -138,7 +138,7 @@ Make a Pick
 <tr class="{cycle values=light,dark} {if $user._id == $entrant.user._id}self{/if}">
 <td class="entrantName">
 {if $user.role == 1}
-<a href="index.php?a=editbets&amp;p={$pool._id}&amp;u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
+<a href="index.php?a=editbets&amp;p={$pool.id}&amp;u={$entrant.user._id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
 {/if}
 {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}
 {if $user.role == 1}
@@ -172,7 +172,7 @@ Make a Pick
 </span>
 {elseif $user && $entered && $poolopen && ($user._id == $entrant.user._id)}
 <span>
-<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool._id}&amp;w={$betweek}" class="betLink">Pick</a>
+<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool.id}&amp;w={$betweek}" class="betLink">Pick</a>
 </span>
 {/if}
 
@@ -192,7 +192,7 @@ Make a Pick
 <div class="poolFooter">
 
 <div class="poolRules">
-	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&amp;p={$pool._id}">Rules</a>
+	<a id="lnkRules" href="{$SCRIPT_NAME}?a=rules&amp;p={$pool.id}">Rules</a>
 </div>
 
 {if !$mobile || $forcefull}
@@ -200,8 +200,8 @@ Make a Pick
 {/if}
 
 <div class="poolHistory">
-<a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&amp;p={$pool._id}">History</a>
-<a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&amp;p={$pool._id}"><img class="feedIcon" src="images/feed-icon-14x14.png" width="14" height="14" alt="Feed" /></a>
+<a id="lnkHistory" title="View history of events for this pool" href="{$SCRIPT_NAME}?a=history&amp;p={$pool.id}">History</a>
+<a class="feedTip" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&amp;p={$pool.id}"><img class="feedIcon" src="images/feed-icon-14x14.png" width="14" height="14" alt="Feed" /></a>
 </div>
 
 <div class="clear">
@@ -214,9 +214,9 @@ Make a Pick
 {if $mobile}
 <div>
 {if $forcefull}
-<a href="{$SCRIPT_NAME}?p={$pool._id}&full=0">Switch to mobile version</a>
+<a href="{$SCRIPT_NAME}?p={$pool.id}&full=0">Switch to mobile version</a>
 {else}
-<a href="{$SCRIPT_NAME}?p={$pool._id}&full=1">Switch to full version</a>
+<a href="{$SCRIPT_NAME}?p={$pool.id}&full=1">Switch to full version</a>
 {/if}
 </div>
 {/if}
