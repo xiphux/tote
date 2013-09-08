@@ -16,8 +16,9 @@ function user_in_pool($user, $pool)
 
 	$entryid = null;
 	$userpoolstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?');
-	$userpoolstmt->bind_param('ii', $user, $pool);
+	$userpoolstmt->bind_param('ii', $pool, $user);
 	$userpoolstmt->bind_result($entryid);
+	$userpoolstmt->execute();
 	$found = $userpoolstmt->fetch();
 
 	$userpoolstmt->close();
