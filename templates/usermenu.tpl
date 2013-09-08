@@ -12,9 +12,9 @@
 {elseif $user.role == 2}
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
 {/if}
-{if $record && ($user.role == 1 || $user.role == 2)}
+{if $emaillist && ($user.role == 1 || $user.role == 2)}
 <tr><td>
-<a href="mailto:{foreach from=$record item=entrant name=entrants}{if $entrant.user.email}{if !$smarty.foreach.entrants.first},{/if}{$entrant.user.email}{/if}{/foreach}">Email entrants</a>
+<a href="mailto:{foreach from=$emaillist item=email name=entrants}{if !$smarty.foreach.entrants.first},{/if}{$email}{/foreach}">Email entrants</a>
 </td></tr>
 {/if}
 <tr><td><a href="index.php?a=editprefs">Edit preferences</a></td></tr>

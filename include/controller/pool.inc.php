@@ -69,6 +69,21 @@ function display_pool($poolid = null)
 	$pot = get_pool_pot($poolobj['id']);
 	$payoutamounts = get_pool_payout_amounts($poolobj['id']);
 
+	// get emails if user has access
+	$emaillist = array();
+	if ($user && ($user['role'] == 1 || $user['role'] == 2)) {
+		$email = null;
+		$emailstmt = $mysqldb->prepare('SELECT users.email FROM ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries LEFT JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_entries.pool_id=pools.id LEFT JOIN ' . TOTE_TABLE_USERS . ' AS users ON pool_entries.user_id=users.id WHERE users.email IS NOT NULL AND pools.id=?');
+		$emailstmt->bind_param('i', $poolobj['id']);
+		$emailstmt->bind_result($email);
+		$emailstmt->execute();
+		while ($emailstmt->fetch()) {
+			if (!empty($email))
+				$emaillist[] = $email;
+		}
+		$emailstmt->close();
+	}
+
 	// set data and display
 	$mobile = mobile_browser();
 	if ($mobile) {
@@ -118,6 +133,7 @@ function display_pool($poolid = null)
 		$tpl->assign('currentweek', $currentweek);
 	$tpl->assign('weeks', $openweeks);
 	$tpl->assign('record', $poolrecord);
+	$tpl->assign('emaillist', $emaillist);
 	$tpl->assign('showties', $showties);
 	$tpl->assign('pool', $poolobj);
 	if ($pot)
