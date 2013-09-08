@@ -89,7 +89,7 @@ away_teams.abbreviation AS away_team_abbr,
 games.home_score AS home_score,
 games.away_score AS away_score
 FROM %s AS pool_entry_picks
-LEFT JOIN %s AS pool_entries
+RIGHT JOIN %s AS pool_entries
 ON pool_entry_picks.pool_entry_id=pool_entries.id
 LEFT JOIN %s AS pick_teams
 ON pool_entry_picks.team_id=pick_teams.id
@@ -131,9 +131,18 @@ EOQ;
 				'wins' => 0,
 				'losses' => 0,
 				'ties' => 0,
-				'spread' => 0
+				'spread' => 0,
+				'bets' => array()
 			);
+			for ($i = 1; $i <= $weeks; ++$i) {
+				$poolrecord[$lastidx]['bets'][$i] = array();
+			}
 			$lastuserid = $pick['user_id'];
+		}
+
+		if (!$pick['pick_team_id']) {
+			// user hasn't picked anything
+			continue;
 		}
 
 		// if game has scores (game has finished),
@@ -211,24 +220,16 @@ EOQ;
 
 	foreach ($poolrecord as $useridx => $user) {
 
-		$modified = false;
-
 		// check for no pick weeks
 		for ($i = 1; $i <= $weeks; ++$i) {
 
-			if (!isset($poolrecord[$useridx]['bets'][$i])) {
-				
-				$modified = true;
-
-				$poolrecord[$useridx][$i] = array();
+			if (!isset($poolrecord[$useridx]['bets'][$i]['team'])) {
 
 				if (!$openweeks[$i]) {
 					// if this week has no open games, week is closed
 					// and user is a no pick (loss) for this week
-					$poolrecord[$useridx]['bets'][$i] = array(
-						'nopick' => true,
-						'result' => -1
-					);
+					$poolrecord[$useridx]['bets'][$i]['nopick'] = true;
+					$poolrecord[$useridx]['bets'][$i]['result'] = -1;
 					$poolrecord[$useridx]['losses'] += 1;
 
 					if (($weeks - $i) < 4) {
@@ -240,10 +241,6 @@ EOQ;
 			}
 		}
 
-		if ($modified) {
-			// ensure bets are in week order after manipulation
-			ksort($poolrecord[$useridx]['bets']);
-		}
 	}
 
 	// sort pool according to status
