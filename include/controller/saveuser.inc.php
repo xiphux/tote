@@ -2,8 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
@@ -27,7 +25,7 @@ define('SAVEUSER_HEADER', 'Edit A User');
  */
 function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpassword, $newpassword2, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -51,9 +49,14 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		return;
 	}
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
+	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$userstmt->bind_param('i', $userid);
+	$userstmt->execute();
+	$userresult = $userstmt->get_result();
+	$edituser = $userresult->fetch_assoc();
+	$userresult->close();
+	$userstmt->close();
 
-	$edituser = get_user($userid);
 	if (!$edituser) {
 		// needs to be a valid user
 		display_message("User not found", SAVEUSER_HEADER);
@@ -66,16 +69,10 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		// need the email address
 		$errors[] = "Email is required";
 	} else {
-		$existinguser = $users->findOne(
-			array(
-				'email' => $email,
-				'_id' => array(
-					'$ne' => $edituser['_id']
-				)
-			),
-			array('username', 'email')
-		);
-		if ($existinguser) {
+		$emailstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=? AND id!=?');
+		$emailstmt->bind_param('si', $email, $userid);
+		$emailstmt->execute();
+		if ($emailstmt->fetch()) {
 			// no duplicate emails
 			$errors[] = "A user with that email address already exists";
 		}
@@ -109,32 +106,27 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		$tpl->display('edituser.tpl');
 	} else {
 		// set data
-		$data = array();
-		$setdata = array();
-		$unsetdata = array();
-		if ($firstname != $edituser['first_name'])
-			$setdata['first_name'] = $firstname;
-		if ($lastname != $edituser['last_name'])
-			$setdata['last_name'] = $lastname;
-		if ($email != $edituser['email'])
-			$setdata['email'] = $email;
-		if (!empty($role))
-			$setdata['role'] = (int)$role;
-		else
-			$unsetdata['role'] = 1;
-		if (!(empty($newpassword) || empty($newpassword2))) {
-			$hashdata = generate_password_hash($edituser['username'], $newpassword);
-			$setdata['salt'] = $hashdata['salt'];
-			$setdata['password'] = $hashdata['passwordhash'];
-			$setdata['lastpasswordchange'] = new MongoDate();
-		}
-		if (count($setdata) > 0)
-			$data['$set'] = $setdata;
-		if (count($unsetdata) > 0)
-			$data['$unset'] = $unsetdata;
-		if (count($data) > 0) {
-			$users->update(array('_id' => $edituser['_id']), $data);
+		if (($firstname != $edituser['first_name']) || ($lastname != $edituser['last_name']) || ($email != $edituser['email']) || ((int)$role != (int)$edituser['role'])) {
+
+			$firstname = !empty($firstname) ? $firstname : null;
+			$lastname = !empty($lastname) ? $lastname : null;
+			$email = !empty($email) ? $email : null;
+			$role = $role > 0 ? (int)$role : 0;
+			
+			$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET first_name=?, last_name=?, email=?, role=? WHERE id=?');
+			$updatestmt->bind_param('sssii', $firstname, $lastname, $email, $role, $userid);
+			$updatestmt->execute();
+			$updatestmt->close();
+
 			clear_cache('pool');
+		}
+		if (!(empty($newpassword) || empty($newpassword2))) {
+			
+			$hashdata = generate_password_hash($edituser['username'], $newpassword);
+			$passstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP()  WHERE id=?');
+			$passstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $userid);
+			$passstmt->execute();
+			$passstmt->close();
 		}
 
 		// go back to edit users page

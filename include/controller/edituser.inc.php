@@ -1,8 +1,6 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
@@ -19,7 +17,7 @@ define('EDITUSER_HEADER', 'Edit A User');
  */
 function display_edituser($userid)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -38,7 +36,14 @@ function display_edituser($userid)
 		return;
 	}
 
-	$edituser = get_user($userid);
+	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$userstmt->bind_param('i', $userid);
+	$userstmt->execute();
+	$userresult = $userstmt->get_result();
+	$edituser = $userresult->fetch_assoc();
+	$userresult->close();
+	$userstmt->close();
+
 	if (!$edituser) {
 		// needs to be a valid user
 		display_message("User not found", EDITUSER_HEADER);
