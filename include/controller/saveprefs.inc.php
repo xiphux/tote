@@ -2,7 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -21,7 +20,7 @@ define('SAVEPREFS_HEADER', 'Edit Your Preferences');
  */
 function display_saveprefs($timezone, $reminder, $remindertime, $resultnotification, $style, $csrftoken)
 {
-	global $tpl, $tote_conf;
+	global $tpl, $tote_conf, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -61,43 +60,21 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 		display_editprefs();
 	} else {
 
-		$data = array();
-
-		if (!empty($timezone)) {
-			$data['$set']['timezone'] = $timezone;
-		} else {
-			$data['$unset']['timezone'] = 1;
-		}
-
-		if (!empty($style)) {
-			$data['$set']['style'] = $style;
-		} else {
-			$data['$unset']['style'] = 1;
-		}
+		$timezoneval = !empty($timezone) ? $timezone : null;
+		$styleval = !empty($style) ? $style : null;
+		$reminderval = 0;
+		$remindertimeval = null;
+		$resultnotificationval = ($resultnotification && $resultnotification == '1') ? 1 : 0;
 
 		if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
-			// only save reminder settings if reminders are turned on
-
-			if ($reminder) {
-				$data['$set']['reminder'] = true;
-				// store reminder time in seconds internally
-				$data['$set']['remindertime'] = (int)$remindertime * 3600;
-			} else {
-				$data['$unset']['reminder'] = 1;
-				$data['$unset']['lastreminder'] = 1;
-			}
+			$reminderval = $reminder ? 1 : 0;
+			$remindertimeval = !empty($remindertime) ? ((int)$remindertime * 3600) : null;
 		}
 
-		if ($resultnotification && $resultnotification == '1') {
-			$data['$set']['resultnotification'] = true;
-		} else {
-			$data['$unset']['resultnotification'] = 1;
-		}
-
-		$users = get_collection(TOTE_COLLECTION_USERS);
-
-		// do the update
-		$users->update(array('_id' => $user['_id']), $data);
+		$prefsstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET timezone=?, style=?, reminder=?, reminder_time=?, result_notification=? WHERE id=?');
+		$prefsstmt->bind_param('ssiiii', $timezoneval, $styleval, $reminderval, $remindertimeval, $resultnotificationval, $user['id']);
+		$prefsstmt->execute();
+		$prefsstmt->close();
 
 		// go home
 		redirect();

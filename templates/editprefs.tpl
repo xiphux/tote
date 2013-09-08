@@ -33,14 +33,14 @@
 
 <br />
 <div>
-<input type="checkbox" name="resultnotification" id="resultnotification" value="1" {if $user.resultnotification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my pick when the game finishes</label>
+<input type="checkbox" name="resultnotification" id="resultnotification" value="1" {if $user.result_notification}checked="checked"{/if} /><label for="resultnotification">Email me the result of my pick when the game finishes</label>
 </div>
 
 {if $enablereminders}
 <br />
 <div>
 <input type="checkbox" name="reminder" id="reminder" value="1" {if $user.reminder}checked="checked"{/if} /><label for="reminder">Email me a reminder before the first game of the week</label><br />
-<label for="remindertime">How many hours beforehand:</label><input type="number" min="0" id="remindertime" name="remindertime" value="{if $user.remindertime}{$user.remindertime}{else}{$defaultremindertime}{/if}" />
+<label for="remindertime">How many hours beforehand:</label><input type="number" min="0" id="remindertime" name="remindertime" value="{if $user.reminder_time}{$user.reminder_time/3600}{else}{$defaultremindertime}{/if}" />
 </div>
 {/if}
 
