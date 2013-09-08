@@ -16,7 +16,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishlogin($user, $pass)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	if (user_logged_in()) {
 		// user must be logged in
@@ -47,17 +47,10 @@ function display_finishlogin($user, $pass)
 			$_SESSION['csrftoken'] = generate_salt();
 
 			// update last login
-			$users = get_collection(TOTE_COLLECTION_USERS);
-			$userObj = $users->findOne(array('username' => $user), array('username'));
-
-			if ($userObj) {
-				$users->update(
-					array('_id' => $userObj['_id']),
-					array('$set' => array(
-						'lastlogin' => new MongoDate()
-					))
-				);
-			}
+			$lastloginstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_login=UTC_TIMESTAMP() WHERE username=?');
+			$lastloginstmt->bind_param('s', $user);
+			$lastloginstmt->execute();
+			$lastloginstmt->close();
 		} else {
 			$errors[] = 'Incorrect username or password';
 		}
