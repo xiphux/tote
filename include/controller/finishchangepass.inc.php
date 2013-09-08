@@ -2,7 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_password_valid.inc.php');
@@ -23,7 +22,7 @@ define('FINISHCHANGEPASS_HEADER', 'Change Your Password');
  */
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();	
 	if (!$user) {
@@ -62,15 +61,10 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 				$hashdata = generate_password_hash($user['username'], $newpassword);
 
 				// update the user in the database
-				$users = get_collection(TOTE_COLLECTION_USERS);
-				$users->update(
-					array('_id' => $user['_id']),
-					array('$set' => array(
-						'salt' => $hashdata['salt'],
-						'password' => $hashdata['passwordhash'],
-						'lastpasswordchange' => new MongoDate()
-					))
-				);
+				$passstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP() WHERE id=?');
+				$passstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $user['id']);
+				$passstmt->execute();
+				$passstmt->close();
 			} else {
 				// old password has to be correct
 				$errors[] = 'Old password incorrect';
