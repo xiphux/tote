@@ -63,7 +63,7 @@ function display_pool($poolid = null)
 
 	// check if logged in user is entered in this pool
 	$entered = false;
-	if ($user && user_in_pool($user['_id'], $poolobj['id']))
+	if ($user && user_in_pool($user['id'], $poolobj['id']))
 		$entered = true;
 
 	$pot = get_pool_pot($poolobj['id']);

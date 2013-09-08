@@ -10,25 +10,19 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
  */
 function user_logged_in()
 {
-	global $usercache;
+	global $mysqldb;
 
 	if (empty($_SESSION['user']))
 		return null;
 
-	foreach ($usercache as $user) {
-		if (!empty($user['username']) && ($user['username'] == $_SESSION['user'])) {
-			return $user;
-		}
-	}
+	$userstmt = $mysqldb->prepare('SELECT * FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+	$userstmt->bind_param('s', $_SESSION['user']);
+	$userstmt->execute();
+	$userresult = $userstmt->get_result();
+	$user = $userresult->fetch_assoc();
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
-
-	$user = $users->findOne(
-		array('username' => $_SESSION['user']),  // match on stored username
-		array('password' => 0, 'salt' => 0)
-	);
-	
-	$usercache[(string)$user['_id']] = $user;
+	$userresult->close();
+	$userstmt->close();
 
 	return $user;
 }
