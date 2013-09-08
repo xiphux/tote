@@ -2,8 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
@@ -22,7 +20,7 @@ define('DELETEUSER_HEADER', 'Manage Your Users');
  */
 function display_deleteuser($userid, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -46,60 +44,73 @@ function display_deleteuser($userid, $csrftoken)
 		return;
 	}
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$userstmt->bind_param('i', $userid);
+	$userstmt->execute();
+	$userresult = $userstmt->get_result();
+	$deleteuser = $userresult->fetch_assoc();
+	$userresult->close();
+	$userstmt->close();
 
-	$deleteuser = get_user($userid);
 	if (!$deleteuser) {
 		// must be a valid user to delete
 		display_message("Could not find user to delete", DELETEUSER_HEADER);
 		return;
 	}
 
-	// create audit log entry
-	$adminname = user_readable_name($user);
-	$username = user_readable_name($deleteuser);
-	$action = array(
-		'action' => 'removeentrant',
-		'user' => $deleteuser['_id'],
-		'user_name' => $username,
-		'admin' => $user['_id'],
-		'admin_name' => $username,
-	);
+	// delete any user picks
+	$pickdelstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id IN (SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?)');
+	$pickdelstmt->bind_param('i', $userid);
+	$pickdelstmt->execute();
+	$pickdelstmt->close();
+
+	// audit entrant removal in any pools user is in
+	$entriesstmt = $mysqldb->prepare('SELECT id, pool_id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
+	$entriesstmt->bind_param('i', $userid);
+	$entriesstmt->execute();
+	$entriesresult = $entriesstmt->get_result();
+	$entries = $entriesresult->fetch_all(MYSQLI_ASSOC);
+	$entriesresult->close();
+	$entriesstmt->close();
+
+	if (count($entries) > 0) {
 		
-	// remove user from any pools they're in
-	$enteredpools = $pools->find(
-		array(
-			'entries.user' => $deleteuser['_id']
-		),
-		array('name', 'season')
-	);
-	foreach ($enteredpools as $p) {
-		$action['time'] = new MongoDate(time());
-		$pools->update(
-			array(
-				'_id' => $p['_id']
-			),
-			array(
-				'$pull' => array(
-					'entries' => array(
-						'user' => $deleteuser['_id']
-					)
-				),
-				'$push' => array(
-					'actions' => $action
-				)
-			)
-		);
-		clear_cache('pool|' . (string)$p['_id']);
+		$adminname = user_readable_name($user);
+		$username = user_readable_name($deleteuser);
+
+		$auditstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (?, 2, UTC_TIMESTAMP(), ?, ?, ?)');
+		foreach ($entries as $entry) {
+			$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $adminname);
+			$auditstmt->execute();
+		}
+		$auditstmt->close();
+
+		// delete any user entries
+		$delentrystmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
+		$delentrystmt->bind_param('i', $userid);
+		$delentrystmt->execute();
+		$delentrystmt->close();
 	}
 
-	// remove user from system
-	$users->remove(
-		array(
-			'_id' => $deleteuser['_id']
-		)
-	);
+	// nullify any action / administrator ids pointing to this user
+	$deluseractionstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET user_id=NULL WHERE user_id=?');
+	$deluseractionstmt->bind_param('i', $userid);
+	$deluseractionstmt->execute();
+	$deluseractionstmt->close();
+
+	$deladminactionstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET admin_id=NULL WHERE admin_id=?');
+	$deladminactionstmt->bind_param('i', $userid);
+	$deladminactionstmt->execute();
+	$deladminactionstmt->close();
+
+	// delete user
+	$deluserstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$deluserstmt->bind_param('i', $userid);
+	$deluserstmt->execute();
+	$deluserstmt->close();
+
+	// clear caches
+	clear_cache('pool');
 
 	redirect(array('a' => 'editusers'));
 }
