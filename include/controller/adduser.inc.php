@@ -2,7 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
@@ -26,7 +25,7 @@ define('ADDUSER_HEADER', 'Add A New User');
  */
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -44,35 +43,35 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		return;
 	}
 
-	$users = get_collection(TOTE_COLLECTION_USERS);
+	$lowerusername = strtolower($username);
 
 	$errors = array();
 	if (empty($username)) {
 		// must have a username
 		$errors[] = "Username is required";
 	} else {
-		$existinguser = $users->findOne(
-			array('username' => strtolower($username)),
-			array('username', 'email')
-		);
-		if ($existinguser) {
+		$usernamestmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+		$usernamestmt->bind_param('s', $lowerusername);
+		$usernamestmt->execute();
+		if ($usernamestmt->fetch()) {
 			// no duplicate usernames
 			$errors[] = "A user with that username already exists";
 		}
+		$usernamestmt->close();
 	}
 
 	if (empty($email)) {
 		// must have an email
 		$errors[] = "Email is required";
 	} else {
-		$existinguser = $users->findOne(
-			array('email' => $email),
-			array('username', 'email')
-		);
-		if ($existinguser) {
+		$emailstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=?');
+		$emailstmt->bind_param('s', $email);
+		$emailstmt->execute();
+		if ($emailstmt->fetch()) {
 			// no duplicate emails
 			$errors[] = "A user with that email address already exists";
 		}
+		$emailstmt->close();
 		if (!preg_match('/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
 			// must be validly formatted email
 			$errors[] = "Email must be valid";
@@ -113,18 +112,15 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		$tpl->display('newuser.tpl');
 	} else {
 		// insert user into database
-		$data = array();
-		$data['username'] = strtolower($username);
-		$data['email'] = $email;
-		if (!empty($firstname))
-			$data['first_name'] = $firstname;
-		if (!empty($lastname))
-			$data['last_name'] = $lastname;
-		$hashdata = generate_password_hash($data['username'], $password);
-		$data['salt'] = $hashdata['salt'];
-		$data['password'] = $hashdata['passwordhash'];
-		$data['created'] = new MongoDate();
-		$users->insert($data);
+		$firstname = !empty($firstname) ? $firstname : null;
+		$lastname = !empty($lastname) ? $lastname : null;
+
+		$hashdata = generate_password_hash($lowerusername, $password);
+
+		$newuserstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, email, first_name, last_name, salt, password, created) VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP())');
+		$newuserstmt->bind_param('ssssss', $lowerusername, $email, $firstname, $lastname, $hashdata['salt'], $hashdata['passwordhash']);
+		$newuserstmt->execute();
+		$newuserstmt->close();
 
 		// go back to the edit users page
 		redirect(array('a' => 'editusers'));
