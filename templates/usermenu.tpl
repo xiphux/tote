@@ -6,7 +6,7 @@
 {/if}
 {if $user.role == 1}
 <tr><td><a href="index.php?a=update">Update scores</a></td></tr>
-<tr><td><a href="index.php?a=editpool&amp;p={$pool._id}">Manage pool</a></td></tr>
+<tr><td><a href="index.php?a=editpool&amp;p={$pool.id}">Manage pool</a></td></tr>
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
 <tr><td><a href="index.php?a=newpool">New pool</a></td></tr>
 {elseif $user.role == 2}

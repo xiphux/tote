@@ -2,8 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
@@ -16,14 +14,14 @@ define('ADDBET_HEADER', 'Make A Pick');
  *
  * add a bet to the database
  *
- * @param string $poolID pool ID
+ * @param string $poolid pool ID
  * @param string $week week number
  * @param string $team team ID
  * @param string $csrftoken CSRF request token
  */
-function display_addbet($poolID, $week, $team, $csrftoken)
+function display_addbet($poolid, $week, $team, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -36,22 +34,9 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 		return;
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// need to know the pool
 		display_message("Pool is required", ADDBET_HEADER);
-		return;
-	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
-
-	$pool = $pools->findOne(
-		array('_id' => new MongoId($poolID)),
-		array('season', 'entries')
-	);
-	if (!$pool) {
-		// pool must exist
-		display_message("Unknown pool", ADDBET_HEADER);
 		return;
 	}
 
@@ -67,65 +52,74 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 		return;
 	}
 
-	// find the user's entry in the pool
-	$userentry = null;
-	$userentryindex = -1;
-	for ($i = 0; $i < count($pool['entries']); $i++) {
-		if ($pool['entries'][$i]['user'] == $user['_id']) {
-			$userentry = $pool['entries'][$i];
-			$userentryindex = $i;
-			break;
-		}
-	}
+	$poolstmt = $mysqldb->prepare('SELECT seasons.year, pool_entries.id, pool_entry_picks.team_id, teams.home, teams.team FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks ON pool_entries.id=pool_entry_picks.pool_entry_id AND pool_entry_picks.week=? LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS teams ON pool_entry_picks.team_id=teams.id WHERE pools.id=?');
+	$poolstmt->bind_param('iii', $user['id'], $week, $poolid);
 
-	if (!$userentry) {
+	$poolseason = null;
+	$entryid = null;
+	$prevpickid = null;
+	$prevpickhome = null;
+	$prevpickteam = null;
+	$poolstmt->bind_result($poolseason, $entryid, $prevpickid, $prevpickhome, $prevpickteam);
+	$poolstmt->execute();
+	$found = $poolstmt->fetch();
+	$poolstmt->close();
+
+	if (!$found) {
+		// pool must exist
+		display_message("Unknown pool", ADDBET_HEADER);
+		return;
+	}
+	
+	if (!$entryid) {
 		// can't bet if you aren't in the pool
 		display_message("You are not entered in this pool", ADDBET_HEADER);
 		return;
 	}
 
-	$betteam = $teams->findOne(array('_id' => new MongoId($team)));
-	if (!$betteam) {
+	if ($prevpickid) {
+		// user already bet on this week
+		display_message("You already picked the " . $prevpickhome . ' ' . $prevpickteam . " for week " . $week, ADDBET_HEADER);
+		return;
+	}
+
+	$teamstmt = $mysqldb->prepare('SELECT teams.home, teams.team, games.start, games.id, pool_entry_picks.id, pool_entry_picks.week FROM ' . TOTE_TABLE_TEAMS . ' AS teams LEFT JOIN ' . TOTE_TABLE_GAMES . ' AS games ON games.week=? AND (games.away_team_id=teams.id OR games.home_team_id=teams.id) AND games.season_id IN (SELECT id FROM ' . TOTE_TABLE_SEASONS . ' WHERE year=?) LEFT JOIN pool_entry_picks ON pool_entry_picks.team_id=teams.id AND pool_entry_picks.pool_entry_id=? WHERE teams.id=?');
+	$teamstmt->bind_param('iiii', $week, $poolseason, $entryid, $team);
+	$pickhome = null;
+	$pickteam = null;
+	$pickgamestart = null;
+	$pickgameid = null;
+	$prevteampickid = null;
+	$prevteampickweek = null;
+	$teamstmt->bind_result($pickhome, $pickteam, $pickgamestart, $pickgameid, $prevteampickid, $prevteampickweek);
+	$teamstmt->execute();
+	$found = $teamstmt->fetch();
+	$teamstmt->close();
+
+	if (!$found) {
 		// need to bet on a valid team
 		display_message("Invalid team", ADDBET_HEADER);
 		return;
 	}
 
-	// check and see if user has bet on this team or this week already
-	$weekbet = false;
-	$teambet = false;
-	foreach ($pool['entries'] as $entrant) {
-		if ($entrant['user'] == $user['_id']) {
-			foreach ($entrant['bets'] as $bet) {
-				if ($bet['week'] == (int)$week) {
-					$weekbet = $teams->findOne(array('_id' => $bet['team']));
-				} else if ($bet['team'] == $betteam['_id'])
-					$teambet = (int)$bet['week'];
-			}
-		}
-	}
-
-	if ($weekbet) {
-		// user already bet on this week
-		display_message("You already picked the " . $weekbet['home'] . ' ' . $weekbet['team'] . " for week " . $week, ADDBET_HEADER);
-		return;
-	}
-
-	if ($teambet) {
-		// user already bet on this team
-		display_message("You already picked the " . $betteam['home'] . ' ' . $betteam['team'] . ' in week ' . $teambet, ADDBET_HEADER);
-		return;
-	}
-
-	// find game user is betting on
-	$betgame = get_game_by_team((int)$pool['season'], (int)$week, $betteam['_id']);
-	if (!$betgame) {
+	if (!$pickgameid) {
 		// user bet on a bye team
-		display_message($betteam['home'] . ' ' . $betteam['team'] . " aren't playing this week", ADDBET_HEADER);
+		display_message($pickhome . ' ' . $pickteam . " aren't playing this week", ADDBET_HEADER);
 		return;
 	}
 
-	if ($betgame['start']->sec < time()) {
+	if ($prevteampickid) {
+		// user already bet on this team
+		display_message("You already picked the " . $pickhome . ' ' . $pickteam . ' in week ' . $prevteampickweek, ADDBET_HEADER);
+		return;
+	}
+
+	$tz = date_default_timezone_get();
+	date_default_timezone_set('UTC');
+	$starttimestamp = strtotime($pickgamestart);
+	date_default_timezone_set($tz);
+
+	if ($starttimestamp < time()) {
 		// can't bet after the game has started
 		display_message("This game has already started", ADDBET_HEADER);
 		return;
@@ -133,29 +127,19 @@ function display_addbet($poolID, $week, $team, $csrftoken)
 
 	$username = user_readable_name($user);
 
-	$pools->update(
-		array('_id' => $pool['_id']),
-		array(
-			'$push' => array(
-				'entries.' . (string)$userentryindex . '.bets' => array(	// add bet
-					'week' => (int)$week,
-					'team' => $betteam['_id'],
-					'placed' => new MongoDate(time())
-				),
-				'actions' => array(	// audit bet entry
-					'action' => 'bet',
-					'user' => $user['_id'],
-					'user_name' => $username,
-					'week' => (int)$week,
-					'team' => $betteam['_id'],
-					'time' => new MongoDate(time())
-				)
-			)
-		)
-	);
-	clear_cache('pool|' . (string)$pool['_id']);
+	$pickstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed) VALUES (?, ?, ?, UTC_TIMESTAMP())');
+	$pickstmt->bind_param('iii', $entryid, $week, $team);
+	$pickstmt->execute();
+	$pickstmt->close();
+
+	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, week, team_id) VALUES (?, 4, UTC_TIMESTAMP(), ?, ?, ?, ?)');
+	$actionstmt->bind_param('iisii', $poolid, $user['id'], $username, $week, $team);
+	$actionstmt->execute();
+	$actionstmt->close();
+
+	clear_cache('pool|' . (string)$poolid);
 
 	// go back to the pool view
-	redirect(array('p' => $pool['_id']));
+	redirect(array('p' => $poolid));
 }
 

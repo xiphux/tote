@@ -96,8 +96,8 @@
   </script>
 
  {if $poolinfo}
- <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&amp;p={$pool._id}" type="application/atom+xml" />
- <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (RSS)" href="{$SCRIPT_NAME}?a=rss&amp;p={$pool._id}" type="application/rss+xml" />
+ <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (Atom)" href="{$SCRIPT_NAME}?a=atom&amp;p={$pool.id}" type="application/atom+xml" />
+ <link rel="alternate" title="{$pool.name} [{$pool.season}-{$pool.season+1}] action log (RSS)" href="{$SCRIPT_NAME}?a=rss&amp;p={$pool.id}" type="application/rss+xml" />
  {/if}
 
 <meta name="viewport" content="initial-scale=1.0" />
@@ -126,7 +126,7 @@
 {/if}
 
 {if $homelink}
-<a href="{$SCRIPT_NAME}{if $pool}?p={$pool._id}{/if}">Home</a>
+<a href="{$SCRIPT_NAME}{if $pool}?p={$pool.id}{/if}">Home</a>
 {/if}
 
 </p>
