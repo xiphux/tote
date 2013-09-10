@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
@@ -15,12 +16,12 @@ define('EDITBETS_HEADER', "Edit A User's Bets");
  *
  * edit all of a user's bets
  *
- * @param string $poolID pool id
+ * @param string $poolid pool id
  * @param string $entrant entrant id
  */
-function display_editbets($poolID, $entrant)
+function display_editbets($poolid, $entrant)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -33,73 +34,79 @@ function display_editbets($poolID, $entrant)
 		return redirect();
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// need to know the pool
 		display_message("Pool is required", EDITBETS_HEADER);
 		return;
 	}
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
-	$teams = get_collection(TOTE_COLLECTION_TEAMS);
+	if (empty($entrant)) {
+		// need to know the user
+		display_message("User is required", EDITBETS_HEADER);
+		return;
+	}
 
-	$pool = $pools->findOne(
-		array(
-			'_id' => new MongoId($poolID)
-		),
-		array('season', 'name', 'entries')
-	);
+	$entrantstmt = $mysqldb->prepare('SELECT first_name, last_name, id, username FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$entrantstmt->bind_param('i', $entrant);
+	$entrantstmt->execute();
+	$entrantresult = $entrantstmt->get_result();
+	$entrantobj = $entrantresult->fetch_assoc();
+	$entrantresult->close();
+	$entrantstmt->close();
+
+	if (!$entrantobj) {
+		display_message('Invalid user', EDITBETS_HEADER);
+		return;
+	}
+
+	$poolstmt = $mysqldb->prepare('SELECT seasons.year AS season, pools.name, pools.id, pool_entries.id AS entry_id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? WHERE pools.id=?');
+	$poolstmt->bind_param('ii', $entrant, $poolid);
+	$poolstmt->execute();
+	$poolresult = $poolstmt->get_result();
+	$pool = $poolresult->fetch_assoc();
+	$poolresult->close();
+	$poolstmt->close();
+
 	if (!$pool) {
 		// pool must exist
 		display_message("Unknown pool", EDITBETS_HEADER);
 		return;
 	}
 
-	$entrantobj = get_user($entrant);
-	if (!$entrantobj) {
-		// entrant being edited needs to exist
-		display_message("Entrant not found", EDITBETS_HEADER);
-		return;
-	}
-
-	$poolentry = null;
-	foreach ($pool['entries'] as $entry) {
-		if ($entry['user'] == $entrantobj['_id']) {
-			$poolentry = $entry;
-		}
-	}
-
-	if (!$poolentry) {
+	if (empty($pool['entry_id'])) {
 		// entrant being edited needs to be in the pool
-		display_message("Entrant not in pool", EDITBETS_HEADER);
+		display_message("User not in pool", EDITBETS_HEADER);
 		return;
 	}
 
 	// make a list of the user's bets
 	$userbets = array();
-	if (isset($poolentry['bets'])) {
-		foreach ($poolentry['bets'] as $bet) {
-			$userbets[(int)$bet['week']] = $bet['team'];
-		}
+	$picksstmt = $mysqldb->prepare('SELECT week, team_id FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=? ORDER BY week');
+	$picksstmt->bind_param('i', $pool['entry_id']);
+	$picksstmt->execute();
+	$picksresult = $picksstmt->get_result();
+
+	while ($pick = $picksresult->fetch_assoc()) {
+		$userbets[(int)$pick['week']] = $pick['team_id'];
 	}
 
-	// find the number of weeks in the season
-	$lastgame = $games->find(array('season' => (int)$pool['season']), array('week'))->sort(array('week' => -1))->getNext();
-	$weeks = $lastgame['week'];
+	$picksresult->close();
+	$picksstmt->close();
 
 	// for any weeks user hasn't bet on, set a placeholder
 	// so we can provide the option to add a bet there
+	$weeks = get_season_weeks($pool['season']);
 	for ($i = 1; $i <= $weeks; $i++) {
 		if (!isset($userbets[$i])) {
 			$userbets[$i] = '';
 		}
 	}
-
-	// sort in week order
 	ksort($userbets);
 
 	// make a list of all teams available
-	$allteams = $teams->find(array())->sort(array('home' => 1, 'team' => 1));
+	$teamsresult = $mysqldb->query('SELECT id, home, team FROM ' . TOTE_TABLE_TEAMS . ' ORDER BY home, team');
+	$allteams = $teamsresult->fetch_all(MYSQLI_ASSOC);
+	$teamsresult->close();
 
 	// provide data and display
 	http_headers();

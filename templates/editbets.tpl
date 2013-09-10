@@ -11,7 +11,7 @@
 <select name="week[{$week}]" id="week{$week}">
 <option value="">No pick</option>
 {foreach from=$teams item=team}
-<option value="{$team._id}" {if $team._id == $bet}selected="selected"{/if}>{$team.home} {$team.team}</option>
+<option value="{$team.id}" {if $team.id == $bet}selected="selected"{/if}>{$team.home} {$team.team}</option>
 {/foreach}
 </select>
 </td>
@@ -33,8 +33,8 @@
 </td>
 </tr>
 </table>
-<input type="hidden" name="p" value="{$pool._id}" />
-<input type="hidden" name="u" value="{$entrant._id}" />
+<input type="hidden" name="p" value="{$pool.id}" />
+<input type="hidden" name="u" value="{$entrant.id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
 

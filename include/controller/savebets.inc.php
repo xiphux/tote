@@ -2,8 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
@@ -28,15 +27,15 @@ define('SAVEBETS_HEADER', "Edit A User's Bets");
  *
  * after editing a user's bets, save the changes into the database
  *
- * @param string $poolID pool id
+ * @param string $poolid pool id
  * @param string $entrant entrant user id
  * @param string $weekbets array of bets for the week
  * @param string $comment edit comment
  * @param string $csrftoken CSRF request token
  */
-function display_savebets($poolID, $entrant, $weekbets, $comment, $csrftoken)
+function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -54,176 +53,119 @@ function display_savebets($poolID, $entrant, $weekbets, $comment, $csrftoken)
 		return;
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// need the pool
 		display_message("Pool is required", SAVEBETS_HEADER);
 		return;
 	}
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	if (empty($entrant)) {
+		// need the pool
+		display_message("Entrant is required", SAVEBETS_HEADER);
+		return;
+	}
 
-	$pool = $pools->findOne(
-		array('_id' => new MongoId($poolID)
-		),
-		array('season', 'name', 'entries')
-	);
-	if (!$pool) {
+	$entrantstmt = $mysqldb->prepare('SELECT seasons.year AS season, pool_entries.id AS entry_id, users.first_name, users.last_name, users.username  FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN ' . TOTE_TABLE_USERS . ' ON users.id=pool_entries.user_id WHERE pools.id=?');
+	$entrantstmt->bind_param('ii', $entrant, $poolid);
+	$entrantstmt->execute();
+	$entrantresult = $entrantstmt->get_result();
+	$entrantobj = $entrantresult->fetch_assoc();
+	$entrantresult->close();
+	$entrantstmt->close();
+	
+	if (!$entrantobj) {
 		// must be a valid pool
 		display_message("Unknown pool", SAVEBETS_HEADER);
 		return;
 	}
 
-	$entrantobj = get_user($entrant);
-	if (!$entrantobj) {
-		// user must exist
-		display_message("Entrant not found", SAVEBETS_HEADER);
-		return;
-	}
-
-	// find the user's entry in the pool
-	$userentry = null;
-	$userentryindex = -1;
-	for ($i = 0; $i < count($pool['entries']); $i++) {
-		if ($pool['entries'][$i]['user'] == $entrantobj['_id']) {
-			$userentry = $pool['entries'][$i];
-			$userentryindex = $i;
-			break;
-		}
-	}
-
-	$adminname = user_readable_name($user);
-
-	$entrantname = user_readable_name($entrantobj);
-
-	if (!$userentry) {
+	if (empty($entrantobj['entry_id'])) {
 		// user needs to be in the pool
 		display_message("Entrant not in pool", SAVEBETS_HEADER);
 		return;
 	}
 
-	// find the number of weeks in the season
-	$lastgame = $games->find(array('season' => (int)$pool['season']), array('week'))->sort(array('week' => -1))->getNext();
-	$weeks = $lastgame['week'];
+	// get all user picks
+	$picksstmt = $mysqldb->prepare('SELECT team_id, week FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks WHERE pool_entry_id=? ORDER BY week');
+	$picksstmt->bind_param('i', $entrantobj['entry_id']);
+	$picksstmt->execute();
+	$picksresult = $picksstmt->get_result();
 
-	$actions = array();
+	$oldpicks = array();
+	while ($pick = $picksresult->fetch_assoc()) {
+		$oldpicks[(int)$pick['week']] = $pick['team_id'];
+	}
+	$picksresult->close();
+	$picksstmt->close();
+
+	// go through all weeks and resolve differences
+	$addpickstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, edited) VALUES (?, ?, ?, UTC_TIMESTAMP())');
+	$delpickstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=? AND week=?');
+	$modpickstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' SET team_id=?, edited=UTC_TIMESTAMP() WHERE pool_entry_id=? AND week=?');
+	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, comment) VALUES (?, 5, UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ?, ?)');
+
+	$weeks = get_season_weeks($entrantobj['season']);
 
 	$comment = trim($comment);
+	$comment = !empty($comment) ? $comment : null;
+	$adminid = $user['id'];
+	$adminname = user_readable_name($user);
+	$entrantname = user_readable_name($entrantobj);
+	$entrantid = $entrantobj['entry_id'];
 
-	// go through all the weeks sent down
-	for ($i = 1; $i <= $weeks; $i++) {
+	for ($i = 1; $i <= $weeks; ++$i) {
 
-		if (empty($weekbets[$i])) {
-
-			// no bet for this week, try to see if user had a bet for that week
-			for ($j = 0; $j < count($userentry['bets']); $j++) {
-				if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
-					// user had a bet in the database but now doesn't meaning we're deleting their bet - delete and audit it
-					$action = array(
-						'action' => 'edit',
-						'user' => $entrantobj['_id'],
-						'user_name' => $entrantname,
-						'admin' => $user['_id'],
-						'admin_name' => $adminname,
-						'week' => $i,
-						'from_team' => $userentry['bets'][$j]['team'],
-						'time' => new MongoDate(time())
-					);
-					if (!empty($comment)) {
-						$action['comment'] = $comment;
-					}
-					$actions[] = $action;
-					unset($userentry['bets'][$j]);
-					break;
-				}
-			}
-		} else {
-
-			// setting a bet for a week
-			$set = false;
-
-			if (isset($userentry['bets'])) {
-
-				for ($j = 0; $j < count($userentry['bets']); $j++) {
-
-					if (isset($userentry['bets'][$j]) && ($userentry['bets'][$j]['week'] == $i)) {
-						// user had a bet for that week
-
-						if ($weekbets[$i] != (string)$userentry['bets'][$j]['team']) {
-							// user's old bet for that week doesn't match the new bet for that week,
-							// meaning we're changing the user's bet - audit and do it
-							$action = array(
-								'action' => 'edit',
-								'user' => $entrantobj['_id'],
-								'user_name' => $entrantname,
-								'admin' => $user['_id'],
-								'admin_name' => $adminname,
-								'week' => $i,
-								'from_team' => $userentry['bets'][$j]['team'],
-								'to_team' => new MongoId($weekbets[$i]),
-								'time' => new MongoDate(time())
-							);
-							if (!empty($comment)) {
-								$action['comment'] = $comment;
-							}
-							$actions[] = $action;
-							$userentry['bets'][$j]['team'] = new MongoId($weekbets[$i]);
-							$userentry['bets'][$j]['edited'] = new MongoDate(time());
-						}
-						$set = true;
-						break;
-					}
-				}
-			}
-
-			if (!$set) {
-
-				// we didn't replace an old bet - meaning we're setting
-				// a new bet where there wasn't one, audit and add it
-				$action = array(
-					'action' => 'edit',
-					'user' => $entrantobj['_id'],
-					'user_name' => $entrantname,
-					'admin' => $user['_id'],
-					'admin_name' => $adminname,
-					'week' => $i,
-					'to_team' => new MongoId($weekbets[$i]),
-					'time' => new MongoDate(time())
-				);
-				if (!empty($comment)) {
-					$action['comment'] = $comment;
-				}
-				$actions[] = $action;
-				$userentry['bets'][] = array(
-					'week' => $i,
-					'team' => new MongoId($weekbets[$i]),
-					'edited' => new MongoDate(time())
-				);
-			}
+		if (empty($oldpicks[$i]) && empty($weekbets[$i])) {
+			// no pick and no change
+			continue;
 		}
+
+		if (empty($oldpicks[$i]) && !empty($weekbets[$i])) {
+			// newly added pick
+
+			$oldteam = null;
+			$newteam = $weekbets[$i];
+
+			$addpickstmt->bind_param('iii', $entrantid, $i, $newteam);
+			$addpickstmt->execute();
+
+			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->execute();
+
+		} else if (!empty($oldpicks[$i]) && empty($weekbets[$i])) {
+			// deleted pick
+
+			$oldteam = $oldpicks[$i];
+			$newteam = null;
+
+			$delpickstmt->bind_param('ii', $entrantid, $i);
+			$delpickstmt->execute();
+
+			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->execute();
+
+		} else if (!empty($oldpicks[$i]) && !empty($weekbets[$i]) && ($oldpicks[$i] != $weekbets[$i])) {
+			// modified pick
+
+			$oldteam = $oldpicks[$i];
+			$newteam = $weekbets[$i];
+
+			$modpickstmt->bind_param('iii', $newteam, $entrantid, $i);
+			$modpickstmt->execute();
+
+			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->execute();
+
+		}
+
 	}
 
-	// sort the bets
-	usort($userentry['bets'], 'sort_bets');
+	$addpickstmt->close();
+	$delpickstmt->close();
+	$modpickstmt->close();
+	$actionstmt->close();
 
-	// delete the previous bet data
-	$pools->update(
-		array('_id' => $pool['_id']),
-		array(
-		'$unset' => array('entries.' . (string)$userentryindex . '.bets' => 1),
-		)
-	);
-
-	// set the new bet data and add audit log entries
-	$pools->update(
-		array('_id' => $pool['_id']),
-		array(
-			'$set' => array('entries.' . (string)$userentryindex . '.bets' => $userentry['bets']),
-			'$pushAll' => array('actions' => $actions)
-		)
-	);
-
-	clear_cache('pool|' . (string)$pool['_id']);
+	clear_cache('pool|' . (string)$poolid);
 
 	// go home
 	redirect();
