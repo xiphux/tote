@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 
 define('BET_HEADER', 'Make A Pick');
 
@@ -49,6 +50,12 @@ function display_bet($poolid, $week)
 	if (empty($week)) {
 		// week is required
 		display_message("Week is required", BET_HEADER);
+		return;
+	}
+
+	$openweeks = get_open_weeks($pool['season']);
+	if (!$openweeks[$week]) {
+		display_message("Week " . $week . " is closed for picks", BET_HEADER);
 		return;
 	}
 
