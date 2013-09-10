@@ -241,7 +241,7 @@ if (!$newpickstmt) {
 	echo $mysqldb->error . "\n";
 	exit;
 }
-$newactionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_actions (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+$newactionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_actions (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 if (!$newactionstmt) {
 	echo $mysqldb->error . "\n";
 	exit;
@@ -316,6 +316,7 @@ foreach ($pools as $pool) {
 			$time = date('Y-m-d H:i:s', $action['time']->sec);
 			$userid = $useridmap[(string)$action['user']];
 			$username = $action['user_name'];
+			$comment = !empty($action['comment']) ? $action['comment'] : null;
 
 			switch ($action['action']) {
 
@@ -360,7 +361,7 @@ foreach ($pools as $pool) {
 					continue;
 			}
 
-			$newactionstmt->bind_param('iisisisiiiii', $poolid, $actionnum, $time, $userid, $username, $adminid, $adminusername, $week, $teamid, $oldteamid, $admintype, $oldadmintype);
+			$newactionstmt->bind_param('iisisisiiiiis', $poolid, $actionnum, $time, $userid, $username, $adminid, $adminusername, $week, $teamid, $oldteamid, $admintype, $oldadmintype, $comment);
 			$newactionstmt->execute();
 			echo ".";
 		}
