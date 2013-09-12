@@ -78,6 +78,9 @@ EOQ;
 	$userstmt->execute();
 	$userresult = $userstmt->get_result();
 
+	$poolusers = array();
+	$availableusers = array();
+
 	while ($user = $userresult->fetch_assoc()) {
 		if (!empty($user['entry_id'])) {
 			$poolusers[(int)$user['id']] = $user;
