@@ -1,11 +1,8 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -16,11 +13,11 @@ define('EDITPOOL_HEADER', 'Manage Your Pool');
  *
  * page to edit entrants/settings for a pool
  *
- * @param string $poolID pool id
+ * @param string $poolid pool id
  */
-function display_editpool($poolID)
+function display_editpool($poolid)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -33,76 +30,71 @@ function display_editpool($poolID)
 		return redirect();
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// need to know the pool
 		display_message("Pool is required", EDITPOOL_HEADER);
 		return;
 	}
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
+	$poolstmt = $mysqldb->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=?');
+	$poolstmt->bind_param('i', $poolid);
+	$poolstmt->execute();
+	$poolresult = $poolstmt->get_result();
+	$pool = $poolresult->fetch_assoc();
+	$poolresult->close();
+	$poolstmt->close();
 
-	$pool = $pools->findOne(
-		array(
-			'_id' => new MongoId($poolID)
-		),
-		array('season', 'name', 'entries', 'administrators')
-	);
 	if (!$pool) {
 		// pool must exist
 		display_message("Unknown pool", EDITPOOL_HEADER);
 		return;
 	}
 
-	// get all users in the system
-	$allusers = $users->find(
-		array(),
-		array('username', 'first_name', 'last_name', 'email')
-	);
+	$userquery = <<<EOQ
+SELECT
+users.id,
+users.email,
+(CASE
+ WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name)
+ WHEN users.first_name IS NOT NULL THEN users.first_name
+ ELSE users.username
+END) AS display_name,
+pool_entries.id AS entry_id,
+pool_administrators.admin_type,
+COUNT(pool_entry_picks.id) AS pick_count
+FROM %s AS users
+LEFT JOIN %s AS pool_entries
+ON pool_entries.user_id=users.id AND pool_entries.pool_id=?
+LEFT JOIN %s AS pool_administrators
+ON pool_administrators.user_id=users.id AND pool_administrators.pool_id=?
+LEFT JOIN %s AS pool_entry_picks
+ON pool_entry_picks.pool_entry_id=pool_entries.id
+GROUP BY users.id
+ORDER BY LOWER(display_name)
+EOQ;
+	$userquery = sprintf($userquery, TOTE_TABLE_USERS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOL_ADMINISTRATORS, TOTE_TABLE_POOL_ENTRY_PICKS);
+	$userstmt = $mysqldb->prepare($userquery);
+	$userstmt->bind_param('ii', $poolid, $poolid);
+	$userstmt->execute();
+	$userresult = $userstmt->get_result();
 
-	// set all users as "available" (not in pool)
-	$availableusers = array();
-	foreach ($allusers as $eachuser) {
-		$availableusers[(string)$eachuser['_id']] = $eachuser;
-	}
-
-	$poolusers = array();
-	if (!empty($pool['entries'])) {
-		foreach ($pool['entries'] as $entrant) {
-			// for each entrant in the pool, move them from the available
-			// users list to the pool user list
-			$poolusers[(string)$entrant['user']] = $availableusers[(string)$entrant['user']];
-			if (!empty($entrant['bets']) && (count($entrant['bets']) > 0)) {
-				// flag a user if they have bets, so we can make that clear
-				// in the admin page
-				$poolusers[(string)$entrant['user']]['hasbets'] = true;
-			}
-
-			if (isset($pool['administrators'])) {
-				foreach ($pool['administrators'] as $admin) {
-					if ($admin['user'] == $entrant['user']) {
-						if (isset($admin['secondary']) && ($admin['secondary'] == true)) {
-							$poolusers[(string)$entrant['user']]['secondaryadmin'] = true;
-						} else {
-							$poolusers[(string)$entrant['user']]['primaryadmin'] = true;
-						}
-						break;
-					}
-				}
-			}
-
-			unset($availableusers[(string)$entrant['user']]);
+	while ($user = $userresult->fetch_assoc()) {
+		if (!empty($user['entry_id'])) {
+			$poolusers[(int)$user['id']] = $user;
+		} else {
+			$availableusers[(int)$user['id']] = $user;
 		}
 	}
+
+	$userresult->close();
+	$userstmt->close();
 
 	// set data and display
 	http_headers();
 	if (count($poolusers) > 0) {
-		uasort($poolusers, 'sort_users');
 		$tpl->assign('poolusers', $poolusers);
 	}
 	if (count($availableusers) > 0) {
-		uasort($availableusers, 'sort_users');
 		$tpl->assign('availableusers', $availableusers);
 	}
 	$tpl->assign('pool', $pool);

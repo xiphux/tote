@@ -1,6 +1,6 @@
 {include file='header.tpl' jsmodule='editpool' header='Manage Your Pool' homelink=true}
 
-<span style="display: none" id="poolID">{$pool._id}</span>
+<span style="display: none" id="poolID">{$pool.id}</span>
 
 <div class="poolEditToolbar">
 <div class="left">
@@ -8,7 +8,7 @@
 <div class="right">
 <form action="{$SCRIPT_NAME}?a=setpoolname" method="post">
 <label for="poolName">Pool name:</label> <input type="text" name="poolname" id="poolName" value="{$pool.name}" /><input type="submit" value="Set" />
-<input type="hidden" name="p" value="{$pool._id}" />
+<input type="hidden" name="p" value="{$pool.id}" />
 <input type="hidden" name="csrftoken" value="{$csrftoken}" />
 </form>
 </div>
@@ -20,12 +20,12 @@
 Available users:
  <div class="availableUsers">
   {foreach from=$availableusers item=availableuser}
-  <div id="{$availableuser._id}" class="userListItem">
+  <div id="{$availableuser.id}" class="userListItem">
     <table>
       <tr>
         <td class="checkbox"><input type="checkbox" class="selectuser" /></td>
 	<td class="userinfo" colspan="2">
-    <span class="username">{if $availableuser.first_name}{$availableuser.first_name}{if $availableuser.last_name} {$availableuser.last_name}{/if}{else}{$availableuser.username}{/if}</span>
+    <span class="username">{$availableuser.display_name}</span>
     {if $availableuser.email}<br />{$availableuser.email}{/if}
     </td>
     </tr>
@@ -53,21 +53,21 @@ Available users:
 Users in pool:
 <div class="poolUsers">
   {foreach from=$poolusers item=pooluser}
-  <div id="{$pooluser._id}" class="userListItem">
+  <div id="{$pooluser.id}" class="userListItem">
     <table>
       <tr>
         <td class="checkbox"><input type="checkbox" class="selectuser" /></td>
 	<td class="userinfo">
-    <span class="username">{if $pooluser.first_name}{$pooluser.first_name}{if $pooluser.last_name} {$pooluser.last_name}{/if}{else}{$pooluser.username}{/if}</span>
+    <span class="username">{$pooluser.display_name}</span>
     {if $pooluser.email}<br />{$pooluser.email}{/if}
     </td>
-    <td class="alert">{if $pooluser.hasbets}<span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span>{/if}</td>
+    <td class="alert">{if $pooluser.pick_count>0}<span title="Removing this user from the pool will discard all of his/her picks">User has active picks</span>{/if}</td>
     </tr>
     <tr class="poolAdmin">
       <td>
       </td>
-      <td><input type="checkbox" class="primaryadmin admincheckbox" {if $pooluser.primaryadmin}checked="checked"{/if}><label>Pool administrator</label></td>
-      <td><input type="checkbox" class="secondaryadmin admincheckbox" {if $pooluser.secondaryadmin}checked="checked"{/if}><label>Non-voting administrator</label></td>
+      <td><input type="checkbox" class="primaryadmin admincheckbox" {if $pooluser.admin_type == 1}checked="checked"{/if}><label>Pool administrator</label></td>
+      <td><input type="checkbox" class="secondaryadmin admincheckbox" {if $pooluser.admin_type == 2}checked="checked"{/if}><label>Non-voting administrator</label></td>
     </tr>
     </table>
   </div>
@@ -80,7 +80,7 @@ Users in pool:
 </div>
 
 <div class="poolActionsDiv">
-<a href="{$SCRIPT_NAME}?a=deletepool&amp;p={$pool._id}&amp;csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
+<a href="{$SCRIPT_NAME}?a=deletepool&amp;p={$pool.id}&amp;csrftoken={$csrftoken}" class="alert deletePoolAction">Delete pool</a>
 </div>
 
 {include file='footer.tpl'}

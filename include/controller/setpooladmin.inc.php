@@ -1,25 +1,24 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
  * setpooladmin controller
  *
  * toggles users' admin state
  *
- * @param string $poolID pool ID
- * @param string $userID user ID
+ * @param string $poolid pool ID
+ * @param string $userid user ID
  * @param string $type admin type
  * @param string $csrftoken CSRF request token
  */
-function display_setpooladmin($poolID, $userID, $type, $csrftoken)
+function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 {
+	global $mysqldb;
+
 	$user = user_logged_in();
 	if (!$user) {
 		// user must be logged in
@@ -38,31 +37,15 @@ function display_setpooladmin($poolID, $userID, $type, $csrftoken)
 		return;
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// must have a pool to edit
 		echo "Pool is required";
 		return;
 	}
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('name', 'administrators'));
-	if (!$pool) {
-		// pool must exist
-		echo "Unknown pool";
-		return;
-	}
-
-	if (empty($userID)) {
+	if (empty($userid)) {
 		// must have a user
 		echo "User is required";
-		return;
-	}
-
-	$newadminuser = get_user($userID);
-
-	if (!$newadminuser) {
-		echo "Unknown user";
 		return;
 	}
 
@@ -71,71 +54,53 @@ function display_setpooladmin($poolID, $userID, $type, $csrftoken)
 		return;
 	}
 
-	$currentadmintype = 0;
+	$poolstmt = $mysqldb->prepare("SELECT pools.id AS pool_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS user_display_name, pool_administrators.id AS admin_id, pool_administrators.admin_type AS admin_type FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_USERS . " AS users ON users.id=? LEFT JOIN " . TOTE_TABLE_POOL_ADMINISTRATORS . " AS pool_administrators ON pools.id=pool_administrators.pool_id AND pool_administrators.user_id=? WHERE pools.id=?");
+	$poolstmt->bind_param('iii', $userid, $userid, $poolid);
+	$poolstmt->execute();
+	$poolresult = $poolstmt->get_result();
+	$data = $poolresult->fetch_assoc();
+	$poolresult->close();
+	$poolstmt->close();
 
-	if (isset($pool['administrators'])) {
-		foreach ($pool['administrators'] as $admin) {
-			if ((string)$admin['user'] == $userID) {
-				if (isset($admin['secondary']) && ($admin['secondary'] == true)) {
-					$currentadmintype = 2;
-				} else {
-					$currentadmintype = 1;
-				}
-				break;
-			}
-		}
+	if (!$data) {
+		// pool must exist
+		echo "Unknown pool";
+		return;
 	}
 
-	if ($type != $currentadmintype) {
-		$pools->update(
-			array('_id' => $pool['_id']),
-			array('$pull' => array(
-				'administrators' => array(
-					'user' => $newadminuser['_id']
-				)
-			))
-		);
-
-		$newadminusername = user_readable_name($newadminuser);
-
-		if ($type > 0) {
-
-			$admindata = array();
-			$admindata['user'] = $newadminuser['_id'];
-			$admindata['name'] = $newadminusername;
-			if ($type == 2) {
-				$admindata['secondary'] = true;
-			}
-
-			$pools->update(
-				array('_id' => $pool['_id']),
-				array('$push' => array(
-					'administrators' => $admindata
-				))
-			);
-
-		}
-
-		// audit
-		$username = user_readable_name($user);
-		$action = array(
-			'action' => 'pooladminchange',
-			'user' => $newadminuser['_id'],
-			'user_name' => $newadminusername,
-			'admin' => $user['_id'],
-			'admin_name' => $username,
-			'time' => new MongoDate(time()),
-			'oldpooladmin' => (int)$currentadmintype,
-			'newpooladmin' => (int)$type
-		);
-
-		$pools->update(
-			array('_id' => $pool['_id']),
-			array('$push' => array(
-				'actions' => $action
-			))
-		);
-
+	if (empty($data['user_display_name'])) {
+		echo "Unknown user";
+		return;
 	}
+
+	$currentadminid = $data['admin_id'];
+	$currentadmintype = (int)$data['admin_type'];
+	$type = (int)$type;
+
+	if ($type == $currentadmintype)
+		return;
+
+	$adminstmt = null;
+	if ($currentadmintype == 0) {
+		// add admin record
+		$adminstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (?, ?, ?, ?)');
+		$adminstmt->bind_param('iisi', $poolid, $userid, $data['user_display_name'], $type);
+	} else if ($type == 0) {
+		// remove admin record
+		$adminstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' WHERE id=?');
+		$adminstmt->bind_param('i', $currentadminid);
+	} else {
+		// update admin record
+		$adminstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' SET name=?, admin_type=? WHERE id=?');
+		$adminstmt->bind_param('sii', $data['user_display_name'], $type, $currentadminid);
+	}
+	$adminstmt->execute();
+	$adminstmt->close();
+
+	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, admin_type, old_admin_type) VALUES (?, 3, UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?)');
+	$adminname = user_readable_name($user);
+	$actionstmt->bind_param('iisisii', $poolid, $userid, $data['user_display_name'], $user['id'], $adminname, $type, $currentadmintype);
+	$actionstmt->execute();
+	$actionstmt->close();
 
 }
