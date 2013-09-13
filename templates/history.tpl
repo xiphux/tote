@@ -17,46 +17,44 @@
 <th>Comment</th>
 </tr>
 </thead>
-{foreach from=$actions key=time item=timeactions}
-
-{foreach from=$timeactions item=action}
+{foreach from=$actions item=action}
 <tr class="{cycle values=light,dark}">
-  <td><time datetime="{$action.time->format('Y-m-d\TH:i:sO')}">{$action.time->format('r')}</time></td>
-  <td>{$action.user_name}</td>
-  <td>{if $action.admin_name}{$action.admin_name}{/if}</td>
+  <td><time datetime="{$action.timelocal->format('Y-m-d\TH:i:sO')}">{$action.timelocal->format('r')}</time></td>
+  <td>{$action.username}</td>
+  <td>{if $action.admin_username}{$action.admin_username}{/if}</td>
   <td class="center">{if $action.week && ($action.week > 0)}{$action.week}{/if}</td>
   <td>
-  {if $action.action == 'bet'}
-  Pick added: {$action.team.abbreviation}
-  {elseif $action.action == 'edit'}
-    {if $action.from_team && $action.to_team}
-    Admin changed pick from {$action.from_team.abbreviation} to {$action.to_team.abbreviation}
-    {elseif $action.from_team}
-    Admin deleted pick of {$action.from_team.abbreviation}
-    {elseif $action.to_team}
-    Admin added pick of {$action.to_team.abbreviation}
+  {if $action.action == 4}
+  Pick added: {$action.team_abbr}
+  {elseif $action.action == 5}
+    {if $action.team_id && $action.old_team_id}
+    Admin changed pick from {$action.old_team_abbr} to {$action.team_abbr}
+    {elseif $action.old_team_id}
+    Admin deleted pick of {$action.old_team_abbr}
+    {elseif $action.team_id}
+    Admin added pick of {$action.team_abbr}
     {/if}
-  {elseif $action.action == 'addentrant'}
+  {elseif $action.action == 1}
     Admin added user to pool
-  {elseif $action.action == 'removeentrant'}
+  {elseif $action.action == 2}
     Admin removed user from pool
-  {elseif $action.action == 'pooladminchange'}
-    {if $action.newpooladmin == 2}
-      {if $action.oldpooladmin == 1}
+  {elseif $action.action == 3}
+    {if $action.admin_type == 2}
+      {if $action.old_admin_type == 1}
         Admin changed user from pool administrator to non-voting pool administrator
-      {elseif $action.oldpooladmin == 0}
+      {elseif $action.old_admin_type == 0}
       	Admin set user as non-voting pool administrator
       {/if}
-    {elseif $action.newpooladmin == 1}
-      {if $action.oldpooladmin == 2}
+    {elseif $action.admin_type == 1}
+      {if $action.old_admin_type == 2}
       	Admin changed user from non-voting pool administrator to pool administrator
-      {elseif $action.oldpooladmin == 0}
+      {elseif $action.old_admin_type == 0}
         Admin set user as pool administrator
       {/if}
-    {elseif $action.newpooladmin == 0}
-      {if $action.oldpooladmin == 2}
+    {elseif $action.admin_type == 0}
+      {if $action.old_admin_type == 2}
       	Admin removed user from non-voting pool administrators
-      {elseif $action.oldpooladmin == 1}
+      {elseif $action.old_admin_type == 1}
         Admin removed user from pool administrators
       {/if}
     {/if}
@@ -64,8 +62,6 @@
   </td>
   <td>{if $action.comment}{$action.comment}{/if}</td>
 </tr>
-{/foreach}
-
 {/foreach}
 </table>
 

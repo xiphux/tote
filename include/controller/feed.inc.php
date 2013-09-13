@@ -1,9 +1,6 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
@@ -15,20 +12,24 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  * displays pool audit history in a variety of formats
  *
  * @param string $format format to display
- * @param string $poolID pool to display
+ * @param string $poolid pool to display
  */
-function display_feed($format, $poolID)
+function display_feed($format, $poolid)
 {
-	global $tpl;
+	global $tpl, $mysqldb;
 
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	if (empty($poolid)) {
+		echo "Pool is required";
+		return;
+	}
 
-	// if we don't have a pool, try to find the most recent pool
-	$poolobj = null;
-	if (empty($poolID))
-		$poolobj = $pools->find()->sort(array('season' => -1))->getNext();
-	else
-		$poolobj = $pools->findOne(array('_id' => new MongoId($poolID)));
+	$poolstmt = $mysqldb->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=?');
+	$poolstmt->bind_param('i', $poolid);
+	$poolstmt->execute();
+	$poolresult = $poolstmt->get_result();
+	$poolobj = $poolresult->fetch_assoc();
+	$poolresult->close();
+	$poolstmt->close();
 
 	if (!$poolobj) {
 		// we need some pool
@@ -36,68 +37,74 @@ function display_feed($format, $poolID)
 		return;
 	}
 
-	$actions = array();
+	$actionquery = <<<EOQ
+SELECT
+pool_actions.time,
+pool_actions.user_id,
+(CASE
+ WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name)
+ WHEN (users.first_name IS NOT NULL) THEN users.first_name
+ WHEN (users.username IS NOT NULL) THEN users.username
+ ELSE pool_actions.username
+END) AS username,
+users.email AS user_email,
+pool_actions.admin_id,
+(CASE
+ WHEN (admins.first_name IS NOT NULL AND admins.last_name IS NOT NULL) THEN CONCAT(CONCAT(admins.first_name,' '),admins.last_name)
+ WHEN (admins.first_name IS NOT NULL) THEN admins.first_name
+ WHEN (admins.username IS NOT NULL) THEN admins.username
+ ELSE pool_actions.admin_username
+END) AS admin_username,
+admins.email AS admin_email,
+pool_actions.week,
+pool_actions.action,
+pool_actions.team_id,
+(CONCAT(CONCAT(teams.home,' '),teams.team)) AS team_name,
+teams.abbreviation AS team_abbr,
+pool_actions.old_team_id,
+(CONCAT(CONCAT(old_teams.home,' '),old_teams.team)) AS old_team_name,
+old_teams.abbreviation AS old_team_abbr,
+pool_actions.admin_type,
+pool_actions.old_admin_type,
+pool_actions.comment
+FROM %s AS pool_actions
+LEFT JOIN %s AS users
+ON pool_actions.user_id=users.id
+LEFT JOIN %s AS admins
+ON pool_actions.admin_id=admins.id
+LEFT JOIN %s AS teams
+ON pool_actions.team_id=teams.id
+LEFT JOIN %s AS old_teams
+ON pool_actions.old_team_id=old_teams.id
+WHERE pool_actions.pool_id=?
+ORDER BY pool_actions.time DESC
+EOQ;
 
+	$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS, TOTE_TABLE_USERS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
+	$actionstmt = $mysqldb->prepare($actionquery);
+	$actionstmt->bind_param('i', $poolid);
+	$actionstmt->execute();
+	$actionresult = $actionstmt->get_result();
+
+	$tz = date_default_timezone_get();
+	date_default_timezone_set('UTC');
+
+	$actions = array();
 	$updated = null;
 
-	if (isset($poolobj['actions'])) {
-		foreach ($poolobj['actions'] as $action) {
-		
-			// load user data
-			if (!empty($action['user'])) {
-				$action['user'] = get_user($action['user']);
-				if (!empty($action['user'])) {
-					// use the readable name from the user record
-					// if the record still exists
-					$action['user_name'] = user_readable_name($action['user']);
-				}
-			}
-
-			// load admin data
-			if (!empty($action['admin'])) {
-				$action['admin'] = get_user($action['admin']);
-				if (!empty($action['admin'])) {
-					// use the readable name from the user record
-					// if the record still exists
-					$action['admin_name'] = user_readable_name($action['admin']);
-				}
-			}
-
-			// load team data
-			if (!empty($action['team'])) {
-				$action['team'] = get_team($action['team']);
-			}
-
-			// load from team data (for edits)
-			if (!empty($action['from_team'])) {
-				$action['from_team'] = get_team($action['from_team']);
-			}
-
-			// load to team data (for edits)
-			if (!empty($action['to_team'])) {
-				$action['to_team'] = get_team($action['to_team']);
-			}
-
-			// format times with timezones
-			$sec = $action['time']->sec;
-			if (($format == 'html') || ($format == 'js')) {
-				$action['time'] = get_local_datetime($action['time']);
-			} else {
-				$action['time'] = new DateTime('@' . $action['time']->sec);
-			}
-
-			// keep the most recent updated time
-			if ((!$updated) || ((int)$updated->format('U') < $sec))
-				$updated = $action['time'];
-
-			// index by time
-			$actions[$sec][] = $action;
-
-		}
+	while ($action = $actionresult->fetch_assoc()) {
+		$action['time'] = strtotime($action['time']);
+		$action['timelocal'] = get_local_datetime(null, $action['time']);
+		$action['time'] = new DateTime('@' . $action['time']);
+		if (!$updated)
+			$updated = $action['time'];
+		$actions[] = $action;
 	}
 
-	// sort by time descending
-	krsort($actions);
+	$tz = date_default_timezone_set($tz);
+
+	$actionresult->close();
+	$actionstmt->close();
 
 	// set data
 	$tpl->assign('pool', $poolobj);
