@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-
 /**
  * Gets the object for the logged in user
  *
