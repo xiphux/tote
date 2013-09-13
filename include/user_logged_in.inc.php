@@ -1,5 +1,7 @@
 <?php
 
+$loggedinuser = null;
+
 /**
  * Gets the object for the logged in user
  *
@@ -7,19 +9,26 @@
  */
 function user_logged_in()
 {
-	global $mysqldb;
+	global $mysqldb, $loggedinuser;
 
 	if (empty($_SESSION['user']))
 		return null;
 
-	$userstmt = $mysqldb->prepare('SELECT * FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
-	$userstmt->bind_param('s', $_SESSION['user']);
-	$userstmt->execute();
-	$userresult = $userstmt->get_result();
-	$user = $userresult->fetch_assoc();
+	if (!$loggedinuser) {
 
-	$userresult->close();
-	$userstmt->close();
+		$userstmt = $mysqldb->prepare('SELECT * FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+		$userstmt->bind_param('s', $_SESSION['user']);
+		$userstmt->execute();
+		$userresult = $userstmt->get_result();
+		$loggedinuser = $userresult->fetch_assoc();
 
-	return $user;
+		$userresult->close();
+		$userstmt->close();
+
+		unset($loggedinuser['salt']);
+		unset($loggedinuser['password']);
+
+	}
+
+	return $loggedinuser;
 }
