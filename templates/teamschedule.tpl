@@ -25,8 +25,8 @@
 
 <div class="scheduleTocContent">
 <ul>
-{foreach from=$games item=teamgames key=team}
-<li><a href="#{$team}">{$teamnames.$team}</a></li>
+{foreach from=$games item=teamgroup key=teamid}
+<li><a href="#{$teamid}">{$teamgroup.team}</a></li>
 {/foreach}
 </ul>
 </div>
@@ -40,30 +40,30 @@
 
 <td class="scheduleContent teamScheduleContent">
 
-{foreach from=$games item=teamgames key=team}
+{foreach from=$games item=teamgroup key=team}
 <div class="divScheduleTeam divScheduleItem" id="{$team}">
-<div class="scheduleSubHeader">{$teamnames.$team}</div>
-<table>
-{foreach from=$teamgames item=game key=eachweek}
-<tr>
-<td>
-Week {$eachweek}:
-</td>
-<td>
-{if $game.bye}
-Bye
-{else}
-{$game.away_team.abbreviation} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team.abbreviation} {if isset($game.home_score)}{$game.home_score}{/if}
-{/if}
-</td>
-<td>
-{if !$game.bye}
-<time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('D M j, Y g:i a T')}</time>
-{/if}
-</td>
-</tr>
-{/foreach}
-</table>
+  <div class="scheduleSubHeader">{$teamgroup.team}</div>
+  <table>
+  {foreach from=$teamgroup.games item=game key=eachweek}
+   <tr>
+    <td>
+     Week {$eachweek}:
+    </td>
+    <td>
+     {if $game.bye}
+     Bye
+     {else}
+     {$game.away_team_abbr} {if isset($game.away_score)}{$game.away_score}{/if} @ {$game.home_team_abbr} {if isset($game.home_score)}{$game.home_score}{/if}
+     {/if}
+    </td>
+    <td>
+     {if !$game.bye}
+      <time datetime="{$game.localstart->format('Y-m-d\TH:i:sO')}">{$game.localstart->format('D M j, Y g:i a T')}</time>
+     {/if}
+    </td>
+   </tr>
+  {/foreach}
+  </table>
 </div>
 {/foreach}
 
