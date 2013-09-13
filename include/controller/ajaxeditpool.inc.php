@@ -1,8 +1,6 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
@@ -13,13 +11,15 @@ require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
  *
  * perform AJAX asynchronous pool modifications
  *
- * @param string $poolID pool ID
+ * @param string $poolid pool ID
  * @param string $modification type of modification to do
  * @param array $modusers list of users being modified
  * @param string $csrftoken CSRF request token
  */
-function display_ajaxeditpool($poolID, $modification, $modusers, $csrftoken)
+function display_ajaxeditpool($poolid, $modification, $modusers, $csrftoken)
 {
+	global $mysqldb;
+
 	$user = user_logged_in();
 	if (!$user) {
 		// user must be logged in
@@ -38,18 +38,9 @@ function display_ajaxeditpool($poolID, $modification, $modusers, $csrftoken)
 		return;
 	}
 
-	if (empty($poolID)) {
+	if (empty($poolid)) {
 		// must have a pool to edit
 		echo "Pool is required";
-		return;
-	}
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-
-	$pool = $pools->findOne(array('_id' => new MongoId($poolID)), array('season', 'name', 'entries'));
-	if (!$pool) {
-		// pool must exist
-		echo "Unknown pool";
 		return;
 	}
 
@@ -65,55 +56,67 @@ function display_ajaxeditpool($poolID, $modification, $modusers, $csrftoken)
 		return;
 	}
 
+	$poolstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
+	$poolstmt->bind_param('i', $poolid);
+	$poolstmt->execute();
+	$found = $poolstmt->fetch();
+	$poolstmt->close();
+
+	if (!$found) {
+		// pool must exist
+		echo "Unknown pool";
+		return;
+	}
+
 	$adminusername = user_readable_name($user);
 
-	switch ($modification) {
-		case 'add':
-		case 'remove':
-			$actions = array();
-			$moduserdata = array();
-			foreach ($modusers as $muser) {
-				// for each user, set up the modification
-				// and the audit log entry
-				$muserid = new MongoId($muser);
-				if ($modification == 'add') {
-					$moduserdata[] = array('user' => $muserid);
-				} else if ($modification == 'remove') {
-					$moduserdata[] = $muserid;
-				}
-				$muserobj = get_user($muserid);
-				$musername = user_readable_name($muserobj);
-				$action = array(
-					'action' => 'addentrant',
-					'user' => $muserid,
-					'user_name' => $musername,
-					'admin' => $user['_id'],
-					'admin_name' => $adminusername,
-					'time' => new MongoDate(time())
-				);
-				if ($modification == 'add') {
-					$action['action'] = 'addentrant';
-					$actions[] = $action;
-				} else if ($modification == 'remove') {
-					$action['action'] = 'removeentrant';
-					$actions[] = $action;
-				}
-			}
+	if (($modification == 'add') || ($modification == 'remove')) {
+		
+		$modstmt = null;
 
-			// do the modification and audit
-			if ($modification == 'add') {
-				$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('entries' => $moduserdata)));
-			} else if ($modification == 'remove') {
-				$pools->update(array('_id' => $pool['_id']), array('$pull' => array('entries' => array('user' => array('$in' => $moduserdata)))));
-			}
-			$pools->update(array('_id' => $pool['_id']), array('$pushAll' => array('actions' => $actions)));
-			clear_cache('pool|' . (string)$pool['_id']);
+		if ($modification == 'add') {
+			$modstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (?, ?)');
+		} else {
+			$modstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?');
+		}
 
-			break;
+		$actionquery = <<<EOQ
+INSERT INTO %s
+(pool_id, time, action, user_id, username, admin_id, admin_username)
+VALUES
+(?, UTC_TIMESTAMP(), ?, ?, (
+SELECT
+(CASE
+WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name)
+WHEN users.first_name IS NOT NULL THEN users.first_name
+ELSE users.username
+END)
+FROM %s AS users
+WHERE id=?
+),
+?, ?)
+EOQ;
 
-		default:
-			echo "Unknown modification";
-			return;
+		$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS);
+		$actionstmt = $mysqldb->prepare($actionquery);
+		$action = ($modification == 'add') ? 1 : 2;
+
+		foreach ($modusers as $muser) {
+
+			$modstmt->bind_param('ii', $poolid, $muser);
+			$modstmt->execute();
+
+			$actionstmt->bind_param('iiiiis', $poolid, $action, $muser, $muser, $user['id'], $adminusername);
+			$actionstmt->execute();
+
+		}
+
+		$actionstmt->close();
+		$modstmt->close();
+
+		clear_cache('pool|' . $poolid);
+	} else {
+		echo "Unknown modification";
 	}
 
 }
