@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'team_abbreviation_to_id.inc.php');
-
 function point_spread_team_to_abbr($team)
 {
 	switch ($team) {
@@ -80,6 +77,8 @@ function point_spread_team_to_abbr($team)
  */
 function import_point_spreads($season)
 {
+	global $mysqldb;
+
 	if ($season < 2011) {
 		// feeds aren't available before this
 		return;
@@ -108,7 +107,10 @@ function import_point_spreads($season)
 		return;
 	}
 
-	$games = get_collection(TOTE_COLLECTION_GAMES);
+	$oldtz = date_default_timezone_get();
+
+	$gamestmt = $mysqldb->prepare('SELECT games.id, games.favorite_id, favorites.abbreviation AS favorite_abbr, games.point_spread FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS favorites ON games.favorite_id=favorites.id WHERE seasons.year=? AND games.home_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?) AND games.away_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?) AND games.start>=? AND games.start<?');
+	$spreadstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET favorite_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?), point_spread=? WHERE id=?');
 
 	for ($i = 0; $i < $scoresnode->childNodes->length; $i++) {
 		$datenode = $scoresnode->childNodes->item($i);
@@ -182,57 +184,41 @@ function import_point_spreads($season)
 					continue;
 				}
 
-				$homeid = team_abbreviation_to_id($homeabbr);
-				if (empty($homeid)) {
-					echo "invalid home team<br />\n";
-					continue;
-				}
-
-				$visitorid = team_abbreviation_to_id($visitorabbr);
-				if (empty($visitorid)) {
-					echo "invalid away team<br />\n";
-					continue;
-				}
-
 				$favoriteabbr = point_spread_team_to_abbr($favorite);
-				$favoriteid = team_abbreviation_to_id($favoriteabbr);
 
+				date_default_timezone_set('America/New_York');
 				$datestamp = strtotime($date . ' 00:00:00');
 				$nextdatestamp = $datestamp + 86400;
-				$mdate = new MongoDate($datestamp);
-				$nextmdate = new MongoDate($nextdatestamp);
 
-				$gameobj = $games->findOne(
-					array(
-						'season' => (int)$season,
-						'home_team' => $homeid,
-						'away_team' => $visitorid,
-						'start' => array(
-							'$gte' => $mdate,
-							'$lt' => $nextmdate
-						)
-					),
-					array('favorite', 'point_spread')
-				);
-				if (!$gameobj) {
+				date_default_timezone_set('UTC');
+				$datestr = date('Y-m-d H:i:s', $datestamp);
+				$nextdatestr = date('Y-m-d H:i:s', $nextdatestamp);
+
+				$gamestmt->bind_param('issss', $season, $homeabbr, $visitorabbr, $datestr, $nextdatestr);
+				$gamestmt->execute();
+				$gameresult = $gamestmt->get_result();
+				$game = $gameresult->fetch_assoc();
+				$gameresult->close();
+
+				if (!$game) {
 					echo "game not found<br />\n";
 					continue;
 				}
 
-				if (isset($gameobj['favorite']) && isset($gameobj['point_spread']) && ($gameobj['favorite'] == $favoriteid) && ($gameobj['point_spread'] == $spread)) {
+				if (!empty($game['favorite_abbr']) && isset($game['point_spread']) && ($game['favorite_abbr'] == $favoriteabbr) && ($game['point_spread'] == $spread)) {
 					echo "no update necessary<br />\n";
 					continue;
 				} else {
-					$games->update(
-						array('_id' => $gameobj['_id']),
-						array('$set' => array(
-							'favorite' => $favoriteid,
-							'point_spread' => $spread
-						))
-					);
+					$spreadstmt->bind_param('sdi', $favoriteabbr, $spread, $game['id']);
+					$spreadstmt->execute();
 					echo "updated<br />\n";
 				}
 			}
 		}
 	}
+
+	$spreadstmt->close();
+	$gamestmt->close();
+
+	date_default_timezone_set($oldtz);
 }
