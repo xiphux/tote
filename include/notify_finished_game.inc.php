@@ -1,8 +1,5 @@
 <?php
 
-include_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-include_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
-
 /**
  * For users that have bet on this game and have notifications
  * turned on, let them know
@@ -16,14 +13,9 @@ include_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
  */
 function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, $awayscore)
 {
-	global $tpl, $tote_conf;
-
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
-	$users = get_collection(TOTE_COLLECTION_USERS);
+	global $tpl, $tote_conf, $mysqldb;
 
 	$tpl->assign('week', $week);
-	$tpl->assign('hometeam', get_team($hometeam));
-	$tpl->assign('awayteam', get_team($awayteam));
 	$tpl->assign('homescore', $homescore);
 	$tpl->assign('awayscore', $awayscore);
 
@@ -33,64 +25,65 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 	if (!empty($tote_conf['bccemail']))
 		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 
-	$seasonpools = $pools->find(array('season' => $season));
+	$notifyquery = <<<EOQ
+SELECT
+pool_entry_picks.team_id AS pick_id,
+(CONCAT(CONCAT(pick_teams.home,' '),pick_teams.team)) AS pick_team,
+away_teams.abbreviation AS away_team_abbr,
+home_teams.abbreviation AS home_team_abbr,
+users.email,
+pools.name AS pool_name,
+seasons.year AS season
+FROM %s AS pool_entry_picks
+LEFT JOIN %s AS pool_entries ON pool_entry_picks.pool_entry_id=pool_entries.id
+LEFT JOIN %s AS pools ON pool_entries.pool_id=pools.id
+LEFT JOIN %s AS seasons ON pools.season_id=seasons.id
+LEFT JOIN %s AS users ON pool_entries.user_id=users.id
+LEFT JOIN %s AS games ON games.season_id=pools.season_id AND games.week=pool_entry_picks.week AND (games.away_team_id=pool_entry_picks.team_id OR games.home_team_id=pool_entry_picks.team_id)
+LEFT JOIN %s AS pick_teams ON pool_entry_picks.team_id=pick_teams.id
+LEFT JOIN %s AS home_teams ON games.home_team_id=home_teams.id
+LEFT JOIN %s AS away_teams ON games.away_team_id=away_teams.id
+WHERE seasons.year=? AND pool_entry_picks.week=? AND (pool_entry_picks.team_id=? OR pool_entry_picks.team_id=?) AND users.email IS NOT NULL AND users.result_notification=1
+EOQ;
+	$notifyquery = sprintf($notifyquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOLS, TOTE_TABLE_SEASONS, TOTE_TABLE_USERS, TOTE_TABLE_GAMES, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
+	$notifystmt = $mysqldb->prepare($notifyquery);
+	$notifystmt->bind_param('iiii', $season, $week, $hometeam, $awayteam);
+	$notifystmt->execute();
+	$notifyresult = $notifystmt->get_result();
 
-	// go through all pools for this season
-	foreach ($seasonpools as $pool) {
-
-		$tpl->assign('pool', $pool);
-
-		// go through all entrants in the pool
-		foreach ($pool['entries'] as $entrant) {
-		
-			// check if the user has notifications turned on
-			$entrantuser = $users->findOne(array('_id' => $entrant['user']), array('resultnotification', 'username', 'email', 'first_name', 'last_name'));
-			if ($entrantuser && isset($entrantuser['resultnotification']) && ($entrantuser['resultnotification'] === true) && !empty($entrantuser['email'])) {
-				foreach ($entrant['bets'] as $bet) {
-					if ($bet['week'] != $week) {
-						// wrong week
-						continue;
-					}
-
-					if (($bet['team'] != $hometeam) && ($bet['team'] != $awayteam)) {
-						// didn't bet on this game
-						continue;
-					}
-
-					$win = false;
-					$loss = false;
-					if (
-						(($bet['team'] == $hometeam) && ($homescore > $awayscore)) ||
-						(($bet['team'] == $awayteam) && ($awayscore > $homescore))
-					) {
-						$win = true;
-					} else if (
-						(($bet['team'] == $hometeam) && ($awayscore > $homescore)) ||
-						(($bet['team'] == $awayteam) && ($homescore > $awayscore))
-					) {
-						$loss = true;
-					}
-					// (otherwise assume push)
-
-					$subject = '';
-					if ($win) {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick won';
-					} else if ($loss) {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick lost';
-					} else {
-						$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick pushed';
-					}
-
-					$tpl->assign('user', $entrantuser);
-					$tpl->assign('bet', get_team($bet['team']));
-					$tpl->assign('win', $win);
-					$tpl->assign('loss', $loss);
-					$message = $tpl->fetch('notificationemail.tpl');
-					mail($entrantuser['email'], $subject, $message, $headers);
-				}
-			}
-
+	while ($notify = $notifyresult->fetch_assoc()) {
+		$win = false;
+		$loss = false;
+		if (
+			(($notify['pick_id'] == $hometeam) && ($homescore > $awayscore)) ||
+			(($notify['pick_id'] == $awayteam) && ($awayscore > $homescore))
+		) {
+			$win = true;
+		} else if (
+			(($notify['pick_id'] == $hometeam) && ($homescore < $awayscore)) ||
+			(($notify['pick_id'] == $awayteam) && ($awayscore < $homescore))
+		) {
+			$loss = true;
 		}
+
+		$subject = '';
+		if ($win) {
+			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick won';
+		} else if ($loss) {
+			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick lost';
+		} else {
+			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick pushed';
+		}
+
+		$tpl->assign('win', $win);
+		$tpl->assign('loss', $loss);
+		$tpl->assign('data', $notify);
+		$message = $tpl->fetch('notificationemail.tpl');
+		mail($notify['email'], $subject, $message, $headers);
 	}
+
+	$notifyresult->close();
+	$notifystmt->close();
+
 }
 

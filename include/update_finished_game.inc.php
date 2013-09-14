@@ -1,6 +1,6 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'team_abbreviation_to_id.inc.php');
+require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'notify_finished_game.inc.php');
 
 /**
@@ -19,62 +19,38 @@ require_once(TOTE_INCLUDEDIR . 'notify_finished_game.inc.php');
  */
 function update_finished_game($season, $week, $team1, $team1score, $team2, $team2score, $skipmsg = false)
 {
+	global $mysqldb;
+
 	if (!$skipmsg) {
 		echo 'Updating ' . $team1 . ' ' . $team1score . ', ' . $team2 . ' ' . $team2score . '... ';
 	}
 
-	// find the teams we're updating
-	$team1id = team_abbreviation_to_id($team1);
-	if (empty($team1id)) {
-		echo "error: Couldn't locate " . $team1 . "<br />\n";
-		return;
-	}
-	$team2id = team_abbreviation_to_id($team2);
-	if (empty($team2id)) {
-		echo "error: Couldn't locate " . $team2 . "<br />\n";
-		return;
-	}
+	$gamestmt = $mysqldb->prepare('SELECT games.id, games.home_team_id, home_teams.abbreviation AS home_team_abbr, games.away_team_id, away_teams.abbreviation AS away_team_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND games.week=? AND ((home_teams.abbreviation=? AND away_teams.abbreviation=?) OR (home_teams.abbreviation=? AND away_teams.abbreviation=?))');
+	$gamestmt->bind_param('iissss', $season, $week, $team1, $team2, $team2, $team1);
+	$gamestmt->execute();
+	$gameresult = $gamestmt->get_result();
+	$game = $gameresult->fetch_assoc();
+	$gameresult->close();
+	$gamestmt->close();
 
-	$games = get_collection(TOTE_COLLECTION_GAMES);
-
-	// find the game where these two teams are playing this week
-	$js = "function() {
-		return ((this.home_team == '" . $team1id . "') && (this.away_team == '" . $team2id . "')) || ((this.home_team == '" . $team2id . "') && (this.away_team == '" . $team1id . "'));
-	}";
-	$gameobj = $games->findOne(
-		array(
-			'season' => (int)$season,
-			'week' => (int)$week,
-			'$where' => $js
-		)
-	);
-	if (!$gameobj) {
+	if (!$game) {
 		// these teams aren't playing this week
 		echo "error: Couldn't locate " . $team1 . " vs " . $team2 . " for week " . $week . "<br />\n";
 		return;
 	}
 
-	$hometeam = '';
-	$awayteam = '';
-	$homeid = '';
-	$awayid = '';
+	$hometeam = $game['home_team_abbr'];
+	$awayteam = $game['away_team_abbr'];
+	$homeid = $game['home_team_id'];
+	$awayid = $game['away_team_id'];
 	$homescore = '';
 	$awayscore = '';
 
-	// figure out which team is home and which is away
-	if ($gameobj['home_team'] == $team1id) {
-		$hometeam = $team1;
-		$homeid = $team1id;
+	if ($hometeam == $team1) {
 		$homescore = $team1score;
-		$awayteam = $team2;
-		$awayid = $team2id;
 		$awayscore = $team2score;
-	} else if ($gameobj['home_team'] == $team2id) {
-		$hometeam = $team2;
-		$homeid = $team2id;
+	} else if ($hometeam == $team2) {
 		$homescore = $team2score;
-		$awayteam = $team1;
-		$awayid = $team1id;
 		$awayscore = $team1score;
 	} else {
 		// should never happen
@@ -82,21 +58,20 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		return;
 	}
 
-	if (!isset($gameobj['home_score']) || !isset($gameobj['away_score']) || ($gameobj['home_score'] != $homescore) || ($gameobj['away_score'] != $awayscore)) {
+	if (($game['home_score'] != $homescore) || ($game['away_score'] != $awayscore)) {
 
 		// scores don't match what we have in database - update it
-		echo 'updating from ' . $awayteam . (isset($gameobj['away_score']) ? ' ' . $gameobj['away_score'] : '') . ' @ ' . $hometeam . (isset($gameobj['home_score']) ? ' ' . $gameobj['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . "<br />\n";
-		if (!(isset($gameobj['home_score']) || isset($gameobj['away_score']))) {
+		echo 'updating from ' . $awayteam . (isset($game['away_score']) ? ' ' . $game['away_score'] : '') . ' @ ' . $hometeam . (isset($game['home_score']) ? ' ' . $game['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . "<br />\n";
+		if (!(isset($game['home_score']) || isset($game['away_score']))) {
 			// send notification emails if recording scores for the first time
 			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
 		}
-		$games->update(
-			array('_id' => $gameobj['_id']),
-			array('$set' => array(
-				'home_score' => (int)$homescore,
-				'away_score' => (int)$awayscore
-			))
-		);
+
+		$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET home_score=?, away_score=? WHERE id=?');
+		$updatestmt->bind_param('iii', $homescore, $awayscore, $game['id']);
+		$updatestmt->execute();
+		$updatestmt->close();
+		
 		clear_cache('pool');
 	} else {
 		// we're up to date
