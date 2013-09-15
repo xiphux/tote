@@ -122,6 +122,9 @@ define ['jquery'], ($, Game) ->
           @__table.removeClass 'tickerGameFinished'
           @__table.removeClass 'tickerGamePending'
           @__table.addClass 'tickerPlaying'
+          if quarter is 'H'
+            @__homePossessionCell.text ''
+            @__visitorPossessionCell.text ''
 
       if quarter isnt 'P'
         @__homeScoreCell.text @__game.homeScore()
