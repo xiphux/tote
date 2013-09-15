@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
-
 /**
  * For a season figure out which weeks are still
  * open for betting
@@ -16,20 +14,20 @@ function get_open_weeks($season)
 	if (empty($season))
 		return null;
 
-	$weeks = get_season_weeks($season);
-	$openweeks = array_fill(1, $weeks, false);
+	$weekstmt = $mysqldb->prepare('SELECT games.week, MAX(games.start>UTC_TIMESTAMP()) FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=? GROUP BY games.week ORDER BY games.week');
+	$weekstmt->bind_param('i', $season);
 
-	$weeksstmt = $mysqldb->prepare('SELECT DISTINCT week FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=? AND games.start>UTC_TIMESTAMP()');
-	$weeksstmt->bind_param('i', $season);
-	$weeksstmt->execute();
-	$weeksresult = $weeksstmt->get_result();
+	$week = null;
+	$open = null;
 
-	while ($week = $weeksresult->fetch_assoc()) {
-		$openweeks[(int)$week['week']] = true;
+	$weekstmt->bind_result($week, $open);
+	$weekstmt->execute();
+
+	$openweeks = array();
+	while ($weekstmt->fetch()) {
+		$openweeks[(int)$week] = ($open == 1);
 	}
-
-	$weeksresult->close();
-	$weeksstmt->close();
+	$weekstmt->close();
 
 	return $openweeks;
 }
