@@ -5,7 +5,6 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -65,7 +64,7 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 		return;
 	}
 
-	$entrantstmt = $mysqldb->prepare('SELECT seasons.year AS season, pool_entries.id AS entry_id, users.first_name, users.last_name, users.username  FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN ' . TOTE_TABLE_USERS . ' ON users.id=pool_entries.user_id WHERE pools.id=?');
+	$entrantstmt = $mysqldb->prepare("SELECT seasons.year AS season, pool_entries.id AS entry_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS display_name  FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON pools.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_POOL_ENTRIES . " AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN " . TOTE_TABLE_USERS . " ON users.id=pool_entries.user_id WHERE pools.id=?");
 	$entrantstmt->bind_param('ii', $entrant, $poolid);
 	$entrantstmt->execute();
 	$entrantresult = $entrantstmt->get_result();
@@ -109,8 +108,8 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 	$comment = trim($comment);
 	$comment = !empty($comment) ? $comment : null;
 	$adminid = $user['id'];
-	$adminname = user_readable_name($user);
-	$entrantname = user_readable_name($entrantobj);
+	$adminname = $user['display_name'];
+	$entrantname = $entrantobj['display_name'];
 	$entrantid = $entrantobj['entry_id'];
 
 	for ($i = 1; $i <= $weeks; ++$i) {

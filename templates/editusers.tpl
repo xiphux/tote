@@ -65,7 +65,7 @@ Last Password Change
 <tbody>
 {foreach from=$allusers item=eachuser}
 <tr class="{cycle values=light,dark}">
- <td>{$eachuser.readable_name}</td>
+ <td>{$eachuser.display_name}</td>
  <td class="username">{$eachuser.username}</td>
  <td>
  {if $eachuser.email}

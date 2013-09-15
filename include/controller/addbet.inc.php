@@ -3,7 +3,6 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -125,15 +124,13 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 		return;
 	}
 
-	$username = user_readable_name($user);
-
 	$pickstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed) VALUES (?, ?, ?, UTC_TIMESTAMP())');
 	$pickstmt->bind_param('iii', $entryid, $week, $team);
 	$pickstmt->execute();
 	$pickstmt->close();
 
 	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, week, team_id) VALUES (?, 4, UTC_TIMESTAMP(), ?, ?, ?, ?)');
-	$actionstmt->bind_param('iisii', $poolid, $user['id'], $username, $week, $team);
+	$actionstmt->bind_param('iisii', $poolid, $user['id'], $user['display_name'], $week, $team);
 	$actionstmt->execute();
 	$actionstmt->close();
 

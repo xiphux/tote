@@ -2,7 +2,6 @@
 
 require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
-require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
 
 /**
  * sort_poolentrant
@@ -27,7 +26,7 @@ function sort_poolentrant($a, $b)
 		return ($a['spread'] > $b['spread'] ? -1 : 1);
 
 	// finally fall back on alphabetical
-	return sort_users($a['user'], $b['user']);
+	return strcasecmp($a['user']['display_name'], $b['user']['display_name']);
 }
 
 /**
@@ -76,9 +75,11 @@ function get_pool_record($poolid)
 	$pickquery = <<<EOQ
 SELECT
 users.id AS user_id,
-users.username,
-users.first_name AS first_name,
-users.last_name AS last_name,
+(CASE
+ WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name)
+ WHEN users.first_name IS NOT NULL THEN users.first_name
+ ELSE users.username
+END) AS display_name,
 pool_entry_picks.team_id AS pick_team_id,
 pick_teams.abbreviation AS pick_team_abbr,
 pool_entry_picks.week AS week,
@@ -104,7 +105,7 @@ ON games.home_team_id=home_teams.id
 LEFT JOIN %s AS away_teams
 ON games.away_team_id=away_teams.id
 WHERE pool_entries.pool_id=?
-ORDER BY users.username, pool_entry_picks.week
+ORDER BY display_name, pool_entry_picks.week
 EOQ;
 	$pickquery = sprintf($pickquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_TEAMS, TOTE_TABLE_USERS, TOTE_TABLE_POOLS, TOTE_TABLE_GAMES, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
 	$pickstmt = $mysqldb->prepare($pickquery);
@@ -124,9 +125,7 @@ EOQ;
 			$poolrecord[$lastidx] = array(
 				'user' => array(
 					'id' => $pick['user_id'],
-					'username' => $pick['username'],
-					'first_name' => $pick['first_name'],
-					'last_name' => $pick['last_name']
+					'display_name' => $pick['display_name']
 				),
 				'wins' => 0,
 				'losses' => 0,

@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
-
 /**
  * smarty_modifier_userlist
  *
@@ -21,7 +19,7 @@ function smarty_modifier_userlist($users)
 	for ($i = 0; $i < $usercount; $i++) {
 		$name = '';
 		if (is_array($users[$i]))
-			$name = user_readable_name($users[$i]);
+			$name = $users[$i]['display_name'];
 		else
 			$name = $users[$i];
 

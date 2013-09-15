@@ -15,7 +15,7 @@ function get_pool_administrators($poolid)
 	if (empty($poolid))
 		return null;
 
-	$adminstmt = $mysqldb->prepare('SELECT pool_administrators.user_id, pool_administrators.name, pool_administrators.admin_type, users.first_name, users.last_name, users.username FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' AS pool_administrators LEFT JOIN ' . TOTE_TABLE_USERS . ' AS users ON pool_administrators.user_id=users.id WHERE pool_administrators.pool_id=?');
+	$adminstmt = $mysqldb->prepare("SELECT pool_administrators.user_id, pool_administrators.name, pool_administrators.admin_type, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS display_name FROM " . TOTE_TABLE_POOL_ADMINISTRATORS . " AS pool_administrators LEFT JOIN " . TOTE_TABLE_USERS . " AS users ON pool_administrators.user_id=users.id WHERE pool_administrators.pool_id=?");
 	$adminstmt->bind_param('i', $poolid);
 	$adminstmt->execute();
 	$adminresult = $adminstmt->get_result();

@@ -1,6 +1,6 @@
 {include file='header.tpl' header="Edit A User's Picks" homelink=true}
 
-<p>Editing picks for {if $entrant.first_name}{$entrant.first_name}{if $entrant.last_name} {$entrant.last_name}{/if}{else}{$entrant.username}{/if} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
+<p>Editing picks for {$entrant.display_name} in {$pool.name} [{$pool.season}-{$pool.season+1}]</p>
 
 <form action="index.php?a=savebets" method="post">
 <table class="formTable">

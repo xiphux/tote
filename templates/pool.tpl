@@ -138,9 +138,9 @@ Make a Pick
 <tr class="{cycle values=light,dark} {if $user.id == $entrant.user.id}self{/if}">
 <td class="entrantName">
 {if $user.role == 1}
-<a href="index.php?a=editbets&amp;p={$pool.id}&amp;u={$entrant.user.id}" title="Edit {if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}'s picks">
+<a href="index.php?a=editbets&amp;p={$pool.id}&amp;u={$entrant.user.id}" title="Edit {$entrant.user.display_name}'s picks">
 {/if}
-{if $entrant.user.first_name}{$entrant.user.first_name}{if $entrant.user.last_name} {$entrant.user.last_name}{/if}{else}{$entrant.user.username}{/if}
+{$entrant.user.display_name}
 {if $user.role == 1}
 </a>
 {/if}

@@ -3,7 +3,6 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 
 /**
  * setpooladmin controller
@@ -98,8 +97,7 @@ function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 	$adminstmt->close();
 
 	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, admin_type, old_admin_type) VALUES (?, 3, UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?)');
-	$adminname = user_readable_name($user);
-	$actionstmt->bind_param('iisisii', $poolid, $userid, $data['user_display_name'], $user['id'], $adminname, $type, $currentadmintype);
+	$actionstmt->bind_param('iisisii', $poolid, $userid, $data['user_display_name'], $user['id'], $user['display_name'], $type, $currentadmintype);
 	$actionstmt->execute();
 	$actionstmt->close();
 

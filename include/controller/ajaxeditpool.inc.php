@@ -3,7 +3,6 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 
 /**
@@ -68,8 +67,6 @@ function display_ajaxeditpool($poolid, $modification, $modusers, $csrftoken)
 		return;
 	}
 
-	$adminusername = user_readable_name($user);
-
 	if (($modification == 'add') || ($modification == 'remove')) {
 		
 		$modstmt = null;
@@ -106,7 +103,7 @@ EOQ;
 			$modstmt->bind_param('ii', $poolid, $muser);
 			$modstmt->execute();
 
-			$actionstmt->bind_param('iiiiis', $poolid, $action, $muser, $muser, $user['id'], $adminusername);
+			$actionstmt->bind_param('iiiiis', $poolid, $action, $muser, $muser, $user['id'], $user['display_name']);
 			$actionstmt->execute();
 
 		}

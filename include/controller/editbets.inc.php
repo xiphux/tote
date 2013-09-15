@@ -44,7 +44,7 @@ function display_editbets($poolid, $entrant)
 		return;
 	}
 
-	$entrantstmt = $mysqldb->prepare('SELECT first_name, last_name, id, username FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$entrantstmt = $mysqldb->prepare("SELECT id, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name FROM " . TOTE_TABLE_USERS . " WHERE id=?");
 	$entrantstmt->bind_param('i', $entrant);
 	$entrantstmt->execute();
 	$entrantresult = $entrantstmt->get_result();

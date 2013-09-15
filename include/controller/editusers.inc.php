@@ -4,10 +4,13 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_manager.inc.php');
-require_once(TOTE_INCLUDEDIR . 'sort_users.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+
+function sort_displayname($a, $b)
+{
+	return strcasecmp($a['display_name'], $b['display_name']);
+}
 
 function sort_username($a, $b)
 {
@@ -123,7 +126,7 @@ function display_editusers($order = 'name')
 	}
 
 	// get all users
-	$usersresult = $mysqldb->query('SELECT id, username, first_name, last_name, email, role, created, last_login, last_password_change FROM ' . TOTE_TABLE_USERS);
+	$usersresult = $mysqldb->query("SELECT id, username, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name, email, role, created, last_login, last_password_change FROM " . TOTE_TABLE_USERS);
 	$userarray = array();
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
@@ -137,7 +140,6 @@ function display_editusers($order = 'name')
 		if (!empty($u['last_password_change'])) {
 			$u['last_password_change_local'] = get_local_datetime(null, strtotime($u['last_password_change']));
 		}
-		$u['readable_name'] = user_readable_name($u);
 		$userarray[] = $u;
 	}
 	date_default_timezone_set($tz);
@@ -147,7 +149,7 @@ function display_editusers($order = 'name')
 	// sort
 	switch ($order) {
 		case 'name':
-			usort($userarray, 'sort_users');
+			usort($userarray, 'sort_displayname');
 			break;
 
 		case 'username':
@@ -175,7 +177,7 @@ function display_editusers($order = 'name')
 			break;
 
 		default:
-			usort($userarray, 'sort_users');
+			usort($userarray, 'sort_displayname');
 			$order = 'name';
 			break;
 	}

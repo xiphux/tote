@@ -1,5 +1,5 @@
 {if $user}
-  <tr><th>Welcome, {if $user.first_name}{$user.first_name} {$user.last_name}{else}{$user.username}{/if}</th></tr>
+  <tr><th>Welcome, {$user.display_name}</th></tr>
 <tr><td><a href="index.php?a=schedule">Schedule</a></td></tr>
 {if !$mobile || $forcefull}
 <tr><td><a href="index.php?a=analytics">Analytics</a></td></tr>

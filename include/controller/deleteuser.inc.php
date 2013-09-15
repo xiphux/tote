@@ -4,7 +4,6 @@ require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');
 require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
@@ -44,15 +43,15 @@ function display_deleteuser($userid, $csrftoken)
 		return;
 	}
 
-	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
+	$userstmt = $mysqldb->prepare("SELECT (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) FROM " . TOTE_TABLE_USERS . " WHERE id=?");
 	$userstmt->bind_param('i', $userid);
+	$username = null;
+	$userstmt->bind_result($username);
 	$userstmt->execute();
-	$userresult = $userstmt->get_result();
-	$deleteuser = $userresult->fetch_assoc();
-	$userresult->close();
+	$found = $userstmt->fetch();
 	$userstmt->close();
 
-	if (!$deleteuser) {
+	if (!$found) {
 		// must be a valid user to delete
 		display_message("Could not find user to delete", DELETEUSER_HEADER);
 		return;
@@ -75,12 +74,9 @@ function display_deleteuser($userid, $csrftoken)
 
 	if (count($entries) > 0) {
 		
-		$adminname = user_readable_name($user);
-		$username = user_readable_name($deleteuser);
-
 		$auditstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (?, 2, UTC_TIMESTAMP(), ?, ?, ?)');
 		foreach ($entries as $entry) {
-			$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $adminname);
+			$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $user['display_name']);
 			$auditstmt->execute();
 		}
 		$auditstmt->close();
