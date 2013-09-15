@@ -5,7 +5,6 @@ require_once(TOTE_INCLUDEDIR . 'user_in_pool.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_record.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_pool_pot.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_pool_payout_amounts.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
@@ -24,7 +23,7 @@ function display_pool($poolid = null)
 	$user = user_logged_in();
 
 	// get list of all pools
-	$poolsresult = $mysqldb->query('SELECT pools.id, pools.name, pools.fee, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id ORDER BY seasons.year DESC, name');
+	$poolsresult = $mysqldb->query('SELECT pools.id, pools.name, pools.fee, seasons.year AS season, COUNT(pool_entries.id)*pools.fee AS pot FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pools.id=pool_entries.pool_id GROUP BY pools.id ORDER BY seasons.year DESC, name');
 	$pools = $poolsresult->fetch_all(MYSQLI_ASSOC);
 
 	$poolobj = null;
@@ -66,7 +65,6 @@ function display_pool($poolid = null)
 	if ($user && user_in_pool($user['id'], $poolobj['id']))
 		$entered = true;
 
-	$pot = get_pool_pot($poolobj['id']);
 	$payoutamounts = get_pool_payout_amounts($poolobj['id']);
 
 	// get emails if user has access
@@ -136,8 +134,8 @@ function display_pool($poolid = null)
 	$tpl->assign('emaillist', $emaillist);
 	$tpl->assign('showties', $showties);
 	$tpl->assign('pool', $poolobj);
-	if ($pot)
-		$tpl->assign('pot', $pot);
+	if ($poolobj['pot'] > 0)
+		$tpl->assign('pot', $poolobj['pot']);
 	if (count($payoutamounts) > 0)
 		$tpl->assign('payoutamounts', $payoutamounts);
 
