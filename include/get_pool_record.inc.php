@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 
 /**
@@ -55,9 +54,10 @@ function get_pool_record($poolid)
 	}
 
 	$season = null;
-	$seasonstmt = $mysqldb->prepare('SELECT seasons.year FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=?');
+	$weeks = null;
+	$seasonstmt = $mysqldb->prepare('SELECT seasons.year, (CASE WHEN MAX(games.week)>0 THEN MAX(games.week) ELSE 17 END) FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_GAMES . ' AS games ON seasons.id=games.season_id WHERE pools.id=?');
 	$seasonstmt->bind_param('i', $poolid);
-	$seasonstmt->bind_result($season);
+	$seasonstmt->bind_result($season, $weeks);
 	$seasonstmt->execute();
 	$found = $seasonstmt->fetch();
 	$seasonstmt->close();
@@ -65,8 +65,6 @@ function get_pool_record($poolid)
 	if (!$found)
 		return null;
 
-	// Find number of weeks in season
-	$weeks = get_season_weeks($season);
 	// Find weeks that are open for betting
 	$openweeks = get_open_weeks($season);
 
