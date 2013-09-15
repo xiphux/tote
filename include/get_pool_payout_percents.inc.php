@@ -25,8 +25,8 @@ function get_pool_payout_percents($poolid)
 
 	$percents = array();
 
-	$percentstmt = $mysqldb->prepare('SELECT place, percent FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' WHERE payout_id=(SELECT id FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE ((minimum IS NULL) OR (minimum<=?)) AND ((maximum IS NULL) OR (maximum>=?)) AND pool_id=?)');
-	$percentstmt->bind_param('iii', $entrantcount, $entrantcount, $poolid);
+	$percentstmt = $mysqldb->prepare('SELECT place, percent FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' WHERE payout_id=(SELECT id FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE pool_id=? AND ((minimum IS NULL) OR (minimum<=?)) AND ((maximum IS NULL) OR (maximum>=?)))');
+	$percentstmt->bind_param('iii', $poolid, $entrantcount, $entrantcount);
 	$percentstmt->execute();
 	$percentresult = $percentstmt->get_result();
 
