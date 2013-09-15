@@ -93,7 +93,7 @@ EOQ;
 
 	while ($action = $actionresult->fetch_assoc()) {
 		$action['time'] = strtotime($action['time']);
-		$action['timelocal'] = get_local_datetime(null, $action['time']);
+		$action['timelocal'] = get_local_datetime($action['time']);
 		$action['time'] = new DateTime('@' . $action['time']);
 		if (!$updated)
 			$updated = $action['time'];

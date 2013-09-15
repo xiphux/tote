@@ -49,7 +49,7 @@ function display_gridschedule($season)
 			$gamemap[$game['away_abbr']] = array();
 		}
 
-		$game['start'] = get_local_datetime(null, strtotime($game['start']));
+		$game['start'] = get_local_datetime(strtotime($game['start']));
 
 		$gamemap[$game['home_abbr']][(int)$game['week']] = $game;
 		$gamemap[$game['away_abbr']][(int)$game['week']] = $game;

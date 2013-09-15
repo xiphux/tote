@@ -94,7 +94,7 @@ function display_bet($poolid, $week)
 	while ($game = $gamesresult->fetch_assoc()) {
 
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime(null, $game['start']);
+		$game['localstart'] = get_local_datetime($game['start']);
 		$weekgames[] = $game;
 
 	}

@@ -49,7 +49,7 @@ function display_teamschedule($season, $output = 'html')
 			$teamgames[$lastteamid]['games'] = array();
 		}
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime(null, $game['start']);
+		$game['localstart'] = get_local_datetime($game['start']);
 		$teamgames[$lastteamid]['games'][(int)$game['week']] = $game;
 	}
 	date_default_timezone_set($tz);

@@ -132,13 +132,13 @@ function display_editusers($order = 'name')
 	date_default_timezone_set('UTC');
 	while ($u = $usersresult->fetch_assoc()) {
 		if (!empty($u['created'])) {
-			$u['created_local'] = get_local_datetime(null, strtotime($u['created']));
+			$u['created_local'] = get_local_datetime(strtotime($u['created']));
 		}
 		if (!empty($u['last_login'])) {
-			$u['last_login_local'] = get_local_datetime(null, strtotime($u['last_login']));
+			$u['last_login_local'] = get_local_datetime(strtotime($u['last_login']));
 		}
 		if (!empty($u['last_password_change'])) {
-			$u['last_password_change_local'] = get_local_datetime(null, strtotime($u['last_password_change']));
+			$u['last_password_change_local'] = get_local_datetime(strtotime($u['last_password_change']));
 		}
 		$userarray[] = $u;
 	}

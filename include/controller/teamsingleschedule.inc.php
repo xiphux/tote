@@ -44,7 +44,7 @@ function display_teamsingleschedule($season, $team, $output = 'html', $week = nu
 	$teamgames = array();
 	while ($game = $gamesresult->fetch_assoc()) {
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime(null, $game['start']);
+		$game['localstart'] = get_local_datetime($game['start']);
 		$teamgames[(int)$game['week']] = $game;
 	}
 	date_default_timezone_set($tz);

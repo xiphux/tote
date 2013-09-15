@@ -43,7 +43,7 @@ function display_weekschedule($season, $week, $output = 'html')
 	$games = array();
 	while ($game = $gamesresult->fetch_assoc()) {
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime(null, $game['start']);
+		$game['localstart'] = get_local_datetime($game['start']);
 		$games[] = $game;
 	}
 
