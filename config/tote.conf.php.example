@@ -1,26 +1,46 @@
 <?php
 
 /**
- * connectionString
+ * hostname
  *
- * connection string to use to connect to mongodb
- * empty uses default host/port (localhost:27017)
+ * MySQL hostname to connect to
  */
-$tote_conf['connectionString'] = '';
+$tote_conf['hostname'] = 'localhost';
 
 /**
- * database
+ * sql_database
  *
- * name of dataspace to use
+ * MySQL database to connect to
  */
-$tote_conf['database'] = 'tote';
+$tote_conf['sql_database'] = '';
 
 /**
- * namespace
+ * username
  *
- * namespace prefix to use in database
+ * MySQL username
  */
-$tote_conf['namespace'] = '';
+$tote_conf['username'] = '';
+
+/**
+ * password
+ *
+ * MySQL password
+ */
+$tote_conf['password'] = '';
+
+/**
+ * port
+ *
+ * MySQL port to connect to
+ */
+$tote_conf['port'] = 3306;
+
+/**
+ * prefix
+ *
+ * Prefix for MySQL table names
+ */
+$tote_conf['prefix'] = '';
 
 /**
  * smarty
