@@ -28,7 +28,7 @@ $mysqldb = new mysqli(
 	isset($tote_conf['username']) ? $tote_conf['username'] : null,
 	isset($tote_conf['password']) ? $tote_conf['password'] : null,
 	isset($tote_conf['sql_database']) ? $tote_conf['sql_database'] : null,
-	isset($tote_conf['port']) ? $tote_conf['port'] : null
+	isset($tote_conf['port']) ? (int)$tote_conf['port'] : null
 );
 
 // define MySQL tables
