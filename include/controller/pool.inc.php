@@ -65,7 +65,7 @@ function display_pool($poolid = null)
 	if ($user && user_in_pool($user['id'], $poolobj['id']))
 		$entered = true;
 
-	$payoutamounts = get_pool_payout_amounts($poolobj['id']);
+	$payoutamounts = get_pool_payout_amounts($poolobj['id'], $poolobj['fee'], $poolobj['pot']);
 
 	// get emails if user has access
 	$emaillist = array();

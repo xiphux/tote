@@ -11,23 +11,23 @@ require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
  * @param object $poolid pool id
  * @return array array of placement payout amounts
  */
-function get_pool_payout_amounts($poolid)
+function get_pool_payout_amounts($poolid, $fee = null, $pot = null)
 {
 	global $mysqldb;
 
 	if (empty($poolid))
 		return null;
 
-	$fee = null;
-	$feestmt = $mysqldb->prepare('SELECT fee FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
-	$feestmt->bind_param('i', $poolid);
-	$feestmt->bind_result($fee);
-	$feestmt->execute();
-	$found = $feestmt->fetch();
-	$feestmt->close();
-
-	if (!$found)
-		return null;
+	if ($fee == null) {
+		$feestmt = $mysqldb->prepare('SELECT fee FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
+		$feestmt->bind_param('i', $poolid);
+		$feestmt->bind_result($fee);
+		$feestmt->execute();
+		$found = $feestmt->fetch();
+		$feestmt->close();
+		if (!$found)
+			return null;
+	}
 
 	$fee = (float)$fee;
 
@@ -35,9 +35,11 @@ function get_pool_payout_amounts($poolid)
 	if (count($percents) <= 0)
 		return null;
 
-	$pot = get_pool_pot($poolid);
-	if ($pot < 1)
-		return null;
+	if ($pot == null) {
+		$pot = get_pool_pot($poolid);
+		if ($pot < 1)
+			return null;
+	}
 
 	$payout = array();
 
