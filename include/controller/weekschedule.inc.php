@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');

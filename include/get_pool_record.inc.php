@@ -105,7 +105,7 @@ ON games.home_team_id=home_teams.id
 LEFT JOIN %s AS away_teams
 ON games.away_team_id=away_teams.id
 WHERE pool_entries.pool_id=?
-ORDER BY display_name, pool_entry_picks.week
+ORDER BY users.id, pool_entry_picks.week
 EOQ;
 	$pickquery = sprintf($pickquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_TEAMS, TOTE_TABLE_USERS, TOTE_TABLE_POOLS, TOTE_TABLE_GAMES, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
 	$pickstmt = $mysqldb->prepare($pickquery);

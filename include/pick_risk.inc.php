@@ -1,11 +1,7 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_team.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_user.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
 
 /**
  * Gets pick risk history across pools
@@ -14,149 +10,124 @@ require_once(TOTE_INCLUDEDIR . 'get_game_by_team.inc.php');
  */
 function pick_risk()
 {
-	$pools = get_collection(TOTE_COLLECTION_POOLS);
+	global $mysqldb;
 
-	$poolobjects = $pools->find(
-		array(),
-		array('entries', 'name', 'season')
-	)->sort(array('season' => -1, 'name' => 1));
+	$dataquery = <<<EOQ
+SELECT
+seasons.year AS season,
+pools.id AS pool_id,
+pools.name AS pool_name,
+users.id AS user_id,
+users.username AS username,
+users.first_name AS user_first_name,
+users.last_name AS user_last_name,
+games.id AS game_id,
+pool_entry_picks.week AS pick_week,
+pool_entry_picks.team_id AS team_id,
+games.home_team_id AS home_team_id,
+games.away_team_id AS away_team_id,
+games.home_score AS home_score,
+games.away_score AS away_score,
+games.week AS game_week,
+games.favorite_id AS favorite_id,
+games.point_spread AS point_spread
+FROM %s AS pool_entry_picks
+LEFT JOIN %s AS pool_entries ON pool_entry_picks.pool_entry_id=pool_entries.id
+LEFT JOIN %s AS pools ON pool_entries.pool_id=pools.id
+LEFT JOIN %s AS seasons ON seasons.id=pools.season_id
+LEFT JOIN %s AS games ON seasons.id=games.season_id AND pool_entry_picks.week=games.week AND (pool_entry_picks.team_id=games.home_team_id OR pool_entry_picks.team_id=games.away_team_id)
+LEFT JOIN %s AS users ON pool_entries.user_id=users.id
+ORDER BY seasons.year DESC, pools.name, users.id, pool_entry_picks.week
+EOQ;
+	$dataquery = sprintf($dataquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOLS, TOTE_TABLE_SEASONS, TOTE_TABLE_GAMES, TOTE_TABLE_USERS);
+	$datastmt = $mysqldb->prepare($dataquery);
+	$datastmt->execute();
+	$dataresult = $datastmt->get_result();
 
+	$openweeks = array();
+	$seasonweeks = array();
 	$pooldata = array();
-
-	foreach ($poolobjects as $pool) {
-		if (empty($pool['entries']) || (count($pool['entries']) < 1))
+	$entrantidx = -1;
+	$lastentrantid = null;
+	while ($data = $dataresult->fetch_assoc()) {
+		if (!isset($openweeks[$data['season']])) {
+			$openweeks[$data['season']] = get_open_weeks((int)$data['season']);
+		}
+		if ($openweeks[$data['season']][2]) {
+			// not useful with one full week of data (week 2 is still in progress)
 			continue;
+		}
 
-		$poolid = (string)$pool['_id'];
-		$seasonweeks = get_season_weeks($pool['season']);
-		$openweeks = get_open_weeks($pool['season']);
+		if ($openweeks[$data['season']][(int)$data['pick_week']]) {
+			// don't show spreads for weeks still in progress
+			continue;
+		}
 
-		$games = array();
-
-		$weekpickcount = array();
-
-		foreach ($pool['entries'] as $entrant) {
-
-			if (empty($entrant['bets']) || (count($entrant['bets']) < 1))
-				continue;
-
-			$user = get_user($entrant['user']);
-			$userid = (string)$user['_id'];
-
-			if (!$userid)
-				continue;
-
-			$userdata = array();
-			if (isset($user['username']))
-				$userdata['username'] = $user['username'];
-			if (isset($user['first_name']))
-				$userdata['first_name'] = $user['first_name'];
-			if (isset($user['last_name']))
-				$userdata['last_name'] = $user['last_name'];
-			
-			$entrantdata = array(
-				'picks' => array(),
-				'user' => $userdata
+		$poolid = 'p' . $data['pool_id'];
+		if (!isset($pooldata[$poolid])) {
+			// store data about pool
+			if (!isset($seasonweeks[$data['season']])) {
+				$seasonweeks[$data['season']] = get_season_weeks((int)$data['season']);
+			}
+			$pooldata[$poolid] = array(
+				'name' => $data['pool_name'],
+				'season' => (int)$data['season'],
+				'weeks' => $seasonweeks[$data['season']],
+				'entries' => array(),
+				'games' => array()
 			);
 
-			$entrantgames = array();
-
-			foreach ($entrant['bets'] as $bet) {
-				if (empty($bet['team']))
-					continue;
-
-				$game = get_game_by_team($pool['season'], $bet['week'], $bet['team']);
-				if (!$game)
-					continue;
-
-				$gameid = (string)$game['_id'];
-
-				$gamedata = array(
-					'home_team' => (string)$game['home_team'],
-					'away_team' => (string)$game['away_team'],
-					'week' => $game['week']
-				);
-				if (isset($game['home_score']))
-					$gamedata['home_score'] = $game['home_score'];
-				if (isset($game['away_score']))
-					$gamedata['away_score'] = $game['away_score'];
-				if (isset($game['favorite']))
-					$gamedata['favorite'] = (string)$game['favorite'];
-				if (isset($game['point_spread']))
-					$gamedata['point_spread'] = $game['point_spread'];
-
-				$entrantgames[$gameid] = $gamedata;
-
-				$entrantdata['picks'][] = array(
-					'game' => $gameid,
-					'team' => (string)$bet['team'],
-					'week' => $bet['week']
-				);
-
-				if (isset($weekpickcount[$bet['week']]))
-					$weekpickcount[$bet['week']] += 1;
-				else
-					$weekpickcount[$bet['week']] = 1;
-			}
-
-			if (count($entrantdata['picks']) < 1)
-				continue;
-
-			$games = array_merge($games, $entrantgames);
-
-			if (!isset($pooldata[$poolid])) {
-				$pooldata[$poolid] = array(
-					'name' => $pool['name'],
-					'season' => $pool['season'],
-					'weeks' => $seasonweeks,
-					'entries' => array()
-				);
-			}
-
-			$pooldata[$poolid]['entries'][] = $entrantdata;
-
+			$lastentrantid = null;
+			$entrantidx = -1;
 		}
 
-		$openweek = 0;
-		for ($i = 1; $i <= $seasonweeks; ++$i) {
-			if (!(isset($openweeks[$i]) && ($openweeks[$i] == true))) {
-				// week is closed, ok to show
-				continue;
-			}
-			if (isset($weekpickcount[$i]) && ($weekpickcount[$i] == count($pool['entries']))) {
-				// everybody picked, ok to show
-				continue;
-			}
-			$openweek = $i;
-			break;
+		if ($lastentrantid != $data['user_id']) {
+			$lastentrantid = $data['user_id'];
+			$entrantidx++;
+
+			$pooldata[$poolid]['entries'][$entrantidx] = array(
+				// store data about entrant
+				'user' => array(
+					'username' => $data['username'],
+					'first_name' => $data['user_first_name'],
+					'last_name' => $data['user_last_name']
+				),
+				'picks' => array()
+			);
+			
 		}
 
-		if (($openweek > 0) && ($openweek < 3)) {
-			// only one week of data to show - not useful
-			unset($pooldata[$poolid]);
-			continue;
-		}
+		$gameid = 'g' . $data['game_id'];
+		$pooldata[$poolid]['entries'][$entrantidx]['picks'][] = array(
+			// store data about pick
+			'game' => $gameid,
+			'team' => $data['team_id'],
+			'week' => $data['pick_week']
+		);
 
-		if ($openweek > 0) {
-			$entrycount = count($pooldata[$poolid]['entries']);
-			for ($j = 0; $j < $entrycount; ++$j) {
-				$pickcount = count($pooldata[$poolid]['entries'][$j]['picks']);
-				for ($k = 0; $k < $pickcount; ++$k) {
-					if (isset($pooldata[$poolid]['entries'][$j]['picks'][$k]) && isset($pooldata[$poolid]['entries'][$j]['picks'][$k]['week'])) {
-						$week = $pooldata[$poolid]['entries'][$j]['picks'][$k]['week'];
-						if ($week >= $openweek) {
-							unset($pooldata[$poolid]['entries'][$j]['picks'][$k]);
-						}
-					}
-				}
-			}
-		}
+		if (!isset($pooldata[$poolid]['games'][$gameid])) {
+			// store data for any games that have been picked
+			$gamedata = array(
+				'home_team' => $data['home_team_id'],
+				'away_team' => $data['away_team_id'],
+				'week' => $data['game_week']
+			);
+			if ($data['home_score'] !== null)
+				$gamedata['home_score'] = $data['home_score'];
+			if ($data['away_score'] !== null)
+				$gamedata['away_score'] = $data['away_score'];
+			if ($data['favorite_id'] !== null)
+				$gamedata['favorite'] = $data['favorite_id'];
+			if ($data['point_spread'] !== null)
+				$gamedata['point_spread'] = $data['point_spread'];
 
-		if (isset($pooldata[$poolid])) {
-			$pooldata[$poolid]['games'] = $games;
+			$pooldata[$poolid]['games'][$gameid] = $gamedata;
 		}
 
 	}
+
+	$dataresult->close();
+	$datastmt->close();
 
 	return $pooldata;
 }
