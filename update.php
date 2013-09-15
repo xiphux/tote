@@ -20,14 +20,6 @@ require_once('config/tote.conf.php');
 // only allow from command line without login
 if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 
-	// create MongoDB connection
-	$connection = null;
-	if (!empty($tote_conf['connectionString']))
-		$connection = new Mongo($tote_conf['connectionString']);
-	else
-		$connection = new Mongo('mongodb://localhost:27017');
-	$db = $connection->selectDB($tote_conf['database']);
-
 	// create Smarty
 	require_once($tote_conf['smarty'] . 'Smarty.class.php');
 	$tpl = new Smarty();

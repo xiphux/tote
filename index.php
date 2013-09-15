@@ -22,14 +22,6 @@ define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 // include config file
 require_once('config/tote.conf.php');
 
-// create MongoDB connection
-$connection = null;
-if (!empty($tote_conf['connectionString']))
-	$connection = new Mongo($tote_conf['connectionString']);
-else
-	$connection = new Mongo('mongodb://localhost:27017');
-$db = $connection->selectDB($tote_conf['database']);
-
 // create MySQL connection
 $mysqldb = new mysqli(
 	isset($tote_conf['hostname']) ? $tote_conf['hostname'] : null,
