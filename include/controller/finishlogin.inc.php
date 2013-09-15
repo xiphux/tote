@@ -38,22 +38,34 @@ function display_finishlogin($user, $pass)
 	$user = strtolower($user);
 
 	if (!(empty($user) || empty($pass))) {
-		if (user_password_valid($user, $pass)) {
+
+		$userstmt = $mysqldb->prepare('SELECT id, salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+		$userstmt->bind_param('s', $user);
+		$userid = null;
+		$salt = null;
+		$passwordhash = null;
+		$userstmt->bind_result($userid, $salt, $passwordhash);
+		$userstmt->execute();
+		$found = $userstmt->fetch();
+		$userstmt->close();
+
+		if ($found && user_password_valid($user, $pass, $salt, $passwordhash)) {
 			// if username and password are valid,
 			// store user logged in in session
-			$_SESSION['user'] = $user;
+			$_SESSION['user'] = $userid;
 
 			// create CSRF token
 			$_SESSION['csrftoken'] = generate_salt();
 
 			// update last login
-			$lastloginstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_login=UTC_TIMESTAMP() WHERE username=?');
-			$lastloginstmt->bind_param('s', $user);
+			$lastloginstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_login=UTC_TIMESTAMP() WHERE id=?');
+			$lastloginstmt->bind_param('i', $userid);
 			$lastloginstmt->execute();
 			$lastloginstmt->close();
 		} else {
 			$errors[] = 'Incorrect username or password';
 		}
+
 	}
 
 	if (count($errors) > 0) {

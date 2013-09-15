@@ -33,9 +33,10 @@ function user_password_valid($username, $password, $salt = '', $passwordHash = '
 			$userstmt->close();
 			return false;
 		}
+
+		$userstmt->close();
 	}
 
-	$userstmt->close();
 
 	return (md5($salt . $username . md5($username . ':' . $password)) == $passwordHash);
 }
