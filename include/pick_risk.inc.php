@@ -1,8 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_season_weeks.inc.php');
-require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
-
 /**
  * Gets pick risk history across pools
  *
@@ -11,6 +8,27 @@ require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 function pick_risk()
 {
 	global $mysqldb;
+
+	$seasonweeks = array();
+	$seasonweekstmt = $mysqldb->prepare('SELECT seasons.year, MAX(games.week) AS weeks FROM games AS games LEFT JOIN seasons AS seasons ON games.season_id=seasons.id GROUP BY seasons.year');
+	$season = null;
+	$week = null;
+	$seasonweekstmt->bind_result($season, $week);
+	$seasonweekstmt->execute();
+	while ($seasonweekstmt->fetch()) {
+		$seasonweeks[$season] = (int)$week;
+	}
+	$seasonweekstmt->close();
+
+	$openweeks = array();
+	$openweekstmt = $mysqldb->prepare('SELECT seasons.year, games.week, MAX(games.start>UTC_TIMESTAMP()) AS open FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id GROUP BY seasons.year, games.week ORDER BY seasons.year, games.week');
+	$openweekstmt->execute();
+	$openweekresult = $openweekstmt->get_result();
+	while ($openweek = $openweekresult->fetch_assoc()) {
+		$openweeks[$openweek['year']][(int)$openweek['week']] = ($openweek['open'] == 1);
+	}
+	$openweekresult->close();
+	$openweekstmt->close();
 
 	$dataquery = <<<EOQ
 SELECT
@@ -44,15 +62,10 @@ EOQ;
 	$datastmt->execute();
 	$dataresult = $datastmt->get_result();
 
-	$openweeks = array();
-	$seasonweeks = array();
 	$pooldata = array();
 	$entrantidx = -1;
 	$lastentrantid = null;
 	while ($data = $dataresult->fetch_assoc()) {
-		if (!isset($openweeks[$data['season']])) {
-			$openweeks[$data['season']] = get_open_weeks((int)$data['season']);
-		}
 		if ($openweeks[$data['season']][2]) {
 			// not useful with one full week of data (week 2 is still in progress)
 			continue;
@@ -66,9 +79,6 @@ EOQ;
 		$poolid = 'p' . $data['pool_id'];
 		if (!isset($pooldata[$poolid])) {
 			// store data about pool
-			if (!isset($seasonweeks[$data['season']])) {
-				$seasonweeks[$data['season']] = get_season_weeks((int)$data['season']);
-			}
 			$pooldata[$poolid] = array(
 				'name' => $data['pool_name'],
 				'season' => (int)$data['season'],
