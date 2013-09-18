@@ -135,12 +135,12 @@ Make a Pick
 
 {foreach from=$record item=entrant}
 
-<tr class="{cycle values=light,dark} {if $user.id == $entrant.user.id}self{/if}">
+<tr class="{cycle values=light,dark} {if $user.id == $entrant.user_id}self{/if}">
 <td class="entrantName">
 {if $user.role == 1}
-<a href="index.php?a=editbets&amp;p={$pool.id}&amp;u={$entrant.user.id}" title="Edit {$entrant.user.display_name}'s picks">
+<a href="index.php?a=editbets&amp;p={$pool.id}&amp;u={$entrant.user_id}" title="Edit {$entrant.display_name}'s picks">
 {/if}
-{$entrant.user.display_name}
+{$entrant.display_name}
 {if $user.role == 1}
 </a>
 {/if}
@@ -153,26 +153,26 @@ Make a Pick
 {/if}
 <td>{$entrant.spread}</td>
 
-{foreach from=$entrant.bets key=betweek item=bet}
+{foreach from=$entrant.picks key=pickweek item=pick}
 
-{if !$mobile || $forcefull || (array_search($betweek,$mobileweeks) !== false)}
+{if !$mobile || $forcefull || (array_search($pickweek,$mobileweeks) !== false)}
 <td>
 
-{if $bet}
+{if $pick}
 <span 
-{if $bet.result > 0}class="win"{elseif $bet.result < 0}class="loss"{elseif $bet.result === 0}class="tie"{/if}
-{if $bet.game} title="{$bet.game.away_team.abbreviation}{if isset($bet.game.away_score)} {$bet.game.away_score}{/if} @ {$bet.game.home_team.abbreviation}{if isset($bet.game.home_score)} {$bet.game.home_score}{/if}"{/if}
+{if $pick.win}class="win"{elseif $pick.loss}class="loss"{elseif $pick.tie}class="tie"{/if}
+{if $pick.game_id} title="{$pick.away_team_abbr}{if !empty($pick.away_score)} {$pick.away_score}{/if} @ {$pick.home_team_abbr}{if !empty($pick.home_score)} {$pick.home_score}{/if}"{/if}
 >
-{if $bet.team.abbreviation}
-{$bet.team.abbreviation}
-{elseif $bet.nopick}
+{if $pick.pick_team_abbr}
+{$pick.pick_team_abbr}
+{elseif empty($pick.pick_team_id) && $pick.loss}
 -NP-
 {/if}
- {if isset($bet.spread)}({$bet.spread}){/if}
+ {if !empty($pick.spread) || $pick.spread===0}({$pick.spread}){/if}
 </span>
-{elseif $user && $entered && $poolopen && ($user.id == $entrant.user.id)}
+{elseif $user && $entered && $poolopen && ($user.id == $entrant.user_id)}
 <span>
-<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool.id}&amp;w={$betweek}" class="betLink">Pick</a>
+<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool.id}&amp;w={$pickweek}" class="betLink">Pick</a>
 </span>
 {/if}
 
