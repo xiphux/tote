@@ -45,7 +45,7 @@ define('TOTE_TABLE_POOL_ACTIONS', (!empty($tote_conf['prefix']) ? $tote_conf['pr
 define('TOTE_TABLE_POOL_PAYOUTS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_payouts');
 define('TOTE_TABLE_POOL_PAYOUT_PERCENTS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_payout_percents');
 define('TOTE_TABLE_POOL_ADMINISTRATORS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_administrators');
-define('TOTE_TABLE_POOL_RECORDS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records');
+define('TOTE_TABLE_POOL_RECORDS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records_view');
 
 // create Smarty
 require_once($tote_conf['smarty'] . 'Smarty.class.php');
