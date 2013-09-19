@@ -3,7 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_INCLUDEDIR . 'record_mark_dirty.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('ADDBET_HEADER', 'Make A Pick');
@@ -134,7 +134,7 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 	$actionstmt->execute();
 	$actionstmt->close();
 
-	clear_cache('pool|' . (string)$poolid);
+	record_mark_dirty($poolid);
 
 	// go back to the pool view
 	redirect(array('p' => $poolid));

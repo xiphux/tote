@@ -4,7 +4,6 @@ require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
@@ -117,8 +116,6 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 			$updatestmt->bind_param('sssii', $firstname, $lastname, $email, $role, $userid);
 			$updatestmt->execute();
 			$updatestmt->close();
-
-			clear_cache('pool');
 		}
 		if (!(empty($newpassword) || empty($newpassword2))) {
 			

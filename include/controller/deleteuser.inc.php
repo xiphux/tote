@@ -4,7 +4,6 @@ require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('DELETEUSER_HEADER', 'Manage Your Users');
@@ -99,14 +98,17 @@ function display_deleteuser($userid, $csrftoken)
 	$deladminactionstmt->execute();
 	$deladminactionstmt->close();
 
+	// clear records for this user
+	$delrecordstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE user_id=?');
+	$delrecordstmt->bind_param('i', $userid);
+	$delrecordstmt->execute();
+	$delrecordstmt->close();
+
 	// delete user
 	$deluserstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
 	$deluserstmt->bind_param('i', $userid);
 	$deluserstmt->execute();
 	$deluserstmt->close();
-
-	// clear caches
-	clear_cache('pool');
 
 	redirect(array('a' => 'editusers'));
 }

@@ -4,7 +4,6 @@ require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('DELETEPOOL_HEADER', 'Manage Your Pool');
@@ -73,12 +72,15 @@ function display_deletepool($poolid, $csrftoken)
 	$removepayoutstmt->execute();
 	$removepayoutstmt->close();
 
+	$removerecordstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=?');
+	$removerecordstmt->bind_param('i', $poolid);
+	$removerecordstmt->execute();
+	$removerecordstmt->close();
+
 	$removepoolstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
 	$removepoolstmt->bind_param('i', $poolid);
 	$removepoolstmt->execute();
 	$removepoolstmt->close();
-
-	clear_cache('pool|' . $poolid);
 
 	redirect();
 }

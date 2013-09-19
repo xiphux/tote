@@ -3,7 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
+require_once(TOTE_INCLUDEDIR . 'record_mark_dirty.inc.php');
 
 /**
  * ajaxeditpool controller
@@ -100,6 +100,13 @@ EOQ;
 
 		foreach ($modusers as $muser) {
 
+			if ($modification == 'remove') {
+				$rmpickstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=(SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?)');
+				$rmpickstmt->bind_param('ii', $poolid, $muser);
+				$rmpickstmt->execute();
+				$rmpickstmt->close();
+			}
+
 			$modstmt->bind_param('ii', $poolid, $muser);
 			$modstmt->execute();
 
@@ -111,7 +118,7 @@ EOQ;
 		$actionstmt->close();
 		$modstmt->close();
 
-		clear_cache('pool|' . $poolid);
+		record_mark_dirty($poolid);
 	} else {
 		echo "Unknown modification";
 	}
