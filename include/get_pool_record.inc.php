@@ -1,32 +1,7 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
-
-/**
- * sort_poolentrant
- *
- * sort pool entrants
- *
- * @param array $a first sort entrant
- * @param array $b second sort entrant
- */
-function sort_poolentrant($a, $b)
-{
-	// first sort by wins descending
-	if ($a['wins'] != $b['wins'])
-		return ($a['wins'] > $b['wins'] ? -1 : 1);
-
-	// then sort by losses ascending
-	if ($a['losses'] != $b['losses'])
-		return ($a['losses'] > $b['losses'] ? 1 : -1);
-
-	// then sort by point spread descending
-	if ($a['spread'] != $b['spread'])
-		return ($a['spread'] > $b['spread'] ? -1 : 1);
-
-	// finally fall back on alphabetical
-	return strcasecmp($a['user']['display_name'], $b['user']['display_name']);
-}
+require_once(TOTE_INCLUDEDIR . 'materialize_pool_record.inc.php');
+require_once(TOTE_INCLUDEDIR . 'record_needs_materialize.inc.php');
 
 /**
  * Gets the score record for a pool
@@ -36,22 +11,13 @@ function sort_poolentrant($a, $b)
  */
 function get_pool_record($poolid)
 {
-	global $tote_conf, $mysqldb;
+	global $mysqldb;
 
 	if (empty($poolid))
 		return null;
 
-	$cachetpl = null;
-	$cachekey = 'pool|' . $poolid;
-	if (!empty($tote_conf['cache']) && ($tote_conf['cache'] === true)) {
-		// if caching is turned on, try deserializing the calculated
-		// record from the cache
-		$cachetpl = new Smarty;
-		$cachetpl->caching = 2;
-		if ($cachetpl->is_cached('data.tpl', $cachekey)) {
-			return unserialize($cachetpl->fetch('data.tpl', $cachekey));
-		}
-	}
+	if (record_needs_materialize($poolid))
+		materialize_pool_record($poolid);
 
 	$recordstmt = $mysqldb->prepare("SELECT user_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS display_name, SUM(win) AS wins, SUM(loss) AS losses, SUM(tie) AS ties, SUM(spread) AS spread FROM " . TOTE_TABLE_POOL_RECORDS . " AS pool_records LEFT JOIN " . TOTE_TABLE_USERS . " AS users ON pool_records.user_id=users.id WHERE pool_id=? GROUP BY pool_records.user_id ORDER BY wins DESC, losses, spread DESC, display_name");
 	$recordstmt->bind_param('i', $poolid);
@@ -77,38 +43,6 @@ function get_pool_record($poolid)
 
 	$recorddetailresult->close();
 	$recorddetailstmt->close();
-
-	if (!empty($tote_conf['cache']) && ($tote_conf['cache'] === true)) {
-		// if cache is enabled, store calculated record into the cache
-		// so we don't have to recalculate it
-	
-		$currentweek = array_search(true, $openweeks, true);
-		if ($currentweek === false) {
-			// season is over, no need to have cache expire
-			$cachetpl->cache_lifetime = -1;
-		} else {
-			// set cache to expire as soon as the last game of the
-			// week starts
-			// (so we can recalculate 'No Pick' players)
-			$laststart = null;
-			$laststartstmt = $mysqldb->prepare('SELECT MAX(games.start) FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=? AND games.week=?');
-			$laststartstmt->bind_param('ii', $season, $currentweek);
-			$laststartstmt->bind_result($laststart);
-			$laststartstmt->execute();
-			$laststartstmt->fetch();
-			$laststartstmt->close();
-
-			$tz = date_default_timezone_get();
-			date_default_timezone_set('UTC');
-			$cachetpl->cache_lifetime = strtotime($laststart) - time();
-			date_default_timezone_set($tz);
-		}
-		$cachetpl->assign('data', serialize($poolrecord));
-		
-		// force into cache
-		$tmp = $cachetpl->fetch('data.tpl', $cachekey);
-		unset($tmp);
-	}
 
 	return $poolrecord;
 }
