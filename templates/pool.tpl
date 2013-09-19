@@ -153,9 +153,9 @@ Make a Pick
 {/if}
 <td>{$entrant.spread}</td>
 
-{foreach from=$entrant.picks key=pickweek item=pick}
+{foreach from=$entrant.picks item=pick}
 
-{if !$mobile || $forcefull || (array_search($pickweek,$mobileweeks) !== false)}
+{if !$mobile || $forcefull || (array_search($pick.week,$mobileweeks) !== false)}
 <td>
 
 {if !$pick.open || $pick.pick_team_id}
@@ -172,7 +172,7 @@ Make a Pick
 </span>
 {elseif $user && $entered && $poolopen && ($user.id == $entrant.user_id)}
 <span>
-<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool.id}&amp;w={$pickweek}" class="betLink">Pick</a>
+<a href="{$SCRIPT_NAME}?a=bet&amp;p={$pool.id}&amp;w={$pick.week}" class="betLink">Pick</a>
 </span>
 {/if}
 
