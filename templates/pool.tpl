@@ -158,7 +158,7 @@ Make a Pick
 {if !$mobile || $forcefull || (array_search($pickweek,$mobileweeks) !== false)}
 <td>
 
-{if $pick}
+{if !$pick.open || $pick.pick_team_id}
 <span 
 {if $pick.win}class="win"{elseif $pick.loss}class="loss"{elseif $pick.tie}class="tie"{/if}
 {if $pick.game_id} title="{$pick.away_team_abbr}{if !empty($pick.away_score)} {$pick.away_score}{/if} @ {$pick.home_team_abbr}{if !empty($pick.home_score)} {$pick.home_score}{/if}"{/if}
