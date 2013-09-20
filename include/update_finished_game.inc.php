@@ -1,6 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 require_once(TOTE_INCLUDEDIR . 'notify_finished_game.inc.php');
 
 /**
@@ -36,8 +35,10 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 	if (!$game) {
 		// these teams aren't playing this week
 		echo "error: Couldn't locate " . $team1 . " vs " . $team2 . " for week " . $week . "<br />\n";
-		return;
+		return false;
 	}
+
+	$modified = false;
 
 	$hometeam = $game['home_team_abbr'];
 	$awayteam = $game['away_team_abbr'];
@@ -71,11 +72,13 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		$updatestmt->bind_param('iii', $homescore, $awayscore, $game['id']);
 		$updatestmt->execute();
 		$updatestmt->close();
-		
-		clear_cache('pool');
+	
+		$modified = true;
 	} else {
 		// we're up to date
 		echo "no update necessary, scores up to date<br />\n";
 	}
+
+	return $modified;
 }
 

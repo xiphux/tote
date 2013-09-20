@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
-
 /**
  * Update the time on a scheduled game that hasn't started yet
  *
@@ -14,6 +12,8 @@ require_once(TOTE_INCLUDEDIR . 'clear_cache.inc.php');
 function update_scheduled_game($season, $week, $away, $home, $start)
 {
 	global $mysqldb;
+
+	$modified = false;
 
 	$newstart = new DateTime('@' . $start);
 	$newstart->setTimezone(new DateTimeZone('America/New_York'));
@@ -61,8 +61,8 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 			$newgamestmt->execute();
 			$newgamestmt->close();
-			
-			clear_cache('pool');
+		
+			$modified = true;
 		} else {
 			// we got incomplete data
 			echo "error: couldn't locate game but don't have enough information to add it to database<br />\n";
@@ -83,12 +83,14 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 		$updategamestmt->bind_param('si', $datestr, $game['id']);
 		$updategamestmt->execute();
 		$updategamestmt->close();
-		
-		clear_cache('pool');
+	
+		$modified = true;
 	} else {
 		// we're up to date
 		echo "no update necessary, scheduled start up to date<br />\n";
 	}
 
 	date_default_timezone_set($oldtz);
+
+	return $modified;
 }

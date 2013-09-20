@@ -116,8 +116,10 @@ function update_games_espn()
 	if (!$season) {
 		// don't update if we don't have a season
 		echo "<p>Error: couldn't determine season</p>\n";
-		return;
+		return false;
 	}
+
+	$modified = false;
 
 	echo "<p><strong>Updating " . $season . " season...</strong></p>\n";
 
@@ -164,7 +166,8 @@ function update_games_espn()
 				if (preg_match('/^([A-Za-z. ]+) ([0-9]+), ([A-Za-z. ]+) ([0-9]+)/', $text, $regs)) {
 
 					// game that's already finished eg "New Orleans 21, Carolina 14" - update it
-					update_finished_game($season, $week, espn_team_to_abbr($regs[1]), $regs[2], espn_team_to_abbr($regs[3]), $regs[4]);
+					if (update_finished_game($season, $week, espn_team_to_abbr($regs[1]), $regs[2], espn_team_to_abbr($regs[3]), $regs[4]))
+						$modified = true;
 
 				} else if (preg_match('/^([A-Za-z. ]+) at ([A-Za-z. ]+)$/', $text, $regs) && !preg_match('/Bye:/', $text)) {
 
@@ -182,7 +185,8 @@ function update_games_espn()
 						// combine date from date header and this time to form full game start datetime
 						$date->setTime((int)$timeregs[1], (int)$timeregs[2]);
 						// update it
-						update_scheduled_game($season, $week, espn_team_to_abbr($regs[1]), espn_team_to_abbr($regs[2]), (int)$date->format("U"));
+						if (update_scheduled_game($season, $week, espn_team_to_abbr($regs[1]), espn_team_to_abbr($regs[2]), (int)$date->format("U")))
+							$modified = true;
 					}
 
 
@@ -195,4 +199,6 @@ function update_games_espn()
 	}
 
 	date_default_timezone_set($oldtz);
+
+	return $modified;
 }

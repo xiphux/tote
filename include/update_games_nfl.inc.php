@@ -21,8 +21,10 @@ function update_games_nfl()
 
 	if ($gms->item(0)->attributes->getNamedItem('t')->value == 'P') {
 		echo "<p>Preseason, skipping...</p>\n";
-		return;
+		return false;
 	}
+
+	$modified = false;
 
 	for ($i = 0; $i < $gms->length; $i++) {
 		// gms is a container for the week containing games inside it
@@ -52,7 +54,8 @@ function update_games_nfl()
 				else if ($quarter == 'FO')
 					echo "final overtime";
 				echo "... ";
-				update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
+				if (update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true))
+					$modified = true;
 			} else if ($quarter == 'P') {
 				// pending (not started)
 				echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";
@@ -73,4 +76,6 @@ function update_games_nfl()
 	}
 
 	date_default_timezone_set($oldtz);
+
+	return $modified;
 }
