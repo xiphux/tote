@@ -9,8 +9,6 @@
  */
 function display_graphdata($graphtype)
 {
-	global $tpl;
-
 	if (empty($graphtype)) {
 		return;
 	}
@@ -36,7 +34,6 @@ function display_graphdata($graphtype)
 
 	if ($data) {
 		header('Content-Type: application/json');
-		$tpl->assign('data', json_encode($data));
-		$tpl->display('data.tpl');
+		echo json_encode($data);
 	}
 }
