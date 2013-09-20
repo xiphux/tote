@@ -1,9 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'pick_distribution.inc.php');
-require_once(TOTE_INCLUDEDIR . 'pick_risk.inc.php');
-require_once(TOTE_INCLUDEDIR . 'team_relationships.inc.php');
-
 /**
  * graphdata controller
  *
@@ -23,12 +19,15 @@ function display_graphdata($graphtype)
 
 	switch ($graphtype) {
 		case 'pickrisk':
+			require_once(TOTE_INCLUDEDIR . 'pick_risk.inc.php');
 			$data = pick_risk();
 			break;
 		case 'pickdist':
+			require_once(TOTE_INCLUDEDIR . 'pick_distribution.inc.php');
 			$data = pick_distribution();
 			break;
 		case 'teamrel':
+			require_once(TOTE_INCLUDEDIR . 'team_relationships.inc.php');
 			$data = team_relationships();
 			break;
 		default:
