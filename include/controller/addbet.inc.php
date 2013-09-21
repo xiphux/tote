@@ -3,7 +3,6 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
-require_once(TOTE_INCLUDEDIR . 'record_mark_dirty.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 define('ADDBET_HEADER', 'Make A Pick');
@@ -134,7 +133,19 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 	$actionstmt->execute();
 	$actionstmt->close();
 
-	record_mark_dirty($poolid);
+	$updaterecordquery = <<<EOQ
+LOCK TABLES %s WRITE, %s READ;
+UPDATE %s AS pool_records JOIN %s AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=%d AND pool_records.user_id=%d AND pool_records.week=%d;
+UNLOCK TABLES;
+EOQ;
+	$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, $poolid, $user['id'], $week);
+	$mysqldb->multi_query($updaterecordquery);
+	$updaterecordresult = $mysqldb->store_result();
+	do {
+		if ($res = $mysqldb->store_result()) {
+			$res->close();
+		}
+	} while ($mysqldb->more_results() && $mysqldb->next_result());
 
 	// go back to the pool view
 	redirect(array('p' => $poolid));
