@@ -13,7 +13,7 @@ require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
  */
 function display_newpool()
 {
-	global $tpl;
+	global $tpl, $tote_conf;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -33,6 +33,8 @@ function display_newpool()
 
 	$tpl->assign('seasons', $seasons);
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
+	if (!empty($tote_conf['defaultfee']))
+		$tpl->assign('fee', $tote_conf['defaultfee']);
 	$tpl->display('newpool.tpl');
 
 }
