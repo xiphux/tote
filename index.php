@@ -31,6 +31,8 @@ $mysqldb = new mysqli(
 	isset($tote_conf['port']) ? (int)$tote_conf['port'] : null
 );
 
+$db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
+
 // define MySQL tables
 define('TOTE_TABLE_CONFERENCES', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'conferences');
 define('TOTE_TABLE_DIVISIONS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'divisions');
