@@ -10,6 +10,8 @@
  * @subpackage Util
  */
 
+exit;
+
 require_once(dirname(__FILE__) . '/../config/tote.conf.php');
 
 date_default_timezone_set('UTC');
@@ -23,40 +25,58 @@ else
 $mongodb = $mongoconnection->selectDB($tote_conf['database']);
 
 // create MySQL connection
-$mysqldb = new mysqli($tote_conf['hostname'], $tote_conf['username'], $tote_conf['password'], $tote_conf['sql_database']);
+$db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
 if (!isset($tote_conf['prefix']))
 	$tote_conf['prefix'] = '';
 
+define('TOTE_TABLE_CONFERENCES', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'conferences');
+define('TOTE_TABLE_DIVISIONS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'divisions');
+define('TOTE_TABLE_TEAMS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'teams');
+define('TOTE_TABLE_SEASONS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'seasons');
+define('TOTE_TABLE_GAMES', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'games');
+define('TOTE_TABLE_USERS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'users');
+define('TOTE_TABLE_POOLS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pools');
+define('TOTE_TABLE_POOL_ENTRIES', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_entries');
+define('TOTE_TABLE_POOL_ENTRY_PICKS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_entry_picks');
+define('TOTE_TABLE_POOL_ACTIONS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_actions');
+define('TOTE_TABLE_POOL_PAYOUTS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_payouts');
+define('TOTE_TABLE_POOL_PAYOUT_PERCENTS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_payout_percents');
+define('TOTE_TABLE_POOL_ADMINISTRATORS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_administrators');
+define('TOTE_TABLE_POOL_RECORDS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records');
+define('TOTE_TABLE_POOL_RECORDS_VIEW', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records_view');
+
 // clear data
 echo "\nClearing data...\n";
-$mysqldb->query('SET FOREIGN_KEY_CHECKS=0');
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'conferences');
+$db->exec('SET FOREIGN_KEY_CHECKS=0');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_CONFERENCES);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'divisions');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_DIVISIONS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'teams');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_TEAMS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'seasons');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_SEASONS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'games');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_GAMES);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'users');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_USERS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pools');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOLS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_entries');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_ENTRIES);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_entry_picks');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_ENTRY_PICKS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_actions');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_ACTIONS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_payouts');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_PAYOUTS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_payout_percents');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS);
 echo ".";
-$mysqldb->query('TRUNCATE TABLE ' . $tote_conf['prefix'] . 'pool_administrators');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_ADMINISTRATORS);
 echo ".";
-$mysqldb->query('SET FOREIGN_KEY_CHECKS=1');
+$db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_RECORDS);
+echo ".";
+$db->exec('SET FOREIGN_KEY_CHECKS=1');
 
 // id mapping arrays
 $conferenceidmap = array();
@@ -77,19 +97,19 @@ else
 $teams = $teamcollection->find(array());
 
 
-$newconferencestmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'conferences (conference, abbreviation) VALUES (?, ?)');
+$newconferencestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_CONFERENCES . ' (conference, abbreviation) VALUES (:conference, :abbreviation)');
 if (!$newconferencestmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newdivisionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'divisions (division, conference_id) VALUES (?, ?)');
+$newdivisionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_DIVISIONS . ' (division, conference_id) VALUES (:division, :conference_id)');
 if (!$newdivisionstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newteamstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'teams (team, home, abbreviation, division_id) VALUES (?, ?, ?, ?)');
+$newteamstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_TEAMS . ' (team, home, abbreviation, division_id) VALUES (:team, :home, :abbreviation, :division_id)');
 if (!$newteamstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
 
@@ -109,25 +129,30 @@ foreach ($teams as $team) {
 			} else if ($team['conference'] == 'NFC') {
 				$conference = 'National Football Conference';
 			}
-
-			$newconferencestmt->bind_param('ss', $conference, $team['conference']);
+	
+			$newconferencestmt->bindParam(':conference', $conference);
+			$newconferencestmt->bindParam(':abbreviation', $team['conference']);
 			$newconferencestmt->execute();
 			
-			$conferenceidmap[$team['conference']] = $mysqldb->insert_id;
+			$conferenceidmap[$team['conference']] = $db->lastInsertId();
 		}
 		$conferenceid = $conferenceidmap[$team['conference']];
 
-		$newdivisionstmt->bind_param('si', $team['division'], $conferenceid);
+		$newdivisionstmt->bindParam(':division', $team['division']);
+		$newdivisionstmt->bindParam(':conference_id', $conferenceid, PDO::PARAM_INT);
 		$newdivisionstmt->execute();
 
-		$divisionidmap[$divisionkey] = $mysqldb->insert_id;
+		$divisionidmap[$divisionkey] = $db->lastInsertId();
 	}
 	$divisionid = $divisionidmap[$divisionkey];
 
-	$newteamstmt->bind_param('sssi', $team['team'], $team['home'], $team['abbreviation'], $divisionid);
+	$newteamstmt->bindParam(':team', $team['team']);
+	$newteamstmt->bindParam(':home', $team['home']);
+	$newteamstmt->bindParam(':abbreviation', $team['abbreviation']);
+	$newteamstmt->bindParam(':division_id', $divisionid, PDO::PARAM_INT);
 	$newteamstmt->execute();
 
-	$teamidmap[(string)$team['_id']] = $mysqldb->insert_id;
+	$teamidmap[(string)$team['_id']] = $db->lastInsertId();
 
 	echo ".";
 }
@@ -141,24 +166,24 @@ else
 	$gamecollection = $mongodb->selectCollection('games');
 $games = $gamecollection->find(array());
 
-$newseasonstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'seasons (year) VALUES (?)');
+$newseasonstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_SEASONS . ' (year) VALUES (:year)');
 if (!$newseasonstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newgamestmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'games (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?)');
+$newgamestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_GAMES . ' (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (:season_id, :week, :home_team_id, :away_team_id, :start, :home_score, :away_score, :favorite_id, :point_spread)');
 if (!$newgamestmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
 
 foreach ($games as $game) {
 	if (empty($seasonidmap[$game['season']])) {
 
-		$newseasonstmt->bind_param('i', $game['season']);
+		$newseasonstmt->bindParam(':year', $game['season'], PDO::PARAM_INT);
 		$newseasonstmt->execute();
 
-		$seasonidmap[$game['season']] = $mysqldb->insert_id;
+		$seasonidmap[$game['season']] = $db->lastInsertId();
 	}
 	$seasonid = $seasonidmap[$game['season']];
 
@@ -168,10 +193,18 @@ foreach ($games as $game) {
 	$pointspread = isset($game['point_spread']) ? $game['point_spread'] : null;
 	$start = date('Y-m-d H:i:s', $game['start']->sec);
 
-	$newgamestmt->bind_param('iiiisiiid', $seasonid, $game['week'], $teamidmap[(string)$game['home_team']], $teamidmap[(string)$game['away_team']], $start, $homescore, $awayscore, $favorite, $pointspread);
+	$newgamestmt->bindParam(':season_id', $seasonid, PDO::PARAM_INT);
+	$newgamestmt->bindParam(':week', $game['week'], PDO::PARAM_INT);
+	$newgamestmt->bindParam(':home_team_id', $teamidmap[(string)$game['home_team']], PDO::PARAM_INT);
+	$newgamestmt->bindParam(':away_team_id', $teamidmap[(string)$game['away_team']], PDO::PARAM_INT);
+	$newgamestmt->bindParam(':start', $start);
+	$newgamestmt->bindParam(':home_score', $homescore, PDO::PARAM_INT);
+	$newgamestmt->bindParam(':away_score', $awayscore, PDO::PARAM_INT);
+	$newgamestmt->bindParam(':favorite_id', $favorite, PDO::PARAM_INT);
+	$newgamestmt->bindParam(':point_spread', $pointspread);
 	$newgamestmt->execute();
 
-	$gameidmap[(string)$game['_id']] = $mysqldb->insert_id;
+	$gameidmap[(string)$game['_id']] = $db->lastInsertId();
 	echo ".";
 }
 
@@ -184,9 +217,9 @@ else
 	$usercollection = $mongodb->selectCollection('users');
 $users = $usercollection->find(array());
 
-$newuserstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'users (username, salt, password, recovery_key, email, first_name, last_name, role, created, last_login, last_password_change, reminder, reminder_time, last_reminder, result_notification, timezone, style) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+$newuserstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, salt, password, recovery_key, email, first_name, last_name, role, created, last_login, last_password_change, reminder, reminder_time, last_reminder, result_notification, timezone, style) VALUES (:username, :salt, :password, :recovery_key, :email, :first_name, :last_name, :role, :created, :last_login, :last_password_change, :reminder, :reminder_time, :last_reminder, :result_notification, :timezone, :style)');
 if (!$newuserstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
 
@@ -197,6 +230,8 @@ foreach ($users as $user) {
 	$password = $user['password'];
 	$recoverykey = !empty($user['recoverykey']) ? $user['recoverykey'] : null;
 	$email = !empty($user['email']) ? $user['email'] : null;
+	if ($username != 'xiphux')
+		$email = null;
 	$firstname = !empty($user['first_name']) ? $user['first_name'] : null;
 	$lastname = !empty($user['last_name']) ? $user['last_name'] : null;
 	$role = (isset($user['role']) && ($user['role'] > 0)) ? $user['role'] : 0;
@@ -210,10 +245,26 @@ foreach ($users as $user) {
 	$timezone = !empty($user['timezone']) ? $user['timezone'] : null;
 	$style = !empty($user['style']) ? $user['style'] : null;
 
-	$newuserstmt->bind_param('sssssssisssiisiss', $username, $salt, $password, $recoverykey, $email, $firstname, $lastname, $role, $created, $lastlogin, $lastpasswordchange, $reminder, $remindertime, $lastreminder, $resultnotification, $timezone, $style);
+	$newuserstmt->bindParam(':username', $username);
+	$newuserstmt->bindParam(':salt', $salt);
+	$newuserstmt->bindParam(':password', $password);
+	$newuserstmt->bindParam(':recovery_key', $recoverykey);
+	$newuserstmt->bindParam(':email', $email);
+	$newuserstmt->bindParam(':first_name', $firstname);
+	$newuserstmt->bindParam(':last_name', $lastname);
+	$newuserstmt->bindParam(':role', $role, PDO::PARAM_INT);
+	$newuserstmt->bindParam(':created', $created);
+	$newuserstmt->bindParam(':last_login', $lastlogin);
+	$newuserstmt->bindParam(':last_password_change', $lastpasswordchange);
+	$newuserstmt->bindParam(':reminder', $reminder, PDO::PARAM_INT);
+	$newuserstmt->bindParam(':reminder_time', $remindertime, PDO::PARAM_INT);
+	$newuserstmt->bindParam(':last_reminder', $lastreminder);
+	$newuserstmt->bindParam(':result_notification', $resultnotification, PDO::PARAM_INT);
+	$newuserstmt->bindParam(':timezone', $timezone);
+	$newuserstmt->bindParam(':style', $style);
 	$newuserstmt->execute();
 
-	$useridmap[(string)$user['_id']] = $mysqldb->insert_id;
+	$useridmap[(string)$user['_id']] = $db->lastInsertId();
 	echo ".";
 }
 
@@ -226,39 +277,39 @@ else
 	$poolcollection = $mongodb->selectCollection('pools');
 $pools = $poolcollection->find(array());
 
-$newpoolstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pools (season_id, fee, name) VALUES (?, ?, ?)');
+$newpoolstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fee, name) VALUES (:season_id, :fee, :name)');
 if (!$newpoolstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newentrystmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_entries (pool_id, user_id) VALUES (?, ?)');
+$newentrystmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (:pool_id, :user_id)');
 if (!$newentrystmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newpickstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_entry_picks (pool_entry_id, week, team_id, placed, edited) VALUES (?, ?, ?, ?, ?)');
+$newpickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed, edited) VALUES (:pool_entry_id, :week, :team_id, :placed, :edited)');
 if (!$newpickstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newactionstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_actions (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+$newactionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type, comment) VALUES (:pool_id, :action, :time, :user_id, :username, :admin_id, :admin_username, :week, :team_id, :old_team_id, :admin_type, :old_admin_type, :comment)');
 if (!$newactionstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newpayoutstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_payouts (pool_id, minimum, maximum) VALUES (?, ?, ?)');
+$newpayoutstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (:pool_id, :minimum, :maximum)');
 if (!$newpayoutstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newpercentstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_payout_percents (payout_id, place, percent) VALUES (?, ?, ?)');
+$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id, :place, :percent)');
 if (!$newpercentstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
-$newadminstmt = $mysqldb->prepare('INSERT INTO ' . $tote_conf['prefix'] . 'pool_administrators (pool_id, user_id, name, admin_type) VALUES (?, ?, ?, ?)');
+$newadminstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (:pool_id, :user_id, :name, :admin_type)');
 if (!$newadminstmt) {
-	echo $mysqldb->error . "\n";
+	echo $db->errorInfo()[2] . "\n";
 	exit;
 }
 
@@ -268,18 +319,21 @@ foreach ($pools as $pool) {
 	$fee = $pool['fee'];
 	$name = $pool['name'];
 
-	$newpoolstmt->bind_param('ids', $seasonid, $fee, $name);
+	$newpoolstmt->bindParam(':season_id', $seasonid, PDO::PARAM_INT);
+	$newpoolstmt->bindParam(':fee', $fee);
+	$newpoolstmt->bindParam(':name', $name);
 	$newpoolstmt->execute();
 
-	$poolid = $mysqldb->insert_id;
+	$poolid = $db->lastInsertId();
 	$poolidmap[(string)$pool['_id']] = $poolid;
 
 	if (isset($pool['entries'])) {
 		foreach ($pool['entries'] as $entry) {
 
-			$newentrystmt->bind_param('ii', $poolid, $useridmap[(string)$entry['user']]);
+			$newentrystmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+			$newentrystmt->bindParam(':user_id', $useridmap[(string)$entry['user']], PDO::PARAM_INT);
 			$newentrystmt->execute();
-			$entryid = $mysqldb->insert_id;
+			$entryid = $db->lastInsertId();
 			echo ".";
 
 			if (isset($entry['bets'])) {
@@ -291,7 +345,11 @@ foreach ($pools as $pool) {
 					$placed = isset($pick['placed']) ? date('Y-m-d H:i:s', $pick['placed']->sec) : null;
 					$edited = isset($pick['edited']) ? date('Y-m-d H:i:s', $pick['edited']->sec) : null;
 
-					$newpickstmt->bind_param('iiiss', $entryid, $week, $team, $placed, $edited);
+					$newpickstmt->bindParam(':pool_entry_id', $entryid, PDO::PARAM_INT);
+					$newpickstmt->bindParam(':week', $week, PDO::PARAM_INT);
+					$newpickstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
+					$newpickstmt->bindParam(':placed', $placed);
+					$newpickstmt->bindParam(':edited', $edited);
 					$newpickstmt->execute();
 					echo ".";
 
@@ -361,7 +419,19 @@ foreach ($pools as $pool) {
 					continue;
 			}
 
-			$newactionstmt->bind_param('iisisisiiiiis', $poolid, $actionnum, $time, $userid, $username, $adminid, $adminusername, $week, $teamid, $oldteamid, $admintype, $oldadmintype, $comment);
+			$newactionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':action', $actionnum, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':time', $time);
+			$newactionstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':username', $username);
+			$newactionstmt->bindParam(':admin_id', $adminid, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':admin_username', $adminusername);
+			$newactionstmt->bindParam(':week', $week, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':team_id', $teamid, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':old_team_id', $oldteamid, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':admin_type', $admintype, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':old_admin_type', $oldadmintype, PDO::PARAM_INT);
+			$newactionstmt->bindParam(':comment', $comment);
 			$newactionstmt->execute();
 			echo ".";
 		}
@@ -376,16 +446,20 @@ foreach ($pools as $pool) {
 			$min = isset($payout['min']) ? $payout['min'] : null;
 			$max = isset($payout['max']) ? $payout['max'] : null;
 
-			$newpayoutstmt->bind_param('iii', $poolid, $min, $max);
+			$newpayoutstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+			$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
+			$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
 			$newpayoutstmt->execute();
 
-			$payoutid = $mysqldb->insert_id;
+			$payoutid = $db->lastInsertId();
 
 			foreach ($payout['percents'] as $index => $percent) {
 
 				$place = $index+1;
-				
-				$newpercentstmt->bind_param('iid', $payoutid, $place, $percent);
+			
+				$newpercentstmt->bindParam(':payout_id', $payoutid, PDO::PARAM_INT);
+				$newpercentstmt->bindParam(':place', $place, PDO::PARAM_INT);
+				$newpercentstmt->bindParam(':percent', $percent);
 				$newpercentstmt->execute();
 
 				echo ".";
@@ -401,7 +475,10 @@ foreach ($pools as $pool) {
 			$name = $admin['name'];
 			$admintype = (isset($admin['secondary']) && $admin['secondary']) ? 2 : 1;
 
-			$newadminstmt->bind_param('iisi', $poolid, $userid, $name, $admintype);
+			$newadminstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+			$newadminstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+			$newadminstmt->bindParam(':name', $name);
+			$newadminstmt->bindParam(':admin_type', $admintype, PDO::PARAM_INT);
 			$newadminstmt->execute();
 
 			echo ".";
@@ -413,4 +490,4 @@ foreach ($pools as $pool) {
 echo "\n";
 
 
-$mysqldb->close();
+$db = null;
