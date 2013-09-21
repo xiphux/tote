@@ -3,7 +3,6 @@
 require_once(TOTE_INCLUDEDIR . 'validate_csrftoken.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
-require_once(TOTE_INCLUDEDIR . 'record_mark_dirty.inc.php');
 
 /**
  * ajaxeditpool controller
@@ -98,6 +97,8 @@ EOQ;
 		$actionstmt = $mysqldb->prepare($actionquery);
 		$action = ($modification == 'add') ? 1 : 2;
 
+		$modifiedusers = array();
+
 		foreach ($modusers as $muser) {
 
 			if ($modification == 'remove') {
@@ -109,6 +110,9 @@ EOQ;
 
 			$modstmt->bind_param('ii', $poolid, $muser);
 			$modstmt->execute();
+			if ($mysqldb->affected_rows > 0) {
+				$modifiedusers[] = $muser;
+			}
 
 			$actionstmt->bind_param('iiiiis', $poolid, $action, $muser, $muser, $user['id'], $user['display_name']);
 			$actionstmt->execute();
@@ -118,7 +122,32 @@ EOQ;
 		$actionstmt->close();
 		$modstmt->close();
 
-		record_mark_dirty($poolid);
+		if (count($modifiedusers) > 0) {
+			$updaterecordquery = null;
+			if ($modification == 'add') {
+				$updaterecordquery = <<<EOQ
+LOCK TABLES %s WRITE, %s READ;
+INSERT INTO %s SELECT * FROM %s WHERE pool_id=%d AND user_id IN (%s);
+UNLOCK TABLES;
+EOQ;
+				$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, $poolid, implode(', ', $modifiedusers));
+			} else {
+				$updaterecordquery = <<<EOQ
+LOCK TABLES %s WRITE;
+DELETE FROM %s WHERE pool_id=%d AND user_id IN (%s);
+UNLOCK TABLES;
+EOQ;
+				$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS, $poolid, implode(', ', $modifiedusers));
+			}
+			$mysqldb->multi_query($updaterecordquery);
+			$updaterecordresult = $mysqldb->store_result();
+			do {
+				if ($res = $mysqldb->store_result()) {
+					$res->close();
+				}
+			} while ($mysqldb->more_results() && $mysqldb->next_result());
+		}
+
 	} else {
 		echo "Unknown modification";
 	}
