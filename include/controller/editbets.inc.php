@@ -19,7 +19,7 @@ define('EDITBETS_HEADER', "Edit A User's Bets");
  */
 function display_editbets($poolid, $entrant)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -44,26 +44,23 @@ function display_editbets($poolid, $entrant)
 		return;
 	}
 
-	$entrantstmt = $mysqldb->prepare("SELECT id, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name FROM " . TOTE_TABLE_USERS . " WHERE id=?");
-	$entrantstmt->bind_param('i', $entrant);
+	$entrantstmt = $db->prepare("SELECT id, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name FROM " . TOTE_TABLE_USERS . " WHERE id=:entrant_id");
+	$entrantstmt->bindParam(':entrant_id', $entrant, PDO::PARAM_INT);
 	$entrantstmt->execute();
-	$entrantresult = $entrantstmt->get_result();
-	$entrantobj = $entrantresult->fetch_assoc();
-	$entrantresult->close();
-	$entrantstmt->close();
+	$entrantobj = $entrantstmt->fetch(PDO::FETCH_ASSOC);
+	$entrantstmt = null;
 
 	if (!$entrantobj) {
 		display_message('Invalid user', EDITBETS_HEADER);
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare('SELECT seasons.year AS season, pools.name, pools.id, pool_entries.id AS entry_id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? WHERE pools.id=?');
-	$poolstmt->bind_param('ii', $entrant, $poolid);
+	$poolstmt = $db->prepare('SELECT seasons.year AS season, pools.name, pools.id, pool_entries.id AS entry_id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=:user_id WHERE pools.id=:pool_id');
+	$poolstmt->bindParam(':user_id', $entrant, PDO::PARAM_INT);
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolstmt->execute();
-	$poolresult = $poolstmt->get_result();
-	$pool = $poolresult->fetch_assoc();
-	$poolresult->close();
-	$poolstmt->close();
+	$pool = $poolstmt->fetch(PDO::FETCH_ASSOC);
+	$poolstmt = null;
 
 	if (!$pool) {
 		// pool must exist
@@ -79,17 +76,15 @@ function display_editbets($poolid, $entrant)
 
 	// make a list of the user's bets
 	$userbets = array();
-	$picksstmt = $mysqldb->prepare('SELECT week, team_id FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=? ORDER BY week');
-	$picksstmt->bind_param('i', $pool['entry_id']);
+	$picksstmt = $db->prepare('SELECT week, team_id FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=:entry_id ORDER BY week');
+	$picksstmt->bindParam(':entry_id', $pool['entry_id'], PDO::PARAM_INT);
 	$picksstmt->execute();
-	$picksresult = $picksstmt->get_result();
 
-	while ($pick = $picksresult->fetch_assoc()) {
+	while ($pick = $picksstmt->fetch(PDO::FETCH_ASSOC)) {
 		$userbets[(int)$pick['week']] = $pick['team_id'];
 	}
 
-	$picksresult->close();
-	$picksstmt->close();
+	$picksstmt = null;
 
 	// for any weeks user hasn't bet on, set a placeholder
 	// so we can provide the option to add a bet there
@@ -102,12 +97,12 @@ function display_editbets($poolid, $entrant)
 	ksort($userbets);
 
 	// make a list of all teams available
-	$teamsresult = $mysqldb->query('SELECT id, home, team FROM ' . TOTE_TABLE_TEAMS . ' ORDER BY home, team');
+	$teamsstmt = $db->query('SELECT id, home, team FROM ' . TOTE_TABLE_TEAMS . ' ORDER BY home, team');
 	$allteams = array();
-	while ($team = $teamsresult->fetch_assoc()) {
+	while ($team = $teamsstmt->fetch(PDO::FETCH_ASSOC)) {
 		$allteams[] = $team;
 	}
-	$teamsresult->close();
+	$teamsstmt = null;
 
 	// provide data and display
 	http_headers();

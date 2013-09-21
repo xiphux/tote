@@ -7,17 +7,6 @@ require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
-/**
- * Sort bets by week
- *
- * @param array $a first sort item
- * @param array $b second sort item
- */
-function sort_bets($a, $b)
-{
-	return ($a['week'] > $b['week'] ? 1 : -1);
-}
-
 define('SAVEBETS_HEADER', "Edit A User's Bets");
 
 /**
@@ -33,7 +22,7 @@ define('SAVEBETS_HEADER', "Edit A User's Bets");
  */
 function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -63,13 +52,12 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 		return;
 	}
 
-	$entrantstmt = $mysqldb->prepare("SELECT seasons.year AS season, pool_entries.id AS entry_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS display_name  FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON pools.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_POOL_ENTRIES . " AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN " . TOTE_TABLE_USERS . " ON users.id=pool_entries.user_id WHERE pools.id=?");
-	$entrantstmt->bind_param('ii', $entrant, $poolid);
+	$entrantstmt = $db->prepare("SELECT seasons.year AS season, pool_entries.id AS entry_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS display_name  FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON pools.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_POOL_ENTRIES . " AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=:user_id LEFT JOIN " . TOTE_TABLE_USERS . " ON users.id=pool_entries.user_id WHERE pools.id=:pool_id");
+	$entrantstmt->bindParam(':user_id', $entrant, PDO::PARAM_INT);
+	$entrantstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$entrantstmt->execute();
-	$entrantresult = $entrantstmt->get_result();
-	$entrantobj = $entrantresult->fetch_assoc();
-	$entrantresult->close();
-	$entrantstmt->close();
+	$entrantobj = $entrantstmt->fetch(PDO::FETCH_ASSOC);
+	$entrantstmt = null;;
 	
 	if (!$entrantobj) {
 		// must be a valid pool
@@ -84,25 +72,15 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 	}
 
 	// get all user picks
-	$picksstmt = $mysqldb->prepare('SELECT team_id, week FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks WHERE pool_entry_id=? ORDER BY week');
-	$picksstmt->bind_param('i', $entrantobj['entry_id']);
+	$picksstmt = $db->prepare('SELECT team_id, week FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks WHERE pool_entry_id=:entry_id ORDER BY week');
+	$picksstmt->bindParam(':entry_id', $entrantobj['entry_id'], PDO::PARAM_INT);
 	$picksstmt->execute();
-	$picksresult = $picksstmt->get_result();
 
 	$oldpicks = array();
-	while ($pick = $picksresult->fetch_assoc()) {
+	while ($pick = $picksstmt->fetch(PDO::FETCH_ASSOC)) {
 		$oldpicks[(int)$pick['week']] = $pick['team_id'];
 	}
-	$picksresult->close();
-	$picksstmt->close();
-
-	// go through all weeks and resolve differences
-	$addpickstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, edited) VALUES (?, ?, ?, UTC_TIMESTAMP())');
-	$delpickstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=? AND week=?');
-	$modpickstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' SET team_id=?, edited=UTC_TIMESTAMP() WHERE pool_entry_id=? AND week=?');
-	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, comment) VALUES (?, 5, UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ?, ?)');
-
-	$weeks = get_season_weeks($entrantobj['season']);
+	$picksstmt = null;;
 
 	$comment = trim($comment);
 	$comment = !empty($comment) ? $comment : null;
@@ -110,6 +88,26 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 	$adminname = $user['display_name'];
 	$entrantname = $entrantobj['display_name'];
 	$entrantid = $entrantobj['entry_id'];
+
+	// go through all weeks and resolve differences
+	$addpickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, edited) VALUES (:entry_id, :week, :team_id, UTC_TIMESTAMP())');
+	$addpickstmt->bindParam(':entry_id', $entrantid, PDO::PARAM_INT);
+
+	$delpickstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=:entry_id AND week=:week');
+	$delpickstmt->bindParam(':entry_id', $entrantid, PDO::PARAM_INT);
+
+	$modpickstmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' SET team_id=:team_id, edited=UTC_TIMESTAMP() WHERE pool_entry_id=:entry_id AND week=:week');
+	$modpickstmt->bindParam(':entry_id', $entrantid, PDO::PARAM_INT);
+
+	$actionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, comment) VALUES (:pool_id, 5, UTC_TIMESTAMP(), :user_id, :username, :admin_id, :admin_username, :week, :team_id, :old_team_id, :comment)');
+	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+	$actionstmt->bindParam(':user_id', $entrant, PDO::PARAM_INT);
+	$actionstmt->bindParam(':username', $entrantname);
+	$actionstmt->bindParam(':admin_id', $adminid, PDO::PARAM_INT);
+	$actionstmt->bindParam(':admin_username', $adminname);
+	$actionstmt->bindParam(':comment', $comment);
+
+	$weeks = get_season_weeks($entrantobj['season']);
 
 	$modifiedweeks = array();
 
@@ -126,10 +124,13 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 			$oldteam = null;
 			$newteam = $weekbets[$i];
 
-			$addpickstmt->bind_param('iii', $entrantid, $i, $newteam);
+			$addpickstmt->bindParam(':week', $i, PDO::PARAM_INT);
+			$addpickstmt->bindParam(':team_id', $newteam, PDO::PARAM_INT);
 			$addpickstmt->execute();
 
-			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->bindParam(':week', $i, PDO::PARAM_INT);
+			$actionstmt->bindParam(':team_id', $newteam, PDO::PARAM_INT);
+			$actionstmt->bindParam(':old_team_id', $oldteam, PDO::PARAM_INT);
 			$actionstmt->execute();
 			$modifiedweeks[] = $i;
 
@@ -139,10 +140,12 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 			$oldteam = $oldpicks[$i];
 			$newteam = null;
 
-			$delpickstmt->bind_param('ii', $entrantid, $i);
+			$delpickstmt->bindParam(':week', $i);
 			$delpickstmt->execute();
 
-			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->bindParam(':week', $i, PDO::PARAM_INT);
+			$actionstmt->bindParam(':team_id', $newteam, PDO::PARAM_INT);
+			$actionstmt->bindParam(':old_team_id', $oldteam, PDO::PARAM_INT);
 			$actionstmt->execute();
 			$modifiedweeks[] = $i;
 
@@ -152,10 +155,13 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 			$oldteam = $oldpicks[$i];
 			$newteam = $weekbets[$i];
 
-			$modpickstmt->bind_param('iii', $newteam, $entrantid, $i);
+			$modpickstmt->bindParam(':week', $i, PDO::PARAM_INT);
+			$modpickstmt->bindParam(':team_id', $newteam, PDO::PARAM_INT);
 			$modpickstmt->execute();
 
-			$actionstmt->bind_param('iisisiiis', $poolid, $entrant, $entrantname, $adminid, $adminname, $i, $newteam, $oldteam, $comment);
+			$actionstmt->bindParam(':week', $i, PDO::PARAM_INT);
+			$actionstmt->bindParam(':team_id', $newteam, PDO::PARAM_INT);
+			$actionstmt->bindParam(':old_team_id', $oldteam, PDO::PARAM_INT);
 			$actionstmt->execute();
 			$modifiedweeks[] = $i;
 
@@ -163,25 +169,15 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 
 	}
 
-	$addpickstmt->close();
-	$delpickstmt->close();
-	$modpickstmt->close();
-	$actionstmt->close();
+	$addpickstmt = null;
+	$delpickstmt = null;
+	$modpickstmt = null;
+	$actionstmt = null;
 
 	if (count($modifiedweeks) > 0) {
-		$updaterecordquery = <<<EOQ
-LOCK TABLES %s WRITE, %s READ;
-UPDATE %s AS pool_records JOIN %s AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=%d AND pool_records.user_id=%d AND pool_records.week IN (%s);
-UNLOCK TABLES;
-EOQ;
-		$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, $poolid, $entrant, implode(', ', $modifiedweeks));
-		$mysqldb->multi_query($updaterecordquery);
-		$updaterecordresult = $mysqldb->store_result();
-		do {
-			if ($res = $mysqldb->store_result()) {
-				$res->close();
-			}
-		} while ($mysqldb->more_results() && $mysqldb->next_result());
+		$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
+		$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=' . $poolid . ' AND pool_records.user_id=' . $entrant . ' AND pool_records.week IN (' . implode(', ', $modifiedweeks) . ')');
+		$db->exec('UNLOCK TABLES');
 	}
 
 	// go home
