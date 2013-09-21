@@ -16,7 +16,13 @@
   </tr>
   <tr>
     <td><label for="season">Season:</label></td>
-    <td><input type="text" name="season" id="season" value="{if $season}{$season}{else}{$smarty.now|date_format:"%Y"}{/if}" /></td>
+    <td>
+    <select name="season" id="season">
+    {foreach from=$seasons item=eachseason}
+    <option value="{$eachseason}" {if $season == $eachseason}selected="selected"{/if}>{$eachseason}-{$eachseason+1}</option>
+    {/foreach}
+    </select>
+    </td>
   </tr>
   <tr>
     <td><label for="fee">Fee:</label></td>

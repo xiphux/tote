@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_collection.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 require_once(TOTE_INCLUDEDIR . 'user_readable_name.inc.php');  // TODO remove this
@@ -84,6 +85,9 @@ function display_addpool($name, $season, $fee, $csrftoken)
 			$tpl->assign('season', $season);
 		if (!empty($fee))
 			$tpl->assign('fee', $fee);
+		$seasons = get_seasons();
+		rsort($seasons);
+		$tpl->assign('seasons', $seasons);
 		$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 		$tpl->display('newpool.tpl');
 	} else {

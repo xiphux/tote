@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 
 /**
  * newpool controller
@@ -25,8 +26,12 @@ function display_newpool()
 		return redirect();
 	}
 
+	$seasons = get_seasons();
+	rsort($seasons);
+
 	http_headers();
 
+	$tpl->assign('seasons', $seasons);
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->display('newpool.tpl');
 
