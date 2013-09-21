@@ -73,7 +73,7 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 		$updatestmt->execute();
 		$updatestmt->close();
 	
-		$modified = true;
+		$modified = $game['id'];
 	} else {
 		// we're up to date
 		echo "no update necessary, scores up to date<br />\n";

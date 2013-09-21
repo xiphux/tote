@@ -2,7 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'update_finished_game.inc.php');
 
-function update_games_nfl()
+function update_games_nfl(&$finishedgames)
 {
 	// times are reported on nfl in Eastern
 	$oldtz = date_default_timezone_get();
@@ -54,8 +54,10 @@ function update_games_nfl()
 				else if ($quarter == 'FO')
 					echo "final overtime";
 				echo "... ";
-				if (update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true))
-					$modified = true;
+				$finishedgameid = update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
+				if ($finishedgameid) {
+					$finishedgames = $finishedgameid;
+				}
 			} else if ($quarter == 'P') {
 				// pending (not started)
 				echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";
