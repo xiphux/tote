@@ -145,7 +145,10 @@ EOQ;
 	$picksstmt->bind_param('ii', $poolid, $user['id']);
 	$picksstmt->execute();
 	$picksresult = $picksstmt->get_result();
-	$bets = $picksresult->fetch_all(MYSQLI_ASSOC);
+	$picks = array();
+	while ($pick = $picksresult->fetch_assoc()) {
+		$picks[] = $pick;
+	}
 	$picksresult->close();
 	$picksstmt->close();
 
@@ -154,8 +157,8 @@ EOQ;
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 	$tpl->assign('teams', $availableteams);
 	$tpl->assign('week', $week);
-	if (count($bets) > 0) {
-		$tpl->assign('bets', $bets);
+	if (count($picks) > 0) {
+		$tpl->assign('bets', $picks);
 	}
 	$tpl->assign('games', $weekgames);
 	$tpl->assign('pool', $pool);

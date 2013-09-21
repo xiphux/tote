@@ -67,25 +67,23 @@ function display_deleteuser($userid, $csrftoken)
 	$entriesstmt->bind_param('i', $userid);
 	$entriesstmt->execute();
 	$entriesresult = $entriesstmt->get_result();
-	$entries = $entriesresult->fetch_all(MYSQLI_ASSOC);
+
+	$auditstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (?, 2, UTC_TIMESTAMP(), ?, ?, ?)');
+	while ($entry = $entriesresult->fetch_assoc()) {
+		
+		$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $user['display_name']);
+		$auditstmt->execute();
+
+	}
+	$auditstmt->close();
 	$entriesresult->close();
 	$entriesstmt->close();
 
-	if (count($entries) > 0) {
-		
-		$auditstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (?, 2, UTC_TIMESTAMP(), ?, ?, ?)');
-		foreach ($entries as $entry) {
-			$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $user['display_name']);
-			$auditstmt->execute();
-		}
-		$auditstmt->close();
-
-		// delete any user entries
-		$delentrystmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
-		$delentrystmt->bind_param('i', $userid);
-		$delentrystmt->execute();
-		$delentrystmt->close();
-	}
+	// delete any user entries
+	$delentrystmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
+	$delentrystmt->bind_param('i', $userid);
+	$delentrystmt->execute();
+	$delentrystmt->close();
 
 	// nullify any action / administrator ids pointing to this user
 	$deluseractionstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET user_id=NULL WHERE user_id=?');

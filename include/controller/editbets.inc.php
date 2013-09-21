@@ -103,7 +103,10 @@ function display_editbets($poolid, $entrant)
 
 	// make a list of all teams available
 	$teamsresult = $mysqldb->query('SELECT id, home, team FROM ' . TOTE_TABLE_TEAMS . ' ORDER BY home, team');
-	$allteams = $teamsresult->fetch_all(MYSQLI_ASSOC);
+	$allteams = array();
+	while ($team = $teamsresult->fetch_assoc()) {
+		$allteams[] = $team;
+	}
 	$teamsresult->close();
 
 	// provide data and display

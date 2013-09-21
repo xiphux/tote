@@ -24,21 +24,24 @@ function display_pool($poolid = null)
 
 	// get list of all pools
 	$poolsresult = $mysqldb->query('SELECT pools.id, pools.name, pools.fee, seasons.year AS season, COUNT(pool_entries.id)*pools.fee AS pot FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pools.id=pool_entries.pool_id GROUP BY pools.id ORDER BY seasons.year DESC, name');
-	$pools = $poolsresult->fetch_all(MYSQLI_ASSOC);
 
+	$pools = array();
 	$poolobj = null;
-	if (empty($poolid)) {
-		// most recent pool
-		$poolobj = $pools[0];
-	} else {
-		// specified pool
-		foreach ($pools as $pool) {
-			if ($pool['id'] == $poolid) {
+
+	while ($pool = $poolsresult->fetch_assoc()) {
+		if (!$poolobj) {
+			if (empty($poolid)) {
+				// most recent pool
 				$poolobj = $pool;
-				break;
+			} else if ($pool['id'] == $poolid) {
+				// specified pool
+				$poolobj = $pool;
 			}
 		}
+		$pools[] = $pool;
 	}
+
+	$poolsresult->close();
 
 	if (!$poolobj) {
 		// we need some pool

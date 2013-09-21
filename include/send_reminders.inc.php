@@ -65,6 +65,17 @@ EOQ;
 		return;
 	}
 
+	// set up data needed to generate reminder email
+	$tpl->assign('sitename', $tote_conf['sitename']);
+	$tpl->assign('week', $week);
+	$tpl->assign('year', $year);
+	$subject = 'Reminder from ' . $tote_conf['sitename'] . ': Week ' . $week . ' is starting';
+	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
+		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+	if (!empty($tote_conf['bccemail']))
+		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
+
 	// get all users due for a reminder
 	$userquery = <<<EOQ
 SELECT
@@ -94,35 +105,16 @@ AND (
  )
 )
 EOQ;
+
 	$userquery = sprintf($userquery, TOTE_TABLE_USERS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOLS, TOTE_TABLE_SEASONS);
 	$userstmt = $mysqldb->prepare($userquery);
 	$userstmt->bind_param('iss', $year, $weekstart, $weekstart);
 	$userstmt->execute();
 	$userresult = $userstmt->get_result();
-	$users = $userresult->fetch_all(MYSQLI_ASSOC);
-	$userresult->close();
-	$userstmt->close();
-
-	if (count($users) < 1) {
-		// no one to remind
-		date_default_timezone_set($oldtz);
-		return;
-	}
-
-	// set up data needed to generate reminder email
-	$tpl->assign('sitename', $tote_conf['sitename']);
-	$tpl->assign('week', $week);
-	$tpl->assign('year', $year);
-	$subject = 'Reminder from ' . $tote_conf['sitename'] . ': Week ' . $week . ' is starting';
-	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
-		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
-		'X-Mailer: PHP/' . phpversion();
-	if (!empty($tote_conf['bccemail']))
-		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 
 	$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_reminder=UTC_TIMESTAMP() WHERE id=?');
 
-	foreach ($users as $user) {
+	while ($user = $userresult->fetch_assoc()) {
 		// use the user's preferred timezone, otherwise default to Eastern
 		$tz = 'America/New_York';
 		if (!empty($user['timezone']))
@@ -147,6 +139,8 @@ EOQ;
 		$updatestmt->execute();
 	}
 	$updatestmt->close();
+	$userresult->close();
+	$userstmt->close();
 
 	date_default_timezone_set($oldtz);
 }
