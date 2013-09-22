@@ -73,11 +73,11 @@ LEFT JOIN %s AS teams
 ON pool_actions.team_id=teams.id
 LEFT JOIN %s AS old_teams
 ON pool_actions.old_team_id=old_teams.id
-WHERE pool_actions.pool_id=:pool_id
+WHERE pool_actions.pool_id=:pool_id %s
 ORDER BY pool_actions.time DESC
 EOQ;
 
-	$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS, TOTE_TABLE_USERS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
+	$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS, TOTE_TABLE_USERS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS, ((($format == 'atom') || ($format == 'rss')) ? 'AND pool_actions.time>DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 WEEK)'  : ''));
 	$actionstmt = $db->prepare($actionquery);
 	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$actionstmt->execute();
