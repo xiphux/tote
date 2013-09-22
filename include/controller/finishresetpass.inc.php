@@ -14,7 +14,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishresetpass($key, $newpassword, $newpassword2)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$errors = array();
 
@@ -38,24 +38,27 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 
 			$userid = null;
 			$username = null;
-			$keystmt = $mysqldb->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=?');
-			$keystmt->bind_param('s', $key);
-			$keystmt->bind_result($userid, $username);
+			$keystmt = $db->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key');
+			$keystmt->bindParam(':key', $key);
 			$keystmt->execute();
-			$found = $keystmt->fetch();
-			$keystmt->close();
+			$keystmt->bindColumn(1, $userid);
+			$keystmt->bindColumn(2, $username);
+			$found = $keystmt->fetch(PDO::FETCH_BOUND);
+			$keystmt = null;
 
-			if ($found) {
+			if ($found && ($userid != null)) {
 				
 				// hash the new password
 				$hashdata = generate_password_hash($username, $newpassword);
 				
 				// set the new password for the user and delete the recovery key
 				// (since it was used once we don't want it to be used again)
-				$resetstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP(), recovery_key=NULL WHERE id=?');
-				$resetstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $userid);
+				$resetstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=:salt, password=:password, last_password_change=UTC_TIMESTAMP(), recovery_key=NULL WHERE id=:user_id');
+				$resetstmt->bindParam(':salt', $hashdata['salt']);
+				$resetstmt->bindParam(':password', $hashdata['passwordhash']);
+				$resetstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 				$resetstmt->execute();
-				$resetstmt->close();
+				$resetstmt = null;
 
 			} else {
 				// recovery key has to exist in the database to be valid

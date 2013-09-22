@@ -12,7 +12,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishrecoverpass($email)
 {
-	global $tpl, $tote_conf, $mysqldb;
+	global $tpl, $tote_conf, $db;
 
 	$key = '';
 	$username = '';
@@ -24,23 +24,25 @@ function display_finishrecoverpass($email)
 		$errors[] = 'Email is required';
 	} else {
 
-		$userstmt = $mysqldb->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE email=?');
-		$userstmt->bind_param('s', $email);
-		$userstmt->bind_result($userid, $username);
+		$userstmt = $db->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE email=:email');
+		$userstmt->bindParam(':email', $email);
 		$userstmt->execute();
-		$found = $userstmt->fetch();
-		$userstmt->close();
+		$userstmt->bindColumn(1, $userid);
+		$userstmt->bindColumn(2, $username);
+		$found = $userstmt->fetch(PDO::FETCH_BOUND);
+		$userstmt = null;
 
-		if ($found) {
+		if ($found && ($userid != null)) {
 
 			// generate a unique recovery key and store it
 			// for the user
 			$key = generate_salt();
 			
-			$setkeystmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET recovery_key=? WHERE id=?');
-			$setkeystmt->bind_param('si', $key, $userid);
+			$setkeystmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET recovery_key=:recovery_key WHERE id=:user_id');
+			$setkeystmt->bindParam(':recovery_key', $key);
+			$setkeystmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 			$setkeystmt->execute();
-			$setkeystmt->close();
+			$setkeystmt = null;
 
 		} else {
 			// can't find that email in the database

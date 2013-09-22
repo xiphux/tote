@@ -12,7 +12,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_resetpass($key)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$errors = array();
 
@@ -21,14 +21,16 @@ function display_resetpass($key)
 		$errors[] = 'A recovery key is required';
 	} else {
 		
-		$keystmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=?');
-		$keystmt->bind_param('s', $key);
+		$keystmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key');
+		$keystmt->bindParam(':key', $key);
 		$keystmt->execute();
-		if (!$keystmt->fetch()) {
+		$userid = null;
+		$keystmt->bindColumn(1, $userid);
+		if (!$keystmt->fetch(PDO::FETCH_BOUND)) {
 			// the key has to be active and valid
 			$errors[] = 'Invalid key.  It may have been used already.';
 		}
-		$keystmt->close();
+		$keystmt = null;
 	}
 
 	http_headers();
