@@ -2,7 +2,7 @@
 
 function send_reminders()
 {
-	global $tote_conf, $mysqldb, $tpl;
+	global $tote_conf, $db, $tpl;
 
 	$oldtz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
@@ -27,27 +27,27 @@ FROM %s AS games
 LEFT JOIN %s AS seasons ON games.season_id=seasons.id
 LEFT JOIN %s AS home_teams ON games.home_team_id=home_teams.id
 LEFT JOIN %s AS away_teams ON games.away_team_id=away_teams.id
-WHERE seasons.year=?
+WHERE seasons.year=:year
 AND games.week=((
 	SELECT COALESCE(MAX(games.week),0)
 	FROM %s AS games
 	LEFT JOIN %s AS seasons ON games.season_id=seasons.id
-	WHERE seasons.year=?
+	WHERE seasons.year=:weekyear
 	AND games.start<=UTC_TIMESTAMP()
 )+1)
 ORDER BY games.start
 EOQ;
 
 	$schedulequery = sprintf($schedulequery, TOTE_TABLE_GAMES, TOTE_TABLE_SEASONS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS, TOTE_TABLE_GAMES, TOTE_TABLE_SEASONS);
-	$schedulestmt = $mysqldb->prepare($schedulequery);
-	$schedulestmt->bind_param('ii', $year, $year);
+	$schedulestmt = $db->prepare($schedulequery);
+	$schedulestmt->bindParam(':year', $year, PDO::PARAM_INT);
+	$schedulestmt->bindParam(':weekyear', $year, PDO::PARAM_INT);
 	$schedulestmt->execute();
-	$scheduleresult = $schedulestmt->get_result();
 
 	$schedule = array();
 	$weekstart = null;
 	$week = null;
-	while ($game = $scheduleresult->fetch_assoc()) {
+	while ($game = $schedulestmt->fetch(PDO::FETCH_ASSOC)) {
 		if (empty($weekstart)) {
 			$weekstart = $game['start'];
 			$week = $game['week'];
@@ -56,8 +56,7 @@ EOQ;
 		$game['localstart'] = new DateTime('@' . $game['startstamp']);
 		$schedule[] = $game;
 	}
-	$scheduleresult->close();
-	$schedulestmt->close();
+	$schedulestmt = null;
 
 	if ((count($schedule) < 1) || !$weekstart) {
 		// nothing upcoming
@@ -96,25 +95,26 @@ LEFT JOIN %s AS pools ON pools.id=pool_entries.pool_id
 LEFT JOIN %s AS seasons ON seasons.id=pools.season_id
 WHERE users.reminder=1
 AND users.email IS NOT NULL
-AND seasons.year=?
+AND seasons.year=:year
 AND (
- DATE_ADD(UTC_TIMESTAMP(), INTERVAL users.reminder_time second)>?
+ DATE_ADD(UTC_TIMESTAMP(), INTERVAL users.reminder_time second)>:week_start1
  AND (
   users.reminder_time IS NULL
-  OR (DATE_ADD(users.last_reminder, INTERVAL users.reminder_time second) < ?)
+  OR (DATE_ADD(users.last_reminder, INTERVAL users.reminder_time second) < :week_start2)
  )
 )
 EOQ;
 
 	$userquery = sprintf($userquery, TOTE_TABLE_USERS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOLS, TOTE_TABLE_SEASONS);
-	$userstmt = $mysqldb->prepare($userquery);
-	$userstmt->bind_param('iss', $year, $weekstart, $weekstart);
+	$userstmt = $db->prepare($userquery);
+	$userstmt->bindParam(':year', $year, PDO::PARAM_INT);
+	$userstmt->bindParam(':week_start1', $weekstart);
+	$userstmt->bindParam(':week_start2', $weekstart);
 	$userstmt->execute();
-	$userresult = $userstmt->get_result();
 
-	$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_reminder=UTC_TIMESTAMP() WHERE id=?');
+	$updatestmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_reminder=UTC_TIMESTAMP() WHERE id=:user_id');
 
-	while ($user = $userresult->fetch_assoc()) {
+	while ($user = $userstmt->fetch(PDO::FETCH_ASSOC)) {
 		// use the user's preferred timezone, otherwise default to Eastern
 		$tz = 'America/New_York';
 		if (!empty($user['timezone']))
@@ -135,12 +135,11 @@ EOQ;
 		mail($user['email'], $subject, $message, $headers);
 
 		// mark the user as messaged
-		$updatestmt->bind_param('i', $user['id']);
+		$updatestmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);
 		$updatestmt->execute();
 	}
-	$updatestmt->close();
-	$userresult->close();
-	$userstmt->close();
+	$updatestmt = null;
+	$userstmt = null;
 
 	date_default_timezone_set($oldtz);
 }
