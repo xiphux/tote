@@ -2,13 +2,13 @@
 
 function record_mark_dirty($poolid)
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($poolid))
 		return;
 
-	$dirtystmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET record_needs_materialize=1 WHERE id=?');
-	$dirtystmt->bind_param('i', $poolid);
+	$dirtystmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET record_needs_materialize=1 WHERE id=:pool_id');
+	$dirtystmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$dirtystmt->execute();
-	$dirtystmt->close();
+	$dirtystmt = null;
 }
