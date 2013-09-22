@@ -7,14 +7,14 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
-CREATE TABLE IF NOT EXISTS `conferences` (
+CREATE TABLE `conferences` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `conference` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `abbreviation` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `divisions` (
+CREATE TABLE `divisions` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `division` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `conference_id` smallint(5) unsigned NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `divisions` (
   KEY `conference_id` (`conference_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `games` (
+CREATE TABLE `games` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `season_id` smallint(5) unsigned NOT NULL,
   `week` smallint(5) unsigned NOT NULL,
@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS `games` (
   KEY `season_id` (`season_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `migrations` (
+CREATE TABLE `migrations` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `version` int(10) unsigned NOT NULL,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pools` (
+CREATE TABLE `pools` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `season_id` smallint(5) unsigned NOT NULL,
   `fee` float DEFAULT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `pools` (
   KEY `season_id` (`season_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_actions` (
+CREATE TABLE `pool_actions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pool_id` int(10) unsigned NOT NULL,
   `action` smallint(5) unsigned NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `pool_actions` (
   KEY `old_team_id` (`old_team_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_administrators` (
+CREATE TABLE `pool_administrators` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pool_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `pool_administrators` (
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_entries` (
+CREATE TABLE `pool_entries` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pool_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `pool_entries` (
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_entry_picks` (
+CREATE TABLE `pool_entry_picks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pool_entry_id` int(10) unsigned NOT NULL,
   `week` smallint(5) unsigned NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `pool_entry_picks` (
   KEY `team_id` (`team_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_payouts` (
+CREATE TABLE `pool_payouts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pool_id` int(10) unsigned NOT NULL,
   `minimum` smallint(5) unsigned DEFAULT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `pool_payouts` (
   KEY `pool_id` (`pool_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_payout_percents` (
+CREATE TABLE `pool_payout_percents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `payout_id` int(10) unsigned NOT NULL,
   `place` smallint(5) unsigned NOT NULL,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `pool_payout_percents` (
   KEY `payout_id` (`payout_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pool_records` (
+CREATE TABLE `pool_records` (
   `pool_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   `week` smallint(5) unsigned NOT NULL,
@@ -149,29 +149,13 @@ CREATE TABLE IF NOT EXISTS `pool_records` (
   KEY `team_id` (`team_id`),
   KEY `game_id` (`game_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-CREATE TABLE IF NOT EXISTS `pool_records_view` (
-`pool_id` int(10) unsigned
-,`user_id` int(10) unsigned
-,`week` smallint(5) unsigned
-,`team_id` smallint(5) unsigned
-,`game_id` int(10) unsigned
-,`win` int(1)
-,`loss` int(1)
-,`tie` int(1)
-,`spread` int(7)
-,`open` int(1)
-);
-CREATE TABLE IF NOT EXISTS `seasons` (
+CREATE TABLE `seasons` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `year` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `year` (`year`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-CREATE TABLE IF NOT EXISTS `season_weeks_view` (
-`season_id` smallint(5) unsigned
-,`week` smallint(5) unsigned
-);
-CREATE TABLE IF NOT EXISTS `teams` (
+CREATE TABLE `teams` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `team` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `home` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -182,12 +166,13 @@ CREATE TABLE IF NOT EXISTS `teams` (
   KEY `division_id` (`division_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `salt` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `recovery_key` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `recovery_key_expiration` datetime DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `first_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `last_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -203,12 +188,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `style` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-DROP TABLE IF EXISTS `pool_records_view`;
-
-CREATE VIEW `pool_records_view` AS select `pools`.`id` AS `pool_id`,`pool_entries`.`user_id` AS `user_id`,`season_weeks_view`.`week` AS `week`,`pool_entry_picks`.`team_id` AS `team_id`,`games`.`id` AS `game_id`,((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (((`pool_entry_picks`.`team_id` = `games`.`home_team_id`) and (`games`.`home_score` > `games`.`away_score`)) or ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) and (`games`.`away_score` > `games`.`home_score`)))) AS `win`,(((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (((`pool_entry_picks`.`team_id` = `games`.`home_team_id`) and (`games`.`home_score` < `games`.`away_score`)) or ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) and (`games`.`away_score` < `games`.`home_score`)))) or (isnull(`pool_entry_picks`.`team_id`) and (not(`season_weeks_view`.`week` in (select distinct `opengames`.`week` from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp()))))))) AS `loss`,((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`games`.`home_score` = `games`.`away_score`)) AS `tie`,(case when ((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`pool_entry_picks`.`team_id` = `games`.`home_team_id`)) then (cast(`games`.`home_score` as signed) - cast(`games`.`away_score` as signed)) when ((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`pool_entry_picks`.`team_id` = `games`.`away_team_id`)) then (cast(`games`.`away_score` as signed) - cast(`games`.`home_score` as signed)) when (isnull(`pool_entry_picks`.`team_id`) and (`season_weeks_view`.`week` > ((select max(`spreadgames`.`week`) from `games` `spreadgames` where (`spreadgames`.`season_id` = `pools`.`season_id`)) - 4)) and (not(`season_weeks_view`.`week` in (select distinct `opengames`.`week` from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp())))))) then -(10) else NULL end) AS `spread`,coalesce((`season_weeks_view`.`week` >= (select min(`opengames`.`week`) from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp())))),0) AS `open` from ((((`pools` join `season_weeks_view` on((`pools`.`season_id` = `season_weeks_view`.`season_id`))) join `pool_entries` on((`pool_entries`.`pool_id` = `pools`.`id`))) left join `pool_entry_picks` on(((`pool_entries`.`id` = `pool_entry_picks`.`pool_entry_id`) and (`season_weeks_view`.`week` = `pool_entry_picks`.`week`)))) left join `games` on(((`games`.`season_id` = `season_weeks_view`.`season_id`) and (`games`.`week` = `season_weeks_view`.`week`) and ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) or (`pool_entry_picks`.`team_id` = `games`.`home_team_id`)))));
-DROP TABLE IF EXISTS `season_weeks_view`;
 
 CREATE VIEW `season_weeks_view` AS select distinct `games`.`season_id` AS `season_id`,`games`.`week` AS `week` from `games`;
+
+CREATE VIEW `pool_records_view` AS select `pools`.`id` AS `pool_id`,`pool_entries`.`user_id` AS `user_id`,`season_weeks_view`.`week` AS `week`,`pool_entry_picks`.`team_id` AS `team_id`,`games`.`id` AS `game_id`,((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (((`pool_entry_picks`.`team_id` = `games`.`home_team_id`) and (`games`.`home_score` > `games`.`away_score`)) or ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) and (`games`.`away_score` > `games`.`home_score`)))) AS `win`,(((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (((`pool_entry_picks`.`team_id` = `games`.`home_team_id`) and (`games`.`home_score` < `games`.`away_score`)) or ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) and (`games`.`away_score` < `games`.`home_score`)))) or (isnull(`pool_entry_picks`.`team_id`) and (not(`season_weeks_view`.`week` in (select distinct `opengames`.`week` from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp()))))))) AS `loss`,((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`games`.`home_score` = `games`.`away_score`)) AS `tie`,(case when ((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`pool_entry_picks`.`team_id` = `games`.`home_team_id`)) then (cast(`games`.`home_score` as signed) - cast(`games`.`away_score` as signed)) when ((`pool_entry_picks`.`team_id` is not null) and (`games`.`home_score` is not null) and (`games`.`away_score` is not null) and (`pool_entry_picks`.`team_id` = `games`.`away_team_id`)) then (cast(`games`.`away_score` as signed) - cast(`games`.`home_score` as signed)) when (isnull(`pool_entry_picks`.`team_id`) and (`season_weeks_view`.`week` > ((select max(`spreadgames`.`week`) from `games` `spreadgames` where (`spreadgames`.`season_id` = `pools`.`season_id`)) - 4)) and (not(`season_weeks_view`.`week` in (select distinct `opengames`.`week` from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp())))))) then -(10) else NULL end) AS `spread`,coalesce((`season_weeks_view`.`week` >= (select min(`opengames`.`week`) from `games` `opengames` where ((`opengames`.`season_id` = `pools`.`season_id`) and (`opengames`.`start` > utc_timestamp())))),0) AS `open` from ((((`pools` join `season_weeks_view` on((`pools`.`season_id` = `season_weeks_view`.`season_id`))) join `pool_entries` on((`pool_entries`.`pool_id` = `pools`.`id`))) left join `pool_entry_picks` on(((`pool_entries`.`id` = `pool_entry_picks`.`pool_entry_id`) and (`season_weeks_view`.`week` = `pool_entry_picks`.`week`)))) left join `games` on(((`games`.`season_id` = `season_weeks_view`.`season_id`) and (`games`.`week` = `season_weeks_view`.`week`) and ((`pool_entry_picks`.`team_id` = `games`.`away_team_id`) or (`pool_entry_picks`.`team_id` = `games`.`home_team_id`)))));
 
 
 ALTER TABLE `divisions`
