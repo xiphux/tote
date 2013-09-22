@@ -14,23 +14,21 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_rules($poolid, $output = 'html')
 {
-	global $tpl, $tote_conf, $mysqldb;
+	global $tpl, $tote_conf, $db;
 
 	http_headers();
 
 	if (!empty($poolid)) {
-		$poolstmt = $mysqldb->prepare('SELECT pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=?');
-		$poolstmt->bind_param('i', $poolid);
+		$poolstmt = $db->prepare('SELECT pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=:pool_id');
+		$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 		$poolstmt->execute();
-		$poolresult = $poolstmt->get_result();
-		$pool = $poolresult->fetch_assoc();
+		$pool = $poolstmt->fetch(PDO::FETCH_ASSOC);
 
 		if ($pool) {
 			$tpl->assign('pool', $pool);
 		}
 
-		$poolresult->close();
-		$poolstmt->close();
+		$poolstmt = null;
 	}
 
 	$payoutpercents = get_pool_payout_percents($poolid);
