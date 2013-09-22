@@ -16,7 +16,7 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_finishlogin($user, $pass)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (user_logged_in()) {
 		// user must be logged in
@@ -39,15 +39,18 @@ function display_finishlogin($user, $pass)
 
 	if (!(empty($user) || empty($pass))) {
 
-		$userstmt = $mysqldb->prepare('SELECT id, salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
-		$userstmt->bind_param('s', $user);
+		$userstmt = $db->prepare('SELECT id, salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=:username');
+		$userstmt->bindParam(':username', $user);
+		$userstmt->execute();
+
 		$userid = null;
 		$salt = null;
 		$passwordhash = null;
-		$userstmt->bind_result($userid, $salt, $passwordhash);
-		$userstmt->execute();
-		$found = $userstmt->fetch();
-		$userstmt->close();
+		$userstmt->bindColumn(1, $userid);
+		$userstmt->bindColumn(2, $salt);
+		$userstmt->bindColumn(3, $passwordhash);
+		$found = $userstmt->fetch(PDO::FETCH_BOUND);
+		$userstmt = null;
 
 		if ($found && user_password_valid($user, $pass, $salt, $passwordhash)) {
 			// if username and password are valid,
@@ -58,10 +61,10 @@ function display_finishlogin($user, $pass)
 			$_SESSION['csrftoken'] = generate_salt();
 
 			// update last login
-			$lastloginstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_login=UTC_TIMESTAMP() WHERE id=?');
-			$lastloginstmt->bind_param('i', $userid);
+			$lastloginstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET last_login=UTC_TIMESTAMP() WHERE id=:user_id');
+			$lastloginstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 			$lastloginstmt->execute();
-			$lastloginstmt->close();
+			$lastloginstmt = null;
 		} else {
 			$errors[] = 'Incorrect username or password';
 		}
