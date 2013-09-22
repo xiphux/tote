@@ -17,7 +17,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  */
 function display_gridschedule($season)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (empty($season)) {
 		// default to this year
@@ -31,17 +31,16 @@ function display_gridschedule($season)
 		return;
 	}
 
-	$gamesstmt = $mysqldb->prepare('SELECT games.week, games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=?');
-	$gamesstmt->bind_param('i', $season);
+	$gamesstmt = $db->prepare('SELECT games.week, games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=:year');
+	$gamesstmt->bindParam(':year', $season, PDO::PARAM_INT);
 	$gamesstmt->execute();
-	$gamesresult = $gamesstmt->get_result();
 
 	$gamemap = array();
 
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
 
-	while ($game = $gamesresult->fetch_assoc()) {
+	while ($game = $gamesstmt->fetch(PDO::FETCH_ASSOC)) {
 		if (!isset($gamemap[$game['home_abbr']])) {
 			$gamemap[$game['home_abbr']] = array();
 		}
@@ -55,8 +54,7 @@ function display_gridschedule($season)
 		$gamemap[$game['away_abbr']][(int)$game['week']] = $game;
 	}
 
-	$gamesresult->close();
-	$gamesstmt->close();
+	$gamesstmt = null;
 
 	date_default_timezone_set($tz);
 

@@ -19,7 +19,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  */
 function display_teamschedule($season, $output = 'html')
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (empty($season)) {
 		// default to this year
@@ -33,16 +33,15 @@ function display_teamschedule($season, $output = 'html')
 		return;
 	}
 
-	$gamestmt = $mysqldb->prepare("SELECT teams.id AS team_id, CONCAT(CONCAT(teams.home,' '),teams.team) AS team_name, games.week, games.start, games.home_score, games.away_score, home_teams.abbreviation AS home_team_abbr, away_teams.abbreviation AS away_team_abbr FROM " . TOTE_TABLE_TEAMS . " AS teams RIGHT JOIN " . TOTE_TABLE_GAMES . " AS games ON (games.home_team_id=teams.id OR games.away_team_id=teams.id) LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON games.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? ORDER BY teams.home, teams.team, games.week");
-	$gamestmt->bind_param('i', $season);
+	$gamestmt = $db->prepare("SELECT teams.id AS team_id, CONCAT(CONCAT(teams.home,' '),teams.team) AS team_name, games.week, games.start, games.home_score, games.away_score, home_teams.abbreviation AS home_team_abbr, away_teams.abbreviation AS away_team_abbr FROM " . TOTE_TABLE_TEAMS . " AS teams RIGHT JOIN " . TOTE_TABLE_GAMES . " AS games ON (games.home_team_id=teams.id OR games.away_team_id=teams.id) LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON games.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year ORDER BY teams.home, teams.team, games.week");
+	$gamestmt->bindParam(':year', $season, PDO::PARAM_INT);
 	$gamestmt->execute();
-	$gameresult = $gamestmt->get_result();
 
 	$teamgames = array();
 	$lastteamid = null;
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
-	while ($game = $gameresult->fetch_assoc()) {
+	while ($game = $gamestmt->fetch(PDO::FETCH_ASSOC)) {
 		if ($game['team_id'] != $lastteamid) {
 			$lastteamid = $game['team_id'];
 			$teamgames[$lastteamid]['team'] = $game['team_name'];
@@ -54,8 +53,7 @@ function display_teamschedule($season, $output = 'html')
 	}
 	date_default_timezone_set($tz);
 
-	$gameresult->close();
-	$gamestmt->close();
+	$gamestmt = null;
 
 	$seasonweeks = get_season_weeks($season);
 

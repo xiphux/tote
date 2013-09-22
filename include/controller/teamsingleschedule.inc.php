@@ -20,7 +20,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  */
 function display_teamsingleschedule($season, $team, $output = 'html', $week = null)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (empty($season)) {
 		// default to this year
@@ -34,23 +34,23 @@ function display_teamsingleschedule($season, $team, $output = 'html', $week = nu
 		return;
 	}
 
-	$gamesstmt = $mysqldb->prepare('SELECT games.week, games.start, games.home_score, games.away_score, home_teams.abbreviation AS home_team_abbr, away_teams.abbreviation AS away_team_abbr FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND (games.away_team_id=? OR games.home_team_id=?) ORDER BY week');
-	$gamesstmt->bind_param('iii', $season, $team, $team);
+	$gamesstmt = $db->prepare('SELECT games.week, games.start, games.home_score, games.away_score, home_teams.abbreviation AS home_team_abbr, away_teams.abbreviation AS away_team_abbr FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year AND (games.away_team_id=:away_team_id OR games.home_team_id=:home_team_id) ORDER BY week');
+	$gamesstmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$gamesstmt->bindParam(':away_team_id', $team, PDO::PARAM_INT);
+	$gamesstmt->bindParam(':home_team_id', $team, PDO::PARAM_INT);
 	$gamesstmt->execute();
-	$gamesresult = $gamesstmt->get_result();
 
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
 	$teamgames = array();
-	while ($game = $gamesresult->fetch_assoc()) {
+	while ($game = $gamesstmt->fetch(PDO::FETCH_ASSOC)) {
 		$game['start'] = strtotime($game['start']);
 		$game['localstart'] = get_local_datetime($game['start']);
 		$teamgames[(int)$game['week']] = $game;
 	}
 	date_default_timezone_set($tz);
 	
-	$gamesresult->close();
-	$gamesstmt->close();
+	$gamesstmt = null;
 
 	$seasonweeks = get_season_weeks($season);
 
@@ -61,13 +61,11 @@ function display_teamsingleschedule($season, $team, $output = 'html', $week = nu
 	}
 	ksort($teamgames);
 
-	$teamstmt = $mysqldb->prepare('SELECT teams.home, teams.team FROM . ' . TOTE_TABLE_TEAMS . ' WHERE id=?');
-	$teamstmt->bind_param('i', $team);
+	$teamstmt = $db->prepare('SELECT teams.home, teams.team FROM . ' . TOTE_TABLE_TEAMS . ' WHERE id=:team_id');
+	$teamstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
 	$teamstmt->execute();
-	$teamresult = $teamstmt->get_result();
-	$teamobj = $teamresult->fetch_assoc();
-	$teamresult->close();
-	$teamstmt->close();
+	$teamobj = $teamstmt->fetch(PDO::FETCH_ASSOC);
+	$teamstmt = null;
 
 	http_headers();
 

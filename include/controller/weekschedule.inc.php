@@ -18,7 +18,7 @@ define('SCHEDULE_HEADER', 'View Game Schedule');
  */
 function display_weekschedule($season, $week, $output = 'html')
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (empty($season)) {
 		// default to this year
@@ -32,16 +32,16 @@ function display_weekschedule($season, $week, $output = 'html')
 		return;
 	}
 
-	$gamesstmt = $mysqldb->prepare('SELECT games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND games.week=? ORDER BY games.start');
-	$gamesstmt->bind_param('ii', $season, $week);
+	$gamesstmt = $db->prepare('SELECT games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year AND games.week=:week ORDER BY games.start');
+	$gamesstmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$gamesstmt->bindParam(':week', $week, PDO::PARAM_INT);
 	$gamesstmt->execute();
-	$gamesresult = $gamesstmt->get_result();
 
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
 
 	$games = array();
-	while ($game = $gamesresult->fetch_assoc()) {
+	while ($game = $gamesstmt->fetch(PDO::FETCH_ASSOC)) {
 		$game['start'] = strtotime($game['start']);
 		$game['localstart'] = get_local_datetime($game['start']);
 		$games[] = $game;
@@ -49,8 +49,7 @@ function display_weekschedule($season, $week, $output = 'html')
 
 	date_default_timezone_set($tz);
 
-	$gamesresult->close();
-	$gamesstmt->close();
+	$gamesstmt = null;
 
 	http_headers();
 
