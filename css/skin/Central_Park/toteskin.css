@@ -106,6 +106,11 @@ table.displayTable td {
 	border: 1px solid #6c9ffc;
 }
 
+table.menuTable td {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
 table.menuTable tr:hover {
 	background-color: #c0dbed;
 }
