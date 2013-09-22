@@ -77,7 +77,7 @@ function point_spread_team_to_abbr($team)
  */
 function import_point_spreads($season)
 {
-	global $mysqldb;
+	global $db;
 
 	if ($season < 2011) {
 		// feeds aren't available before this
@@ -109,8 +109,10 @@ function import_point_spreads($season)
 
 	$oldtz = date_default_timezone_get();
 
-	$gamestmt = $mysqldb->prepare('SELECT games.id, games.favorite_id, favorites.abbreviation AS favorite_abbr, games.point_spread FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS favorites ON games.favorite_id=favorites.id WHERE seasons.year=? AND games.home_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?) AND games.away_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?) AND games.start>=? AND games.start<?');
-	$spreadstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET favorite_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?), point_spread=? WHERE id=?');
+	$gamestmt = $db->prepare('SELECT games.id, games.favorite_id, favorites.abbreviation AS favorite_abbr, games.point_spread FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS favorites ON games.favorite_id=favorites.id WHERE seasons.year=:year AND games.home_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=:home_team_abbr) AND games.away_team_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=:away_team_abbr) AND games.start>=:start_min AND games.start<:start_max');
+	$gamestmt->bindParam(':year', $season, PDO::PARAM_INT);
+
+	$spreadstmt = $db->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET favorite_id=(SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=:favorite_abbr), point_spread=:spread WHERE id=:game_id');
 
 	for ($i = 0; $i < $scoresnode->childNodes->length; $i++) {
 		$datenode = $scoresnode->childNodes->item($i);
@@ -194,11 +196,12 @@ function import_point_spreads($season)
 				$datestr = date('Y-m-d H:i:s', $datestamp);
 				$nextdatestr = date('Y-m-d H:i:s', $nextdatestamp);
 
-				$gamestmt->bind_param('issss', $season, $homeabbr, $visitorabbr, $datestr, $nextdatestr);
+				$gamestmt->bindParam(':home_team_abbr', $homeabbr);
+				$gamestmt->bindParam(':away_team_abbr', $visitorabbr);
+				$gamestmt->bindParam(':start_min', $datestr);
+				$gamestmt->bindParam(':start_max', $nextdatestr);
 				$gamestmt->execute();
-				$gameresult = $gamestmt->get_result();
-				$game = $gameresult->fetch_assoc();
-				$gameresult->close();
+				$game = $gamestmt->fetch(PDO::FETCH_ASSOC);
 
 				if (!$game) {
 					echo "game not found<br />\n";
@@ -209,7 +212,9 @@ function import_point_spreads($season)
 					echo "no update necessary<br />\n";
 					continue;
 				} else {
-					$spreadstmt->bind_param('sdi', $favoriteabbr, $spread, $game['id']);
+					$spreadstmt->bindParam(':favorite_abbr', $favoriteabbr);
+					$spreadstmt->bindParam(':spread', $spread);
+					$spreadstmt->bindParam(':game_id', $game['id'], PDO::PARAM_INT);
 					$spreadstmt->execute();
 					echo "updated<br />\n";
 				}
@@ -217,8 +222,8 @@ function import_point_spreads($season)
 		}
 	}
 
-	$spreadstmt->close();
-	$gamestmt->close();
+	$spreadstmt = null;
+	$gamestmt = null;
 
 	date_default_timezone_set($oldtz);
 }
