@@ -15,20 +15,18 @@ require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
  */
 function display_feed($format, $poolid)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	if (empty($poolid)) {
 		echo "Pool is required";
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=?');
-	$poolstmt->bind_param('i', $poolid);
+	$poolstmt = $db->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=:pool_id');
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolstmt->execute();
-	$poolresult = $poolstmt->get_result();
-	$poolobj = $poolresult->fetch_assoc();
-	$poolresult->close();
-	$poolstmt->close();
+	$poolobj = $poolstmt->fetch(PDO::FETCH_ASSOC);
+	$poolstmt = null;
 
 	if (!$poolobj) {
 		// we need some pool
@@ -75,15 +73,14 @@ LEFT JOIN %s AS teams
 ON pool_actions.team_id=teams.id
 LEFT JOIN %s AS old_teams
 ON pool_actions.old_team_id=old_teams.id
-WHERE pool_actions.pool_id=?
+WHERE pool_actions.pool_id=:pool_id
 ORDER BY pool_actions.time DESC
 EOQ;
 
 	$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS, TOTE_TABLE_USERS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
-	$actionstmt = $mysqldb->prepare($actionquery);
-	$actionstmt->bind_param('i', $poolid);
+	$actionstmt = $db->prepare($actionquery);
+	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$actionstmt->execute();
-	$actionresult = $actionstmt->get_result();
 
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
@@ -91,7 +88,7 @@ EOQ;
 	$actions = array();
 	$updated = null;
 
-	while ($action = $actionresult->fetch_assoc()) {
+	while ($action = $actionstmt->fetch(PDO::FETCH_ASSOC)) {
 		$action['time'] = strtotime($action['time']);
 		$action['timelocal'] = get_local_datetime($action['time']);
 		$action['time'] = new DateTime('@' . $action['time']);
@@ -102,8 +99,7 @@ EOQ;
 
 	$tz = date_default_timezone_set($tz);
 
-	$actionresult->close();
-	$actionstmt->close();
+	$actionstmt = null;
 
 	// set data
 	$tpl->assign('pool', $poolobj);
