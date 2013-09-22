@@ -94,7 +94,7 @@ Make a Pick
 {if !$mobile || $forcefull}
 
 <div class="userOpts">
-<table class="displayTable subSection rounded-top rounded-bottom subShadow">
+<table class="displayTable menuTable subSection rounded-top rounded-bottom subShadow">
 {include file='usermenu.tpl'}
 </table>
 </div>

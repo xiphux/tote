@@ -107,6 +107,10 @@ table.displayTable td {
 	border: 1px solid #8b858f;
 }
 
+table.menuTable tr:hover {
+	background-color: #dcdcde;
+}
+
 
 .scoreTable {
 	font-family: Helvetica, Arial, sans-serif;
