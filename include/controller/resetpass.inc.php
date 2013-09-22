@@ -21,14 +21,14 @@ function display_resetpass($key)
 		$errors[] = 'A recovery key is required';
 	} else {
 		
-		$keystmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key');
+		$keystmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key AND recovery_key_expiration>UTC_TIMESTAMP()');
 		$keystmt->bindParam(':key', $key);
 		$keystmt->execute();
 		$userid = null;
 		$keystmt->bindColumn(1, $userid);
 		if (!$keystmt->fetch(PDO::FETCH_BOUND)) {
 			// the key has to be active and valid
-			$errors[] = 'Invalid key.  It may have been used already.';
+			$errors[] = 'Invalid key.  It may have been used already or expired.';
 		}
 		$keystmt = null;
 	}

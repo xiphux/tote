@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'generate_password_hash.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 
 /**
  * finishresetpass controller
@@ -38,7 +39,7 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 
 			$userid = null;
 			$username = null;
-			$keystmt = $db->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key');
+			$keystmt = $db->prepare('SELECT id, username FROM ' . TOTE_TABLE_USERS . ' WHERE recovery_key=:key AND recovery_key_expiration>UTC_TIMESTAMP()');
 			$keystmt->bindParam(':key', $key);
 			$keystmt->execute();
 			$keystmt->bindColumn(1, $userid);
@@ -53,7 +54,7 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 				
 				// set the new password for the user and delete the recovery key
 				// (since it was used once we don't want it to be used again)
-				$resetstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=:salt, password=:password, last_password_change=UTC_TIMESTAMP(), recovery_key=NULL WHERE id=:user_id');
+				$resetstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=:salt, password=:password, last_password_change=UTC_TIMESTAMP(), recovery_key=NULL, recovery_key_expiration=NULL WHERE id=:user_id');
 				$resetstmt->bindParam(':salt', $hashdata['salt']);
 				$resetstmt->bindParam(':password', $hashdata['passwordhash']);
 				$resetstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
@@ -62,7 +63,8 @@ function display_finishresetpass($key, $newpassword, $newpassword2)
 
 			} else {
 				// recovery key has to exist in the database to be valid
-				$errors[] = 'Invalid key.  It may have been used already.';
+				display_message('Invalid key.  It may have been used already or expired.');
+				return;
 			}
 		} else {
 			// new password and confirm password need to match

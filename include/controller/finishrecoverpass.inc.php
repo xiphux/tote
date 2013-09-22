@@ -38,7 +38,7 @@ function display_finishrecoverpass($email)
 			// for the user
 			$key = generate_salt();
 			
-			$setkeystmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET recovery_key=:recovery_key WHERE id=:user_id');
+			$setkeystmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET recovery_key=:recovery_key, recovery_key_expiration=DATE_ADD(UTC_TIMESTAMP(), INTERVAL 24 HOUR) WHERE id=:user_id');
 			$setkeystmt->bindParam(':recovery_key', $key);
 			$setkeystmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 			$setkeystmt->execute();
