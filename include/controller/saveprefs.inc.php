@@ -20,7 +20,7 @@ define('SAVEPREFS_HEADER', 'Edit Your Preferences');
  */
 function display_saveprefs($timezone, $reminder, $remindertime, $resultnotification, $style, $csrftoken)
 {
-	global $tpl, $tote_conf, $mysqldb;
+	global $tpl, $tote_conf, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -71,10 +71,15 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 			$remindertimeval = !empty($remindertime) ? ((int)$remindertime * 3600) : null;
 		}
 
-		$prefsstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET timezone=?, style=?, reminder=?, reminder_time=?, result_notification=? WHERE id=?');
-		$prefsstmt->bind_param('ssiiii', $timezoneval, $styleval, $reminderval, $remindertimeval, $resultnotificationval, $user['id']);
+		$prefsstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET timezone=:timezone, style=:style, reminder=:reminder, reminder_time=:reminder_time, result_notification=:result_notification WHERE id=:user_id');
+		$prefsstmt->bindParam(':timezone', $timezoneval);
+		$prefsstmt->bindParam(':style', $styleval);
+		$prefsstmt->bindParam(':reminder', $reminderval, PDO::PARAM_INT);
+		$prefsstmt->bindParam(':reminder_time', $remindertimeval, PDO::PARAM_INT);
+		$prefsstmt->bindParam(':result_notification', $resultnotificationval, PDO::PARAM_INT);
+		$prefsstmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);
 		$prefsstmt->execute();
-		$prefsstmt->close();
+		$prefsstmt = null;
 
 		// go home
 		redirect();
