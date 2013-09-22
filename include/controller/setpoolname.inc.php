@@ -19,7 +19,7 @@ define('SETPOOLNAME_HEADER', 'Manage Your Pool');
  */
 function display_setpoolname($poolid, $poolname, $csrftoken)
 {
-	global $mysqldb;
+	global $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -51,13 +51,13 @@ function display_setpoolname($poolid, $poolname, $csrftoken)
 		return;
 	}
 	
-	$poolstmt = $mysqldb->prepare('SELECT seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=?');
-	$poolstmt->bind_param('i', $poolid);
+	$poolstmt = $db->prepare('SELECT seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE pools.id=:pool_id');
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolseason = null;
-	$poolstmt->bind_result($poolseason);
+	$poolstmt->bindColumn(1, $poolseason);
 	$poolstmt->execute();
-	$found = $poolstmt->fetch();
-	$poolstmt->close();
+	$found = $poolstmt->fetch(PDO::FETCH_BOUND);
+	$poolstmt = null;
 
 	if (!$found) {
 		// pool must exist
@@ -65,13 +65,15 @@ function display_setpoolname($poolid, $poolname, $csrftoken)
 		return;
 	}
 
-	$dupstmt = $mysqldb->prepare('SELECT pools.id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE seasons.year=? AND pools.name=? AND pools.id!=?');
-	$dupstmt->bind_param('isi', $poolseason, $poolname, $poolid);
+	$dupstmt = $db->prepare('SELECT pools.id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id WHERE seasons.year=:year AND pools.name=:poolname AND pools.id!=:pool_id');
+	$dupstmt->bindParam(':year', $poolseason, PDO::PARAM_INT);
+	$dupstmt->bindParam(':poolname', $poolname);
+	$dupstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$dupid = null;
-	$dupstmt->bind_result($dupid);
+	$dupstmt->bindColumn(1, $dupid);
 	$dupstmt->execute();
-	$founddup = $dupstmt->fetch();
-	$dupstmt->close();
+	$founddup = $dupstmt->fetch(PDO::FETCH_BOUND);
+	$dupstmt = null;
 
 	if ($founddup) {
 		// don't allow duplicate pool names - not for technical reasons,
@@ -80,10 +82,11 @@ function display_setpoolname($poolid, $poolname, $csrftoken)
 		return;
 	}
 
-	$namestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET name=? WHERE id=?');
-	$namestmt->bind_param('si', $poolname, $poolid);
+	$namestmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET name=:poolname WHERE id=:pool_id');
+	$namestmt->bindParam(':poolname', $poolname);
+	$namestmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$namestmt->execute();
-	$namestmt->close();
+	$namestmt = null;
 
 	// go back to edit pool page
 	return redirect(array('a' => 'editpool', 'p' => $poolid));

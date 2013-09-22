@@ -16,7 +16,7 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  */
 function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 {
-	global $mysqldb;
+	global $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -53,13 +53,13 @@ function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare("SELECT pools.id AS pool_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS user_display_name, pool_administrators.id AS admin_id, pool_administrators.admin_type AS admin_type FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_USERS . " AS users ON users.id=? LEFT JOIN " . TOTE_TABLE_POOL_ADMINISTRATORS . " AS pool_administrators ON pools.id=pool_administrators.pool_id AND pool_administrators.user_id=? WHERE pools.id=?");
-	$poolstmt->bind_param('iii', $userid, $userid, $poolid);
+	$poolstmt = $db->prepare("SELECT pools.id AS pool_id, (CASE WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name) WHEN users.first_name IS NOT NULL THEN users.first_name ELSE users.username END) AS user_display_name, pool_administrators.id AS admin_id, pool_administrators.admin_type AS admin_type FROM " . TOTE_TABLE_POOLS . " AS pools LEFT JOIN " . TOTE_TABLE_USERS . " AS users ON users.id=:user_id LEFT JOIN " . TOTE_TABLE_POOL_ADMINISTRATORS . " AS pool_administrators ON pools.id=pool_administrators.pool_id AND pool_administrators.user_id=:admin_user_id WHERE pools.id=:pool_id");
+	$poolstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+	$poolstmt->bindParam(':admin_user_id', $userid, PDO::PARAM_INT);
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolstmt->execute();
-	$poolresult = $poolstmt->get_result();
-	$data = $poolresult->fetch_assoc();
-	$poolresult->close();
-	$poolstmt->close();
+	$data = $poolstmt->fetch(PDO::FETCH_ASSOC);
+	$poolstmt = null;
 
 	if (!$data) {
 		// pool must exist
@@ -72,7 +72,7 @@ function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 		return;
 	}
 
-	$currentadminid = $data['admin_id'];
+	$currentadminid = (int)$data['admin_id'];
 	$currentadmintype = (int)$data['admin_type'];
 	$type = (int)$type;
 
@@ -82,23 +82,34 @@ function display_setpooladmin($poolid, $userid, $type, $csrftoken)
 	$adminstmt = null;
 	if ($currentadmintype == 0) {
 		// add admin record
-		$adminstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (?, ?, ?, ?)');
-		$adminstmt->bind_param('iisi', $poolid, $userid, $data['user_display_name'], $type);
+		$adminstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (:pool_id, :user_id, :name, :admin_type)');
+		$adminstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+		$adminstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+		$adminstmt->bindParam(':name', $data['user_display_name']);
+		$adminstmt->bindParam(':admin_type', $type, PDO::PARAM_INT);
 	} else if ($type == 0) {
 		// remove admin record
-		$adminstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' WHERE id=?');
-		$adminstmt->bind_param('i', $currentadminid);
+		$adminstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' WHERE id=:admin_id');
+		$adminstmt->bindParam(':admin_id', $currentadminid, PDO::PARAM_INT);
 	} else {
 		// update admin record
-		$adminstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' SET name=?, admin_type=? WHERE id=?');
-		$adminstmt->bind_param('sii', $data['user_display_name'], $type, $currentadminid);
+		$adminstmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' SET name=:name, admin_type=:admin_type WHERE id=:admin_id');
+		$adminstmt->bindParam(':name', $data['user_display_name']);
+		$adminstmt->bindParam(':admin_type', $type, PDO::PARAM_INT);
+		$adminstmt->bindParam(':admin_id', $currentadminid, PDO::PARAM_INT);
 	}
 	$adminstmt->execute();
-	$adminstmt->close();
+	$adminstmt = null;
 
-	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, admin_type, old_admin_type) VALUES (?, 3, UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?)');
-	$actionstmt->bind_param('iisisii', $poolid, $userid, $data['user_display_name'], $user['id'], $user['display_name'], $type, $currentadmintype);
+	$actionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, admin_type, old_admin_type) VALUES (:pool_id, 3, UTC_TIMESTAMP(), :user_id, :username, :admin_id, :admin_username, :admin_type, :old_admin_type)');
+	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+	$actionstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+	$actionstmt->bindParam(':username', $data['user_display_name']);
+	$actionstmt->bindParam(':admin_id', $user['id'], PDO::PARAM_INT);
+	$actionstmt->bindParam(':admin_username', $user['display_name']);
+	$actionstmt->bindParam(':admin_type', $type, PDO::PARAM_INT);
+	$actionstmt->bindParam(':old_admin_type', $currentadmintype, PDO::PARAM_INT);
 	$actionstmt->execute();
-	$actionstmt->close();
+	$actionstmt = null;
 
 }

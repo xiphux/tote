@@ -16,7 +16,7 @@ require_once(TOTE_INCLUDEDIR . 'user_is_admin.inc.php');
  */
 function display_ajaxeditpool($poolid, $modification, $modusers, $csrftoken)
 {
-	global $mysqldb;
+	global $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -54,11 +54,11 @@ function display_ajaxeditpool($poolid, $modification, $modusers, $csrftoken)
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
-	$poolstmt->bind_param('i', $poolid);
+	$poolstmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_POOLS . ' WHERE id=:pool_id');
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolstmt->execute();
-	$found = $poolstmt->fetch();
-	$poolstmt->close();
+	$found = $poolstmt->fetch(PDO::FETCH_ASSOC);
+	$poolstmt = null;
 
 	if (!$found) {
 		// pool must exist
@@ -71,16 +71,17 @@ function display_ajaxeditpool($poolid, $modification, $modusers, $csrftoken)
 		$modstmt = null;
 
 		if ($modification == 'add') {
-			$modstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (?, ?)');
+			$modstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (:pool_id, :user_id)');
 		} else {
-			$modstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?');
+			$modstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=:pool_id AND user_id=:user_id');
 		}
+		$modstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 
 		$actionquery = <<<EOQ
 INSERT INTO %s
 (pool_id, time, action, user_id, username, admin_id, admin_username)
 VALUES
-(?, UTC_TIMESTAMP(), ?, ?, (
+(:pool_id, UTC_TIMESTAMP(), :action, :user_id, (
 SELECT
 (CASE
 WHEN (users.first_name IS NOT NULL AND users.last_name IS NOT NULL) THEN CONCAT(CONCAT(users.first_name,' '),users.last_name)
@@ -88,64 +89,57 @@ WHEN users.first_name IS NOT NULL THEN users.first_name
 ELSE users.username
 END)
 FROM %s AS users
-WHERE id=?
+WHERE id=:user_name_id
 ),
-?, ?)
+:admin_id, :admin_username)
 EOQ;
 
 		$actionquery = sprintf($actionquery, TOTE_TABLE_POOL_ACTIONS, TOTE_TABLE_USERS);
-		$actionstmt = $mysqldb->prepare($actionquery);
+		$actionstmt = $db->prepare($actionquery);
 		$action = ($modification == 'add') ? 1 : 2;
+		$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+		$actionstmt->bindParam(':action', $action, PDO::PARAM_INT);
+		$actionstmt->bindParam(':admin_id', $user['id'], PDO::PARAM_INT);
+		$actionstmt->bindParam(':admin_username', $user['display_name']);
 
 		$modifiedusers = array();
 
 		foreach ($modusers as $muser) {
 
 			if ($modification == 'remove') {
-				$rmpickstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=(SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=? AND user_id=?)');
-				$rmpickstmt->bind_param('ii', $poolid, $muser);
+				$rmpickstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id=(SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=:pool_id AND user_id=:user_id)');
+				$rmpickstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+				$rmpickstmt->bindParam(':user_id', $muser, PDO::PARAM_INT);
 				$rmpickstmt->execute();
-				$rmpickstmt->close();
+				$rmpickstmt = null;
 			}
 
-			$modstmt->bind_param('ii', $poolid, $muser);
+			$modstmt->bindParam(':user_id', $muser, PDO::PARAM_INT);
 			$modstmt->execute();
-			if ($mysqldb->affected_rows > 0) {
+			if ($modstmt->rowCount() > 0) {
 				$modifiedusers[] = $muser;
 			}
 
-			$actionstmt->bind_param('iiiiis', $poolid, $action, $muser, $muser, $user['id'], $user['display_name']);
+			$actionstmt->bindParam(':user_id', $muser, PDO::PARAM_INT);
+			$actionstmt->bindParam(':user_name_id', $muser, PDO::PARAM_INT);
 			$actionstmt->execute();
 
 		}
 
-		$actionstmt->close();
-		$modstmt->close();
+		$actionstmt = null;
+		$modstmt = null;
 
 		if (count($modifiedusers) > 0) {
 			$updaterecordquery = null;
 			if ($modification == 'add') {
-				$updaterecordquery = <<<EOQ
-LOCK TABLES %s WRITE, %s READ;
-INSERT INTO %s SELECT * FROM %s WHERE pool_id=%d AND user_id IN (%s);
-UNLOCK TABLES;
-EOQ;
-				$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, $poolid, implode(', ', $modifiedusers));
+				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
+				$db->exec('INSERT INTO ' . TOTE_TABLE_POOL_RECORDS . ' SELECT * FROM ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' WHERE pool_id=' . $poolid . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('UNLOCK TABLES');
 			} else {
-				$updaterecordquery = <<<EOQ
-LOCK TABLES %s WRITE;
-DELETE FROM %s WHERE pool_id=%d AND user_id IN (%s);
-UNLOCK TABLES;
-EOQ;
-				$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS, $poolid, implode(', ', $modifiedusers));
+				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE');
+				$db->exec('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=' . $poolid . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('UNLOCK TABLES');
 			}
-			$mysqldb->multi_query($updaterecordquery);
-			$updaterecordresult = $mysqldb->store_result();
-			do {
-				if ($res = $mysqldb->store_result()) {
-					$res->close();
-				}
-			} while ($mysqldb->more_results() && $mysqldb->next_result());
 		}
 
 	} else {

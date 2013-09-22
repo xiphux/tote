@@ -22,7 +22,7 @@ define('ADDPOOL_HEADER', 'Add A New Pool');
  */
 function display_addpool($name, $season, $fee, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -52,15 +52,15 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		if (!is_numeric($season)) {
 			$errors[] = "Season must be a year";
 		} else {
-			$existingstmt = $mysqldb->prepare('SELECT pools.id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.name=? AND seasons.year=?');
-			$intseason = (int)$season;
-			$existingstmt->bind_param('si', $name, $intseason);
+			$existingstmt = $db->prepare('SELECT pools.id FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.name=:pool_name AND seasons.year=:year');
+			$existingstmt->bindParam(':pool_name', $name);
+			$existingstmt->bindParam(':year', $season, PDO::PARAM_INT);
 			$existingid = null;
-			$existingstmt->bind_result($existingid);
+			$existingstmt->bindColumn(1, $existingid);
 			$existingstmt->execute();
-			$existingpool = $existingstmt->fetch();
-			$existingstmt->close();
-			if ($existingpool) {
+			$existingpool = $existingstmt->fetch(PDO::FETCH_ASSOC);
+			$existingstmt = null;
+			if ($existingpool || $existingid) {
 				// don't allow duplicate pool names - not for technical reasons,
 				// just because it makes no sense since you can't differentiate
 				$errors[] = "A pool with that name already exists";
@@ -100,43 +100,56 @@ function display_addpool($name, $season, $fee, $csrftoken)
 
 		$season = (int)$season;
 
-		$newpoolstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fee, name) VALUES ((SELECT id FROM seasons WHERE year=?),?,?)');
-		$newpoolstmt->bind_param('ids', $season, $fee, $name);
+		$newpoolstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fee, name) VALUES ((SELECT id FROM seasons WHERE year=:year), :fee, :name)');
+		$newpoolstmt->bindParam(':year', $season, PDO::PARAM_INT);
+		$newpoolstmt->bindParam(':fee', $fee);
+		$newpoolstmt->bindParam(':name', $name);
 		$newpoolstmt->execute();
 
-		$poolid = $mysqldb->insert_id;
+		$poolid = $db->lastInsertId();
 
-		$newpoolstmt->close();
+		$newpoolstmt = null;
 
 		// TODO: make payouts user entered rather than hardcoding
-		$newpayoutstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (?, ?, ?)');
+		$newpayoutstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (:pool_id, :minimum, :maximum)');
+		$newpayoutstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 
 		// 0-29: 75%, 15%, 10%
 		$min = null;
 		$max = 29;
-		$newpayoutstmt->bind_param('iii', $poolid, $min, $max);
+		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
+		$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
 		$newpayoutstmt->execute();
-		$payoutid = $mysqldb->insert_id;
+		$payoutid = $db->lastInsertId();
 
-		$newpercentstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)');
+		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3)');
 		$place1 = 1;
 		$percent1 = 0.75;
 		$place2 = 2;
 		$percent2 = 0.15;
 		$place3 = 3;
 		$percent3 = 0.10;
-		$newpercentstmt->bind_param('iidiidiid', $payoutid, $place1, $percent1, $payoutid, $place2, $percent2, $payoutid, $place3, $percent3);
+		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place1', $place1, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent1', $percent1);
+		$newpercentstmt->bindParam(':payout_id2', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place2', $place2, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent2', $percent2);
+		$newpercentstmt->bindParam(':payout_id3', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place3', $place3, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent3', $percent3);
 		$newpercentstmt->execute();
-		$newpercentstmt->close();
+		$newpercentstmt = null;
 
 		// 30-39: 75%, 15%, 10%, entry fee
 		$min = 30;
 		$max = 39;
-		$newpayoutstmt->bind_param('iii', $poolid, $min, $max);
+		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
+		$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
 		$newpayoutstmt->execute();
-		$payoutid = $mysqldb->insert_id;
+		$payoutid = $db->lastInsertId();
 
-		$newpercentstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?), (?, ?, ?)');
+		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3), (:payout_id4, :place4, :percent4)');
 		$place1 = 1;
 		$percent1 = 0.75;
 		$place2 = 2;
@@ -145,18 +158,30 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$percent3 = 0.10;
 		$place4 = 4;
 		$percent4 = 0;
-		$newpercentstmt->bind_param('iidiidiidiid', $payoutid, $place1, $percent1, $payoutid, $place2, $percent2, $payoutid, $place3, $percent3, $payoutid, $place4, $percent4);
+		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place1', $place1, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent1', $percent1);
+		$newpercentstmt->bindParam(':payout_id2', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place2', $place2, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent2', $percent2);
+		$newpercentstmt->bindParam(':payout_id3', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place3', $place3, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent3', $percent3);
+		$newpercentstmt->bindParam(':payout_id4', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place4', $place4, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent4', $percent4);
 		$newpercentstmt->execute();
-		$newpercentstmt->close();
+		$newpercentstmt = null;
 
 		// 40+: 73%, 13%, 8%, 6%, entry fee
 		$min = 40;
 		$max = null;
-		$newpayoutstmt->bind_param('iii', $poolid, $min, $max);
+		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
+		$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
 		$newpayoutstmt->execute();
-		$payoutid = $mysqldb->insert_id;
+		$payoutid = $db->lastInsertId();
 
-		$newpercentstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?), (?, ?, ?), (?, ?, ?)');
+		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3), (:payout_id4, :place4, :percent4), (:payout_id5, :place5, :percent5)');
 		$place1 = 1;
 		$percent1 = 0.73;
 		$place2 = 2;
@@ -167,11 +192,25 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$percent4 = 0.06;
 		$place5 = 5;
 		$percent5 = 0;
-		$newpercentstmt->bind_param('iidiidiidiidiid', $payoutid, $place1, $percent1, $payoutid, $place2, $percent2, $payoutid, $place3, $percent3, $payoutid, $place4, $percent4, $payoutid, $place5, $percent5);
+		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place1', $place1, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent1', $percent1);
+		$newpercentstmt->bindParam(':payout_id2', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place2', $place2, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent2', $percent2);
+		$newpercentstmt->bindParam(':payout_id3', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place3', $place3, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent3', $percent3);
+		$newpercentstmt->bindParam(':payout_id4', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place4', $place4, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent4', $percent4);
+		$newpercentstmt->bindParam(':payout_id5', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place5', $place5, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent5', $percent5);
 		$newpercentstmt->execute();
-		$newpercentstmt->close();
+		$newpercentstmt = null;
 
-		$newpayoutstmt->close();
+		$newpayoutstmt = null;
 
 		// end TODO
 

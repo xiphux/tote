@@ -18,7 +18,7 @@ define('DELETEPOOL_HEADER', 'Manage Your Pool');
  */
 function display_deletepool($poolid, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -42,45 +42,45 @@ function display_deletepool($poolid, $csrftoken)
 		return;
 	}
 
-	$removeactionstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ACTIONS . ' WHERE pool_id=?');
-	$removeactionstmt->bind_param('i', $poolid);
+	$removeactionstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ACTIONS . ' WHERE pool_id=:pool_id');
+	$removeactionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removeactionstmt->execute();
-	$removeactionstmt->close();
+	$removeactionstmt = null;
 
-	$removeadminstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' WHERE pool_id=?');
-	$removeadminstmt->bind_param('i', $poolid);
+	$removeadminstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' WHERE pool_id=:pool_id');
+	$removeadminstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removeadminstmt->execute();
-	$removeadminstmt->close();
+	$removeadminstmt = null;
 
-	$removepickstmt = $mysqldb->prepare('DELETE pool_entry_picks FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entry_picks.pool_entry_id=pool_entries.id WHERE pool_entries.pool_id=?');
-	$removepickstmt->bind_param('i', $poolid);
+	$removepickstmt = $db->prepare('DELETE pool_entry_picks FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entry_picks.pool_entry_id=pool_entries.id WHERE pool_entries.pool_id=:pool_id');
+	$removepickstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removepickstmt->execute();
-	$removepickstmt->close();
+	$removepickstmt = null;
 
-	$removeentrystmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=?');
-	$removeentrystmt->bind_param('i', $poolid);
+	$removeentrystmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=:pool_id');
+	$removeentrystmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removeentrystmt->execute();
-	$removeentrystmt->close();
+	$removeentrystmt = null;
 
-	$removepercentstmt = $mysqldb->prepare('DELETE pool_payout_percents FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' AS pool_payout_percents LEFT JOIN ' . TOTE_TABLE_POOL_PAYOUTS . ' AS pool_payouts ON pool_payout_percents.payout_id=pool_payouts.id WHERE pool_payouts.pool_id=?');
-	$removepercentstmt->bind_param('i', $poolid);
+	$removepercentstmt = $db->prepare('DELETE pool_payout_percents FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' AS pool_payout_percents LEFT JOIN ' . TOTE_TABLE_POOL_PAYOUTS . ' AS pool_payouts ON pool_payout_percents.payout_id=pool_payouts.id WHERE pool_payouts.pool_id=:pool_id');
+	$removepercentstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removepercentstmt->execute();
-	$removepercentstmt->close();
+	$removepercentstmt = null;
 
-	$removepayoutstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE pool_id=?');
-	$removepayoutstmt->bind_param('i', $poolid);
+	$removepayoutstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE pool_id=:pool_id');
+	$removepayoutstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removepayoutstmt->execute();
-	$removepayoutstmt->close();
+	$removepayoutstmt = null;
 
-	$removerecordstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=?');
-	$removerecordstmt->bind_param('i', $poolid);
+	$removerecordstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=:pool_id');
+	$removerecordstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removerecordstmt->execute();
-	$removerecordstmt->close();
+	$removerecordstmt = null;
 
-	$removepoolstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
-	$removepoolstmt->bind_param('i', $poolid);
+	$removepoolstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOLS . ' WHERE id=:pool_id');
+	$removepoolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removepoolstmt->execute();
-	$removepoolstmt->close();
+	$removepoolstmt = null;
 
 	redirect();
 }
