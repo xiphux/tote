@@ -10,18 +10,19 @@
  */
 function get_pool_pot($poolid)
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($poolid))
 		return null;
 
 	$pot = null;
-	$potstmt = $mysqldb->prepare('SELECT COUNT(pool_entries.id)*pools.fee AS pot FROM ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries LEFT JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_entries.pool_id=pools.id WHERE pool_entries.pool_id=?');
-	$potstmt->bind_param('i', $poolid);
-	$potstmt->bind_result($pot);
+	$potstmt = $db->prepare('SELECT COUNT(pool_entries.id)*pools.fee AS pot FROM ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries LEFT JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_entries.pool_id=pools.id WHERE pool_entries.pool_id=:pool_id');
+	$potstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$potstmt->execute();
-	$found = $potstmt->fetch();
-	$potstmt->close();
+
+	$potstmt->bindColumn(1, $pot);
+	$found = $potstmt->fetch(PDO::FETCH_BOUND);
+	$potstmt = null;
 
 	if ($found)
 		return (float)$pot;
