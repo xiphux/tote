@@ -17,7 +17,7 @@ define('EDITPOOL_HEADER', 'Manage Your Pool');
  */
 function display_editpool($poolid)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -36,13 +36,11 @@ function display_editpool($poolid)
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=?');
-	$poolstmt->bind_param('i', $poolid);
+	$poolstmt = $db->prepare('SELECT pools.id, pools.name, seasons.year AS season FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=pools.season_id WHERE pools.id=:pool_id');
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$poolstmt->execute();
-	$poolresult = $poolstmt->get_result();
-	$pool = $poolresult->fetch_assoc();
-	$poolresult->close();
-	$poolstmt->close();
+	$pool = $poolstmt->fetch(PDO::FETCH_ASSOC);
+	$poolstmt = null;
 
 	if (!$pool) {
 		// pool must exist
@@ -64,24 +62,24 @@ pool_administrators.admin_type,
 COUNT(pool_entry_picks.id) AS pick_count
 FROM %s AS users
 LEFT JOIN %s AS pool_entries
-ON pool_entries.user_id=users.id AND pool_entries.pool_id=?
+ON pool_entries.user_id=users.id AND pool_entries.pool_id=:entry_pool_id
 LEFT JOIN %s AS pool_administrators
-ON pool_administrators.user_id=users.id AND pool_administrators.pool_id=?
+ON pool_administrators.user_id=users.id AND pool_administrators.pool_id=:admin_pool_id
 LEFT JOIN %s AS pool_entry_picks
 ON pool_entry_picks.pool_entry_id=pool_entries.id
 GROUP BY users.id
 ORDER BY LOWER(display_name)
 EOQ;
 	$userquery = sprintf($userquery, TOTE_TABLE_USERS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOL_ADMINISTRATORS, TOTE_TABLE_POOL_ENTRY_PICKS);
-	$userstmt = $mysqldb->prepare($userquery);
-	$userstmt->bind_param('ii', $poolid, $poolid);
+	$userstmt = $db->prepare($userquery);
+	$userstmt->bindParam(':entry_pool_id', $poolid, PDO::PARAM_INT);
+	$userstmt->bindParam(':admin_pool_id', $poolid, PDO::PARAM_INT);
 	$userstmt->execute();
-	$userresult = $userstmt->get_result();
 
 	$poolusers = array();
 	$availableusers = array();
 
-	while ($user = $userresult->fetch_assoc()) {
+	while ($user = $userstmt->fetch(PDO::FETCH_ASSOC)) {
 		if (!empty($user['entry_id'])) {
 			$poolusers[(int)$user['id']] = $user;
 		} else {
@@ -89,8 +87,7 @@ EOQ;
 		}
 	}
 
-	$userresult->close();
-	$userstmt->close();
+	$userstmt = null;
 
 	// set data and display
 	http_headers();
