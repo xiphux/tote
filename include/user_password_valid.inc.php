@@ -10,7 +10,7 @@
  */
 function user_password_valid($username, $password, $salt = '', $passwordHash = '')
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($username) || empty($password))
 		return false;
@@ -19,22 +19,19 @@ function user_password_valid($username, $password, $salt = '', $passwordHash = '
 		// if we weren't provided with salt and hash,
 		// load it from the database
 
-		$userstmt = $mysqldb->prepare('SELECT salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
+		$userstmt = $db->prepare('SELECT salt, password FROM ' . TOTE_TABLE_USERS . ' WHERE username=:username');
 		if (!$userstmt)
 			return false;
 
-		$userstmt->bind_param('s', $username);
-		$userstmt->bind_result($salt, $passwordHash);
-		if (!$userstmt->execute()) {
-			$userstmt->close();
+		$userstmt->bindParam(':username', $username);
+		$userstmt->execute();
+		$userstmt->bindColumn(1, $salt);
+		$userstmt->bindColumn(2, $passwordHash);
+		$found = $userstmt->fetch(PDO::FETCH_BOUND);
+		$userstmt = null;
+		if (!$found) {
 			return false;
 		}
-		if (!$userstmt->fetch()) {
-			$userstmt->close();
-			return false;
-		}
-
-		$userstmt->close();
 	}
 
 

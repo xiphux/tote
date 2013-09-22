@@ -22,7 +22,7 @@ define('FINISHCHANGEPASS_HEADER', 'Change Your Password');
  */
 function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();	
 	if (!$user) {
@@ -61,10 +61,12 @@ function display_finishchangepass($oldpassword, $newpassword, $newpassword2, $cs
 				$hashdata = generate_password_hash($user['username'], $newpassword);
 
 				// update the user in the database
-				$passstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP() WHERE id=?');
-				$passstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $user['id']);
+				$passstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=:salt, password=:password, last_password_change=UTC_TIMESTAMP() WHERE id=:user_id');
+				$passstmt->bindParam(':salt', $hashdata['salt']);
+				$passstmt->bindParam(':password', $hashdata['passwordhash']);
+				$passstmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);
 				$passstmt->execute();
-				$passstmt->close();
+				$passstmt = null;
 			} else {
 				// old password has to be correct
 				$errors[] = 'Old password incorrect';
