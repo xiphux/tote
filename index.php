@@ -23,14 +23,6 @@ define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 require_once('config/tote.conf.php');
 
 // create MySQL connection
-$mysqldb = new mysqli(
-	isset($tote_conf['hostname']) ? $tote_conf['hostname'] : null,
-	isset($tote_conf['username']) ? $tote_conf['username'] : null,
-	isset($tote_conf['password']) ? $tote_conf['password'] : null,
-	isset($tote_conf['sql_database']) ? $tote_conf['sql_database'] : null,
-	isset($tote_conf['port']) ? (int)$tote_conf['port'] : null
-);
-
 $db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
 
 // define MySQL tables
