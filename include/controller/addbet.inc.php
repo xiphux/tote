@@ -19,7 +19,7 @@ define('ADDBET_HEADER', 'Make A Pick');
  */
 function display_addbet($poolid, $week, $team, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -50,20 +50,26 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 		return;
 	}
 
-	$poolstmt = $mysqldb->prepare('SELECT seasons.year, pool_entries.id, pool_entry_picks.team_id, teams.home, teams.team FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=? LEFT JOIN ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks ON pool_entries.id=pool_entry_picks.pool_entry_id AND pool_entry_picks.week=? LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS teams ON pool_entry_picks.team_id=teams.id WHERE pools.id=?');
-	$poolstmt->bind_param('iii', $user['id'], $week, $poolid);
+	$poolstmt = $db->prepare('SELECT seasons.year, pool_entries.id, pool_entry_picks.team_id, teams.home, teams.team FROM ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRIES . ' AS pool_entries ON pool_entries.pool_id=pools.id AND pool_entries.user_id=:user_id LEFT JOIN ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' AS pool_entry_picks ON pool_entries.id=pool_entry_picks.pool_entry_id AND pool_entry_picks.week=:week LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS teams ON pool_entry_picks.team_id=teams.id WHERE pools.id=:pool_id');
+	$poolstmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);
+	$poolstmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$poolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+	$poolstmt->execute();
 
 	$poolseason = null;
 	$entryid = null;
 	$prevpickid = null;
 	$prevpickhome = null;
 	$prevpickteam = null;
-	$poolstmt->bind_result($poolseason, $entryid, $prevpickid, $prevpickhome, $prevpickteam);
-	$poolstmt->execute();
+	$poolstmt->bindColumn(1, $poolseason);
+	$poolstmt->bindColumn(2, $entryid);
+	$poolstmt->bindColumn(3, $prevpickid);
+	$poolstmt->bindColumn(4, $prevpickhome);
+	$poolstmt->bindColumn(5, $prevpickteam);
 	$found = $poolstmt->fetch();
-	$poolstmt->close();
+	$poolstmt = null;
 
-	if (!$found) {
+	if (!($found && $poolseason)) {
 		// pool must exist
 		display_message("Unknown pool", ADDBET_HEADER);
 		return;
@@ -81,20 +87,28 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 		return;
 	}
 
-	$teamstmt = $mysqldb->prepare('SELECT teams.home, teams.team, games.start, games.id, pool_entry_picks.id, pool_entry_picks.week FROM ' . TOTE_TABLE_TEAMS . ' AS teams LEFT JOIN ' . TOTE_TABLE_GAMES . ' AS games ON games.week=? AND (games.away_team_id=teams.id OR games.home_team_id=teams.id) AND games.season_id IN (SELECT id FROM ' . TOTE_TABLE_SEASONS . ' WHERE year=?) LEFT JOIN pool_entry_picks ON pool_entry_picks.team_id=teams.id AND pool_entry_picks.pool_entry_id=? WHERE teams.id=?');
-	$teamstmt->bind_param('iiii', $week, $poolseason, $entryid, $team);
+	$teamstmt = $db->prepare('SELECT teams.home, teams.team, games.start, games.id, pool_entry_picks.id, pool_entry_picks.week FROM ' . TOTE_TABLE_TEAMS . ' AS teams LEFT JOIN ' . TOTE_TABLE_GAMES . ' AS games ON games.week=:week AND (games.away_team_id=teams.id OR games.home_team_id=teams.id) AND games.season_id IN (SELECT id FROM ' . TOTE_TABLE_SEASONS . ' WHERE year=:year) LEFT JOIN pool_entry_picks ON pool_entry_picks.team_id=teams.id AND pool_entry_picks.pool_entry_id=:entry_id WHERE teams.id=:team_id');
+	$teamstmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$teamstmt->bindParam(':year', $poolseason, PDO::PARAM_INT);
+	$teamstmt->bindParam(':entry_id', $entryid, PDO::PARAM_INT);
+	$teamstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
+	$teamstmt->execute();
 	$pickhome = null;
 	$pickteam = null;
 	$pickgamestart = null;
 	$pickgameid = null;
 	$prevteampickid = null;
 	$prevteampickweek = null;
-	$teamstmt->bind_result($pickhome, $pickteam, $pickgamestart, $pickgameid, $prevteampickid, $prevteampickweek);
-	$teamstmt->execute();
+	$teamstmt->bindColumn(1, $pickhome);
+	$teamstmt->bindColumn(2, $pickteam);
+	$teamstmt->bindColumn(3, $pickgamestart);
+	$teamstmt->bindColumn(4, $pickgameid);
+	$teamstmt->bindColumn(5, $prevteampickid);
+	$teamstmt->bindColumn(6, $prevteampickweek);
 	$found = $teamstmt->fetch();
-	$teamstmt->close();
+	$teamstmt = null;
 
-	if (!$found) {
+	if (!($found && $pickteam)) {
 		// need to bet on a valid team
 		display_message("Invalid team", ADDBET_HEADER);
 		return;
@@ -123,29 +137,25 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 		return;
 	}
 
-	$pickstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed) VALUES (?, ?, ?, UTC_TIMESTAMP())');
-	$pickstmt->bind_param('iii', $entryid, $week, $team);
+	$pickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed) VALUES (:entry_id, :week, :team_id, UTC_TIMESTAMP())');
+	$pickstmt->bindParam(':entry_id', $entryid, PDO::PARAM_INT);
+	$pickstmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$pickstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
 	$pickstmt->execute();
-	$pickstmt->close();
+	$pickstmt = null;
 
-	$actionstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, week, team_id) VALUES (?, 4, UTC_TIMESTAMP(), ?, ?, ?, ?)');
-	$actionstmt->bind_param('iisii', $poolid, $user['id'], $user['display_name'], $week, $team);
+	$actionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, week, team_id) VALUES (:pool_id, 4, UTC_TIMESTAMP(), :user_id, :username, :week, :team_id)');
+	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
+	$actionstmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);
+	$actionstmt->bindParam(':username', $user['display_name']);
+	$actionstmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$actionstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
 	$actionstmt->execute();
-	$actionstmt->close();
+	$actionstmt = null;
 
-	$updaterecordquery = <<<EOQ
-LOCK TABLES %s WRITE, %s READ;
-UPDATE %s AS pool_records JOIN %s AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=%d AND pool_records.user_id=%d AND pool_records.week=%d;
-UNLOCK TABLES;
-EOQ;
-	$updaterecordquery = sprintf($updaterecordquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, $poolid, $user['id'], $week);
-	$mysqldb->multi_query($updaterecordquery);
-	$updaterecordresult = $mysqldb->store_result();
-	do {
-		if ($res = $mysqldb->store_result()) {
-			$res->close();
-		}
-	} while ($mysqldb->more_results() && $mysqldb->next_result());
+	$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
+	$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=' . $poolid . ' AND pool_records.user_id=' . $user['id'] . ' AND pool_records.week=' . $week);
+	$db->exec('UNLOCK TABLES');
 
 	// go back to the pool view
 	redirect(array('p' => $poolid));
