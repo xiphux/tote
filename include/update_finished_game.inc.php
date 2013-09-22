@@ -18,19 +18,22 @@ require_once(TOTE_INCLUDEDIR . 'notify_finished_game.inc.php');
  */
 function update_finished_game($season, $week, $team1, $team1score, $team2, $team2score, $skipmsg = false)
 {
-	global $mysqldb;
+	global $db;
 
 	if (!$skipmsg) {
 		echo 'Updating ' . $team1 . ' ' . $team1score . ', ' . $team2 . ' ' . $team2score . '... ';
 	}
 
-	$gamestmt = $mysqldb->prepare('SELECT games.id, games.home_team_id, home_teams.abbreviation AS home_team_abbr, games.away_team_id, away_teams.abbreviation AS away_team_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND games.week=? AND ((home_teams.abbreviation=? AND away_teams.abbreviation=?) OR (home_teams.abbreviation=? AND away_teams.abbreviation=?))');
-	$gamestmt->bind_param('iissss', $season, $week, $team1, $team2, $team2, $team1);
+	$gamestmt = $db->prepare('SELECT games.id, games.home_team_id, home_teams.abbreviation AS home_team_abbr, games.away_team_id, away_teams.abbreviation AS away_team_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year AND games.week=:week AND ((home_teams.abbreviation=:home_abbr1 AND away_teams.abbreviation=:away_abbr1) OR (home_teams.abbreviation=:home_abbr2 AND away_teams.abbreviation=:away_abbr2))');
+	$gamestmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$gamestmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$gamestmt->bindParam(':home_abbr1', $team1);
+	$gamestmt->bindParam(':away_abbr1', $team2);
+	$gamestmt->bindParam(':home_abbr2', $team2);
+	$gamestmt->bindParam(':away_abbr2', $team1);
 	$gamestmt->execute();
-	$gameresult = $gamestmt->get_result();
-	$game = $gameresult->fetch_assoc();
-	$gameresult->close();
-	$gamestmt->close();
+	$game = $gamestmt->fetch(PDO::FETCH_ASSOC);
+	$gamestmt = null;
 
 	if (!$game) {
 		// these teams aren't playing this week
@@ -68,10 +71,12 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
 		}
 
-		$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET home_score=?, away_score=? WHERE id=?');
-		$updatestmt->bind_param('iii', $homescore, $awayscore, $game['id']);
+		$updatestmt = $db->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET home_score=:home_score, away_score=:away_score WHERE id=:game_id');
+		$updatestmt->bindParam(':home_score', $homescore, PDO::PARAM_INT);
+		$updatestmt->bindParam(':away_score', $awayscore, PDO::PARAM_INT);
+		$updatestmt->bindParam(':game_id', $game['id'], PDO::PARAM_INT);
 		$updatestmt->execute();
-		$updatestmt->close();
+		$updatestmt = null;
 	
 		$modified = $game['id'];
 	} else {

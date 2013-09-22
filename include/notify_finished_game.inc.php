@@ -13,7 +13,7 @@
  */
 function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, $awayscore)
 {
-	global $tpl, $tote_conf, $mysqldb;
+	global $tpl, $tote_conf, $db;
 
 	$tpl->assign('week', $week);
 	$tpl->assign('homescore', $homescore);
@@ -43,15 +43,17 @@ LEFT JOIN %s AS games ON games.season_id=pools.season_id AND games.week=pool_ent
 LEFT JOIN %s AS pick_teams ON pool_entry_picks.team_id=pick_teams.id
 LEFT JOIN %s AS home_teams ON games.home_team_id=home_teams.id
 LEFT JOIN %s AS away_teams ON games.away_team_id=away_teams.id
-WHERE seasons.year=? AND pool_entry_picks.week=? AND (pool_entry_picks.team_id=? OR pool_entry_picks.team_id=?) AND users.email IS NOT NULL AND users.result_notification=1
+WHERE seasons.year=:year AND pool_entry_picks.week=:week AND (pool_entry_picks.team_id=:home_team_id OR pool_entry_picks.team_id=:away_team_id) AND users.email IS NOT NULL AND users.result_notification=1
 EOQ;
 	$notifyquery = sprintf($notifyquery, TOTE_TABLE_POOL_ENTRY_PICKS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOLS, TOTE_TABLE_SEASONS, TOTE_TABLE_USERS, TOTE_TABLE_GAMES, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS, TOTE_TABLE_TEAMS);
-	$notifystmt = $mysqldb->prepare($notifyquery);
-	$notifystmt->bind_param('iiii', $season, $week, $hometeam, $awayteam);
+	$notifystmt = $db->prepare($notifyquery);
+	$notifystmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$notifystmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$notifystmt->bindParam(':home_team_id', $hometeam, PDO::PARAM_INT);
+	$notifystmt->bindParam(':away_team_id', $awayteam, PDO::PARAM_INT);
 	$notifystmt->execute();
-	$notifyresult = $notifystmt->get_result();
 
-	while ($notify = $notifyresult->fetch_assoc()) {
+	while ($notify = $notifystmt->fetch(PDO::FETCH_ASSOC)) {
 		$win = false;
 		$loss = false;
 		if (
@@ -82,8 +84,7 @@ EOQ;
 		mail($notify['email'], $subject, $message, $headers);
 	}
 
-	$notifyresult->close();
-	$notifystmt->close();
+	$notifystmt = null;
 
 }
 

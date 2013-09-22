@@ -11,7 +11,7 @@
  */
 function update_scheduled_game($season, $week, $away, $home, $start)
 {
-	global $mysqldb;
+	global $db;
 
 	$modified = false;
 
@@ -20,13 +20,14 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 	echo 'Updating ' . $away . ' @ ' . $home . ' at ' . $newstart->format('D M j, Y g:i a T') . '... ';
 
-	$gamestmt = $mysqldb->prepare('SELECT games.id, games.season_id, games.start FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=games.season_id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=? AND games.week=? AND away_teams.abbreviation=? AND home_teams.abbreviation=?');
-	$gamestmt->bind_param('iiss', $season, $week, $away, $home);
+	$gamestmt = $db->prepare('SELECT games.id, games.season_id, games.start FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON seasons.id=games.season_id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year AND games.week=:week AND away_teams.abbreviation=:away_team_abbr AND home_teams.abbreviation=:home_team_abbr');
+	$gamestmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$gamestmt->bindParam(':week', $week, PDO::PARAM_INT);
+	$gamestmt->bindParam(':away_team_abbr', $away);
+	$gamestmt->bindParam(':home_team_abbr', $home);
 	$gamestmt->execute();
-	$gameresult = $gamestmt->get_result();
-	$game = $gameresult->fetch_assoc();
-	$gameresult->close();
-	$gamestmt->close();
+	$game = $gamestmt->fetch(PDO::FETCH_ASSOC);
+	$gamestmt = null;
 
 	$oldtz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
@@ -38,29 +39,33 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			echo "adding game to database<br />\n";
 
 			$seasonid = null;
-			$seasonstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_SEASONS . ' WHERE year=?');
-			$seasonstmt->bind_param('i', $season);
-			$seasonstmt->bind_result($seasonid);
+			$seasonstmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_SEASONS . ' WHERE year=:year');
+			$seasonstmt->bindParam(':year', $season, PDO::PARAM_INT);
 			$seasonstmt->execute();
-			$found = $seasonstmt->fetch();
-			$seasonstmt->close();
+			$seasonstmt->bindColumn(1, $seasonid);
+			$found = $seasonstmt->fetch(PDO::FETCH_BOUND);
+			$seasonstmt = null;
 
-			if (!$found) {
+			if (!$found || ($seasonid === null)) {
 				// add new season
-				$newseasonstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_SEASONS . ' (year) VALUES (?)');
-				$newseasonstmt->bind_param('i', $season);
+				$newseasonstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_SEASONS . ' (year) VALUES (:year)');
+				$newseasonstmt->bindParam(':year', $season, PDO::PARAM_INT);
 				$newseasonstmt->execute();
-				$seasonid = $mysqldb->insert_id;
-				$newseasonstmt->close();
+				$seasonid = $db->lastInsertId();
+				$newseasonstmt = null;
 			}
 
-			$newgamestmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_GAMES . ' (season_id, week, home_team_id, away_team_id, start) VALUES (?, ?, (SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?), (SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=?), ?)');
+			$newgamestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_GAMES . ' (season_id, week, home_team_id, away_team_id, start) VALUES (:season_id, :week, (SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=:home_team_abbr), (SELECT id FROM ' . TOTE_TABLE_TEAMS . ' WHERE abbreviation=:away_team_abbr), :start)');
 
 			$datestr = date('Y-m-d H:i:s', $start);
-			$newgamestmt->bind_param('iisss', $seasonid, $week, $home, $away, $datestr);
+			$newgamestmt->bindParam(':season_id', $seasonid, PDO::PARAM_INT);
+			$newgamestmt->bindParam(':week', $week, PDO::PARAM_INT);
+			$newgamestmt->bindParam(':home_team_abbr', $home);
+			$newgamestmt->bindParam(':away_team_abbr', $away);
+			$newgamestmt->bindParam(':start', $datestr);
 
 			$newgamestmt->execute();
-			$newgamestmt->close();
+			$newgamestmt = null;
 		
 			$modified = true;
 		} else {
@@ -73,13 +78,14 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 		echo 'updating start';
 
-		$prevlaststartstmt = $mysqldb->prepare('SELECT MAX(start) FROM ' . TOTE_TABLE_GAMES . ' AS games WHERE season_id=? AND week=?');
-		$prevlaststartstmt->bind_param('ii', $game['season_id'], $week);
-		$prevlaststart = null;
-		$prevlaststartstmt->bind_result($prevlaststart);
+		$prevlaststartstmt = $db->prepare('SELECT MAX(start) FROM ' . TOTE_TABLE_GAMES . ' AS games WHERE season_id=:season_id AND week=:week');
+		$prevlaststartstmt->bindParam(':season_id', $game['season_id'], PDO::PARAM_INT);
+		$prevlaststartstmt->bindParam(':week', $week, PDO::PARAM_INT);
 		$prevlaststartstmt->execute();
-		$prevlaststartstmt->fetch();
-		$prevlaststartstmt->close();
+		$prevlaststart = null;
+		$prevlaststartstmt->bindColumn(1, $prevlaststart);
+		$prevlaststartstmt->fetch(PDO::FETCH_BOUND);
+		$prevlaststartstmt = null;
 
 		if (!empty($game['start']) && ($game['start'] != '0000-00-00 00:00:00')) {
 			echo ' from ';
@@ -88,19 +94,21 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			echo $st->format('D M j, Y g:i a T');
 		}
 		echo ' to ' . $newstart->format('D M j, Y g:i a T') . "<br />\n";
-		$updategamestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET start=? WHERE id=?');
+		$updategamestmt = $db->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET start=:start WHERE id=:game_id');
 		$datestr = date('Y-m-d H:i:s', $start);
-		$updategamestmt->bind_param('si', $datestr, $game['id']);
+		$updategamestmt->bindParam(':start', $datestr);
+		$updategamestmt->bindParam(':game_id', $game['id'], PDO::PARAM_INT);
 		$updategamestmt->execute();
-		$updategamestmt->close();
+		$updategamestmt = null;
 
-		$newlaststartstmt = $mysqldb->prepare('SELECT MAX(start) FROM ' . TOTE_TABLE_GAMES . ' AS games WHERE season_id=? AND week=?');
-		$newlaststartstmt->bind_param('ii', $game['season_id'], $week);
-		$newlaststart = null;
-		$newlaststartstmt->bind_result($newlaststart);
+		$newlaststartstmt = $db->prepare('SELECT MAX(start) FROM ' . TOTE_TABLE_GAMES . ' AS games WHERE season_id=:season_id AND week=:week');
+		$newlaststartstmt->bindParam(':season_id', $game['season_id'], PDO::PARAM_INT);
+		$newlaststartstmt->bindParam(':week', $week, PDO::PARAM_INT);
 		$newlaststartstmt->execute();
-		$newlaststartstmt->fetch();
-		$newlaststartstmt->close();
+		$newlaststart = null;
+		$newlaststartstmt->bindColumn(1, $newlaststart);
+		$newlaststartstmt->fetch(PDO::FETCH_BOUND);
+		$newlaststartstmt = null;
 
 		$prevlaststartstamp = strtotime($prevlaststart);
 		$newlaststartstamp = strtotime($newlaststart);
@@ -111,26 +119,17 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			if ((($newlaststartstamp < $now) && ($oldlaststartstamp > $now)) || (($oldlaststartstamp < $now) && ($newlaststartstamp > $now))) {
 				// refresh open statuses, since this schedule change causes a week's
 				// status to change from open to closed or vice versa
-				$updateopenquery = <<<EOQ
-LOCK TABLES %s WRITE, %s READ, %s READ;
-UPDATE %s AS pool_records JOIN %s AS pools ON pool_records.pool_id=pools.id JOIN %s AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.open=pool_records_view.open WHERE pools.season_id=%d AND pool_records.week=%d;
-UNLOCK TABLES;
-EOQ;
-				$updateopenquery = sprintf($updateopenquery, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOL_RECORDS_VIEW, TOTE_TABLE_POOLS, TOTE_TABLE_POOL_RECORDS, TOTE_TABLE_POOLS, TOTE_TABLE_POOL_RECORDS_VIEW, $game['season_id'], $week);
-				$mysqldb->multi_query($updateopenquery);
-				$updateopenresult = $mysqldb->store_result();
-				do {
-					if ($res = $mysqldb->store_result()) {
-						$res->close();
-					}
-				} while ($mysqldb->more_results() && $mysqldb->next_result());
+				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ, ' . TOTE_TABLE_POOLS . ' READ');
+				$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_records.pool_id=pools.id JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.open=pool_records_view.open WHERE pools.season_id=' . $game['season_id'] . ' AND pool_records.week=' . $week);
+				$db->exec('UNLOCK TABLES');
 			}
 
 			// refresh next materialze date of pools that were basing theirs on this game
-			$updatedatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET record_next_materialize=? WHERE record_next_materialize=?');
-			$updatedatestmt->bind_param('ss', $newlaststart, $prevlaststart);
+			$updatedatestmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' SET record_next_materialize=:new_next WHERE record_next_materialize=:prev_next');
+			$updatedatestmt->bindParam(':new_next', $newlaststart);
+			$updatedatestmt->bindParam(':prev_next', $prevlaststart);
 			$updatedatestmt->execute();
-			$updatedatestmt->close();
+			$updatedatestmt = null;
 		}
 
 	} else {
