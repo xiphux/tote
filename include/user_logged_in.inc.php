@@ -24,6 +24,10 @@ function user_logged_in()
 
 		$userstmt = null;
 
+		if (!$loggedinuser) {
+			unset($_SESSION['user']);
+		}
+
 	}
 
 	return $loggedinuser;
