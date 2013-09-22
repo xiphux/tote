@@ -97,7 +97,7 @@ function display_bet($poolid, $week)
 	while ($game = $gamesstmt->fetch(PDO::FETCH_ASSOC)) {
 
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime($game['start']);
+		$game['localstart'] = get_local_datetime($game['start'], (!empty($user['timezone']) ? $user['timezone'] : null));
 		$weekgames[] = $game;
 
 	}

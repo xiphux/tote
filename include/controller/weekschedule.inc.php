@@ -4,6 +4,7 @@ require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -32,6 +33,8 @@ function display_weekschedule($season, $week, $output = 'html')
 		return;
 	}
 
+	$user = user_logged_in();
+
 	$gamesstmt = $db->prepare('SELECT games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year AND games.week=:week ORDER BY games.start');
 	$gamesstmt->bindParam(':year', $season, PDO::PARAM_INT);
 	$gamesstmt->bindParam(':week', $week, PDO::PARAM_INT);
@@ -43,7 +46,7 @@ function display_weekschedule($season, $week, $output = 'html')
 	$games = array();
 	while ($game = $gamesstmt->fetch(PDO::FETCH_ASSOC)) {
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime($game['start']);
+		$game['localstart'] = get_local_datetime($game['start'], (!empty($user['timezone']) ? $user['timezone'] : null));
 		$games[] = $game;
 	}
 

@@ -6,6 +6,7 @@ require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -33,6 +34,8 @@ function display_teamschedule($season, $output = 'html')
 		return;
 	}
 
+	$user = user_logged_in();
+
 	$gamestmt = $db->prepare("SELECT teams.id AS team_id, CONCAT(CONCAT(teams.home,' '),teams.team) AS team_name, games.week, games.start, games.home_score, games.away_score, home_teams.abbreviation AS home_team_abbr, away_teams.abbreviation AS away_team_abbr FROM " . TOTE_TABLE_TEAMS . " AS teams RIGHT JOIN " . TOTE_TABLE_GAMES . " AS games ON (games.home_team_id=teams.id OR games.away_team_id=teams.id) LEFT JOIN " . TOTE_TABLE_SEASONS . " AS seasons ON games.season_id=seasons.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN " . TOTE_TABLE_TEAMS . " AS away_teams ON games.away_team_id=away_teams.id WHERE seasons.year=:year ORDER BY teams.home, teams.team, games.week");
 	$gamestmt->bindParam(':year', $season, PDO::PARAM_INT);
 	$gamestmt->execute();
@@ -48,7 +51,7 @@ function display_teamschedule($season, $output = 'html')
 			$teamgames[$lastteamid]['games'] = array();
 		}
 		$game['start'] = strtotime($game['start']);
-		$game['localstart'] = get_local_datetime($game['start']);
+		$game['localstart'] = get_local_datetime($game['start'], (!empty($user['timezone']) ? $user['timezone'] : null));
 		$teamgames[$lastteamid]['games'][(int)$game['week']] = $game;
 	}
 	date_default_timezone_set($tz);

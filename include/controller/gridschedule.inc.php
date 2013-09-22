@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_open_weeks.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_seasons.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -31,6 +32,8 @@ function display_gridschedule($season)
 		return;
 	}
 
+	$user = user_logged_in();
+
 	$gamesstmt = $db->prepare('SELECT games.week, games.start, home_teams.abbreviation AS home_abbr, away_teams.abbreviation AS away_abbr, games.home_score, games.away_score FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS home_teams ON games.home_team_id=home_teams.id LEFT JOIN ' . TOTE_TABLE_TEAMS . ' AS away_teams ON games.away_team_id=away_teams.id LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=:year');
 	$gamesstmt->bindParam(':year', $season, PDO::PARAM_INT);
 	$gamesstmt->execute();
@@ -48,7 +51,7 @@ function display_gridschedule($season)
 			$gamemap[$game['away_abbr']] = array();
 		}
 
-		$game['start'] = get_local_datetime(strtotime($game['start']));
+		$game['start'] = get_local_datetime(strtotime($game['start']), (!empty($user['timezone']) ? $user['timezone'] : null));
 
 		$gamemap[$game['home_abbr']][(int)$game['week']] = $game;
 		$gamemap[$game['away_abbr']][(int)$game['week']] = $game;

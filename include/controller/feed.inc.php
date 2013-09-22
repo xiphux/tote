@@ -4,6 +4,7 @@ require_once(TOTE_INCLUDEDIR . 'redirect.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
 
 /**
  * feed controller
@@ -33,6 +34,8 @@ function display_feed($format, $poolid)
 		echo "Pool not found";
 		return;
 	}
+
+	$user = user_logged_in();
 
 	$actionquery = <<<EOQ
 SELECT
@@ -90,7 +93,7 @@ EOQ;
 
 	while ($action = $actionstmt->fetch(PDO::FETCH_ASSOC)) {
 		$action['time'] = strtotime($action['time']);
-		$action['timelocal'] = get_local_datetime($action['time']);
+		$action['timelocal'] = get_local_datetime($action['time'], (!empty($user['timezone']) ? $user['timezone'] : null));
 		$action['time'] = new DateTime('@' . $action['time']);
 		if (!$updated)
 			$updated = $action['time'];

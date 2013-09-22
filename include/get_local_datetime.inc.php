@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
-
 define('TOTE_DEFAULT_TIMEZONE', 'America/New_York');
 
 /**
@@ -9,7 +7,7 @@ define('TOTE_DEFAULT_TIMEZONE', 'America/New_York');
  *
  * @timestamp int utc timestamp
  */
-function get_local_datetime($timestamp)
+function get_local_datetime($timestamp, $timezone = null)
 {
 	if ($timestamp < 1) {
 		return null;
@@ -17,10 +15,9 @@ function get_local_datetime($timestamp)
 
 	$local = new DateTime('@' . $timestamp);
 	$local->setTimezone(new DateTimeZone(TOTE_DEFAULT_TIMEZONE));
-	$user = user_logged_in();
-	if ($user && isset($user['timezone'])) {
+	if (!empty($timezone)) {
 		try {
-			$local->setTimezone(new DateTimeZone($user['timezone']));
+			$local->setTimezone(new DateTimeZone($timezone));
 		} catch (Exception $e) {
 		}
 	}
