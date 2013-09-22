@@ -7,17 +7,17 @@
  */
 function get_seasons()
 {
-	global $mysqldb;
+	global $db;
 
-	$seasonsresult = $mysqldb->query('SELECT DISTINCT year FROM ' . TOTE_TABLE_SEASONS);
+	$seasonsstmt = $db->query('SELECT DISTINCT year FROM ' . TOTE_TABLE_SEASONS);
 
 	$seasons = array();
 
-	while ($season = $seasonsresult->fetch_assoc()) {
+	while ($season = $seasonsstmt->fetch(PDO::FETCH_ASSOC)) {
 		$seasons[] = (int)$season['year'];
 	}
 
-	$seasonsresult->close();
+	$seasonsstmt = null;
 
 	if (count($seasons) > 0)
 		sort($seasons);
