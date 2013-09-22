@@ -25,7 +25,7 @@ define('ADDUSER_HEADER', 'Add A New User');
  */
 function display_adduser($username, $firstname, $lastname, $email, $password, $password2, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -50,28 +50,32 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 		// must have a username
 		$errors[] = "Username is required";
 	} else {
-		$usernamestmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE username=?');
-		$usernamestmt->bind_param('s', $lowerusername);
+		$usernamestmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE username=:username');
+		$usernamestmt->bindParam(':username', $lowerusername);
 		$usernamestmt->execute();
-		if ($usernamestmt->fetch()) {
+		$existingid = null;
+		$usernamestmt->bindColumn(1, $existingid);
+		if ($usernamestmt->fetch(PDO::FETCH_BOUND)) {
 			// no duplicate usernames
 			$errors[] = "A user with that username already exists";
 		}
-		$usernamestmt->close();
+		$usernamestmt = null;
 	}
 
 	if (empty($email)) {
 		// must have an email
 		$errors[] = "Email is required";
 	} else {
-		$emailstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=?');
-		$emailstmt->bind_param('s', $email);
+		$emailstmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=:email');
+		$emailstmt->bindParam(':email', $email);
 		$emailstmt->execute();
-		if ($emailstmt->fetch()) {
+		$existingid = null;
+		$emailstmt->bindColumn(1, $existingid);
+		if ($emailstmt->fetch(PDO::FETCH_BOUND)) {
 			// no duplicate emails
 			$errors[] = "A user with that email address already exists";
 		}
-		$emailstmt->close();
+		$emailstmt = null;
 		if (!preg_match('/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
 			// must be validly formatted email
 			$errors[] = "Email must be valid";
@@ -117,10 +121,15 @@ function display_adduser($username, $firstname, $lastname, $email, $password, $p
 
 		$hashdata = generate_password_hash($lowerusername, $password);
 
-		$newuserstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, email, first_name, last_name, salt, password, created) VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP())');
-		$newuserstmt->bind_param('ssssss', $lowerusername, $email, $firstname, $lastname, $hashdata['salt'], $hashdata['passwordhash']);
+		$newuserstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, email, first_name, last_name, salt, password, created) VALUES (:username, :email, :first_name, :last_name, :salt, :password, UTC_TIMESTAMP())');
+		$newuserstmt->bindParam(':username', $lowerusername);
+		$newuserstmt->bindParam(':email', $email);
+		$newuserstmt->bindParam(':first_name', $firstname);
+		$newuserstmt->bindParam(':last_name', $lastname);
+		$newuserstmt->bindParam(':salt', $hashdata['salt']);
+		$newuserstmt->bindParam(':password', $hashdata['passwordhash']);
 		$newuserstmt->execute();
-		$newuserstmt->close();
+		$newuserstmt = null;
 
 		// go back to the edit users page
 		redirect(array('a' => 'editusers'));

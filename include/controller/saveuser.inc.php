@@ -24,7 +24,7 @@ define('SAVEUSER_HEADER', 'Edit A User');
  */
 function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpassword, $newpassword2, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -48,13 +48,11 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		return;
 	}
 
-	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
-	$userstmt->bind_param('i', $userid);
+	$userstmt = $db->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=:user_id');
+	$userstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$userstmt->execute();
-	$userresult = $userstmt->get_result();
-	$edituser = $userresult->fetch_assoc();
-	$userresult->close();
-	$userstmt->close();
+	$edituser = $userstmt->fetch(PDO::FETCH_ASSOC);
+	$userstmt = null;
 
 	if (!$edituser) {
 		// needs to be a valid user
@@ -68,10 +66,13 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		// need the email address
 		$errors[] = "Email is required";
 	} else {
-		$emailstmt = $mysqldb->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=? AND id!=?');
-		$emailstmt->bind_param('si', $email, $userid);
+		$emailstmt = $db->prepare('SELECT id FROM ' . TOTE_TABLE_USERS . ' WHERE email=:email AND id!=:user_id');
+		$emailstmt->bindParam(':email', $email);
+		$emailstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
+		$existingid = null;
+		$emailstmt->bindColumn(1, $existingid);
 		$emailstmt->execute();
-		if ($emailstmt->fetch()) {
+		if ($emailstmt->fetch(PDO::FETCH_BOUND)) {
 			// no duplicate emails
 			$errors[] = "A user with that email address already exists";
 		}
@@ -112,18 +113,24 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 			$email = !empty($email) ? $email : null;
 			$role = $role > 0 ? (int)$role : 0;
 			
-			$updatestmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET first_name=?, last_name=?, email=?, role=? WHERE id=?');
-			$updatestmt->bind_param('sssii', $firstname, $lastname, $email, $role, $userid);
+			$updatestmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET first_name=:first_name, last_name=:last_name, email=:email, role=:role WHERE id=:user_id');
+			$updatestmt->bindParam(':first_name', $firstname);
+			$updatestmt->bindParam(':last_name', $lastname);
+			$updatestmt->bindParam(':email', $email);
+			$updatestmt->bindParam(':role', $role, PDO::PARAM_INT);
+			$updatestmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 			$updatestmt->execute();
-			$updatestmt->close();
+			$updatestmt = null;
 		}
 		if (!(empty($newpassword) || empty($newpassword2))) {
 			
 			$hashdata = generate_password_hash($edituser['username'], $newpassword);
-			$passstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=?, password=?, last_password_change=UTC_TIMESTAMP()  WHERE id=?');
-			$passstmt->bind_param('ssi', $hashdata['salt'], $hashdata['passwordhash'], $userid);
+			$passstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET salt=:salt, password=:password, last_password_change=UTC_TIMESTAMP()  WHERE id=:user_id');
+			$passstmt->bindParam(':salt', $hashdata['salt']);
+			$passstmt->bindParam(':password', $hashdata['passwordhash']);
+			$passstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 			$passstmt->execute();
-			$passstmt->close();
+			$passstmt = null;
 		}
 
 		// go back to edit users page

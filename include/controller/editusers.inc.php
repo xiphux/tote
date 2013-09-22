@@ -112,7 +112,7 @@ function sort_passwordchange($a, $b)
  */
 function display_editusers($order = 'name')
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -126,11 +126,11 @@ function display_editusers($order = 'name')
 	}
 
 	// get all users
-	$usersresult = $mysqldb->query("SELECT id, username, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name, email, role, created, last_login, last_password_change FROM " . TOTE_TABLE_USERS);
+	$usersstmt = $db->query("SELECT id, username, (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) AS display_name, email, role, created, last_login, last_password_change FROM " . TOTE_TABLE_USERS);
 	$userarray = array();
 	$tz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
-	while ($u = $usersresult->fetch_assoc()) {
+	while ($u = $usersstmt->fetch(PDO::FETCH_ASSOC)) {
 		if (!empty($u['created'])) {
 			$u['created_local'] = get_local_datetime(strtotime($u['created']));
 		}
@@ -144,7 +144,7 @@ function display_editusers($order = 'name')
 	}
 	date_default_timezone_set($tz);
 
-	$usersresult->close();
+	$usersstmt = null;
 
 	// sort
 	switch ($order) {

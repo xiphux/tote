@@ -17,7 +17,7 @@ define('EDITUSER_HEADER', 'Edit A User');
  */
 function display_edituser($userid)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -36,13 +36,11 @@ function display_edituser($userid)
 		return;
 	}
 
-	$userstmt = $mysqldb->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
-	$userstmt->bind_param('i', $userid);
+	$userstmt = $db->prepare('SELECT username, first_name, last_name, email, role FROM ' . TOTE_TABLE_USERS . ' WHERE id=:user_id');
+	$userstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$userstmt->execute();
-	$userresult = $userstmt->get_result();
-	$edituser = $userresult->fetch_assoc();
-	$userresult->close();
-	$userstmt->close();
+	$edituser = $userstmt->fetch(PDO::FETCH_ASSOC);
+	$userstmt = null;
 
 	if (!$edituser) {
 		// needs to be a valid user

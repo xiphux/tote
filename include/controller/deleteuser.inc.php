@@ -18,7 +18,7 @@ define('DELETEUSER_HEADER', 'Manage Your Users');
  */
 function display_deleteuser($userid, $csrftoken)
 {
-	global $tpl, $mysqldb;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 	if (!$user) {
@@ -42,13 +42,13 @@ function display_deleteuser($userid, $csrftoken)
 		return;
 	}
 
-	$userstmt = $mysqldb->prepare("SELECT (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) FROM " . TOTE_TABLE_USERS . " WHERE id=?");
-	$userstmt->bind_param('i', $userid);
-	$username = null;
-	$userstmt->bind_result($username);
+	$userstmt = $db->prepare("SELECT (CASE WHEN (first_name IS NOT NULL AND last_name IS NOT NULL) THEN CONCAT(CONCAT(first_name,' '),last_name) WHEN first_name IS NOT NULL THEN first_name ELSE username END) FROM " . TOTE_TABLE_USERS . " WHERE id=:user_id");
+	$userstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$userstmt->execute();
-	$found = $userstmt->fetch();
-	$userstmt->close();
+	$username = null;
+	$userstmt->bindColumn(1, $username);
+	$found = $userstmt->fetch(PDO::FETCH_BOUND);
+	$userstmt = null;
 
 	if (!$found) {
 		// must be a valid user to delete
@@ -57,56 +57,57 @@ function display_deleteuser($userid, $csrftoken)
 	}
 
 	// delete any user picks
-	$pickdelstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id IN (SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?)');
-	$pickdelstmt->bind_param('i', $userid);
+	$pickdelstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id IN (SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=:user_id)');
+	$pickdelstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$pickdelstmt->execute();
-	$pickdelstmt->close();
+	$pickdelstmt = null;
 
 	// audit entrant removal in any pools user is in
-	$entriesstmt = $mysqldb->prepare('SELECT id, pool_id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
-	$entriesstmt->bind_param('i', $userid);
+	$entriesstmt = $db->prepare('SELECT id, pool_id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=:user_id');
+	$entriesstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$entriesstmt->execute();
-	$entriesresult = $entriesstmt->get_result();
 
-	$auditstmt = $mysqldb->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (?, 2, UTC_TIMESTAMP(), ?, ?, ?)');
-	while ($entry = $entriesresult->fetch_assoc()) {
-		
-		$auditstmt->bind_param('isis', $entry['pool_id'], $username, $user['id'], $user['display_name']);
+	$auditstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, username, admin_id, admin_username) VALUES (:pool_id, 2, UTC_TIMESTAMP(), :username, :admin_id, :admin_username)');
+	$auditstmt->bindParam(':username', $username);
+	$auditstmt->bindParam(':admin_id', $user['id'], PDO::PARAM_INT);
+	$auditstmt->bindParam(':admin_username', $user['display_name']);
+	while ($entry = $entriesstmt->fetch(PDO::FETCH_ASSOC)) {
+	
+		$auditstmt->bindParam(':pool_id', $entry['pool_id'], PDO::PARAM_INT);
 		$auditstmt->execute();
 
 	}
-	$auditstmt->close();
-	$entriesresult->close();
-	$entriesstmt->close();
+	$auditstmt = null;
+	$entriesstmt = null;
 
 	// delete any user entries
-	$delentrystmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=?');
-	$delentrystmt->bind_param('i', $userid);
+	$delentrystmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=:user_id');
+	$delentrystmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$delentrystmt->execute();
-	$delentrystmt->close();
+	$delentrystmt = null;
 
 	// nullify any action / administrator ids pointing to this user
-	$deluseractionstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET user_id=NULL WHERE user_id=?');
-	$deluseractionstmt->bind_param('i', $userid);
+	$deluseractionstmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET user_id=NULL WHERE user_id=:user_id');
+	$deluseractionstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$deluseractionstmt->execute();
-	$deluseractionstmt->close();
+	$deluseractionstmt = null;
 
-	$deladminactionstmt = $mysqldb->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET admin_id=NULL WHERE admin_id=?');
-	$deladminactionstmt->bind_param('i', $userid);
+	$deladminactionstmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOL_ACTIONS . ' SET admin_id=NULL WHERE admin_id=:admin_id');
+	$deladminactionstmt->bindParam(':admin_id', $userid, PDO::PARAM_INT);
 	$deladminactionstmt->execute();
-	$deladminactionstmt->close();
+	$deladminactionstmt = null;
 
 	// clear records for this user
-	$delrecordstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE user_id=?');
-	$delrecordstmt->bind_param('i', $userid);
+	$delrecordstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE user_id=:user_id');
+	$delrecordstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$delrecordstmt->execute();
-	$delrecordstmt->close();
+	$delrecordstmt = null;
 
 	// delete user
-	$deluserstmt = $mysqldb->prepare('DELETE FROM ' . TOTE_TABLE_USERS . ' WHERE id=?');
-	$deluserstmt->bind_param('i', $userid);
+	$deluserstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_USERS . ' WHERE id=:user_id');
+	$deluserstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$deluserstmt->execute();
-	$deluserstmt->close();
+	$deluserstmt = null;
 
 	redirect(array('a' => 'editusers'));
 }
