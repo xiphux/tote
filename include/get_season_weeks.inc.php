@@ -8,20 +8,20 @@
  */
 function get_season_weeks($season)
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($season))
 		return null;
 
-	$maxweekstmt = $mysqldb->prepare('SELECT MAX(games.week) AS weeks FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=?');
+	$maxweekstmt = $db->prepare('SELECT MAX(games.week) AS weeks FROM ' . TOTE_TABLE_GAMES . ' AS games LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON games.season_id=seasons.id WHERE seasons.year=:year');
 
-	$maxweekstmt->bind_param('i', $season);
+	$maxweekstmt->bindParam(':year', $season, PDO::PARAM_INT);
+	$maxweekstmt->execute();
 
 	$weeks = null;
-	$maxweekstmt->bind_result($weeks);
-	$maxweekstmt->execute();
-	$maxweekstmt->fetch();
-	$maxweekstmt->close();
+	$maxweekstmt->bindColumn(1, $weeks);
+	$maxweekstmt->fetch(PDO::FETCH_BOUND);
+	$maxweekstmt = null;
 
 	if ($weeks > 0)
 		return $weeks;
