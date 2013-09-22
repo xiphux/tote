@@ -10,24 +10,23 @@
  */
 function get_pool_payout_percents($poolid)
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($poolid))
 		return null;
 
 	$percents = array();
 
-	$percentstmt = $mysqldb->prepare('SELECT place, percent FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' WHERE payout_id=(SELECT id FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE pool_id=? AND (SELECT COUNT(id) FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=?) BETWEEN COALESCE(minimum,0) AND COALESCE(maximum,65535))');
-	$percentstmt->bind_param('ii', $poolid, $poolid);
+	$percentstmt = $db->prepare('SELECT place, percent FROM ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' WHERE payout_id=(SELECT id FROM ' . TOTE_TABLE_POOL_PAYOUTS . ' WHERE pool_id=:payout_pool_id AND (SELECT COUNT(id) FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE pool_id=:count_pool_id) BETWEEN COALESCE(minimum,0) AND COALESCE(maximum,65535))');
+	$percentstmt->bindParam(':payout_pool_id', $poolid, PDO::PARAM_INT);
+	$percentstmt->bindParam(':count_pool_id', $poolid, PDO::PARAM_INT);
 	$percentstmt->execute();
-	$percentresult = $percentstmt->get_result();
 
-	while ($place = $percentresult->fetch_assoc()) {
+	while ($place = $percentstmt->fetch(PDO::FETCH_ASSOC)) {
 		$percents[(int)$place['place']] = (float)$place['percent'];
 	}
 
-	$percentresult->close();
-	$percentstmt->close();
+	$percentstmt = null;
 
 	return $percents;
 }

@@ -13,19 +13,19 @@ require_once(TOTE_INCLUDEDIR . 'get_pool_payout_percents.inc.php');
  */
 function get_pool_payout_amounts($poolid, $fee = null, $pot = null)
 {
-	global $mysqldb;
+	global $db;
 
 	if (empty($poolid))
 		return null;
 
 	if ($fee == null) {
-		$feestmt = $mysqldb->prepare('SELECT fee FROM ' . TOTE_TABLE_POOLS . ' WHERE id=?');
-		$feestmt->bind_param('i', $poolid);
-		$feestmt->bind_result($fee);
+		$feestmt = $db->prepare('SELECT fee FROM ' . TOTE_TABLE_POOLS . ' WHERE id=:pool_id');
+		$feestmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 		$feestmt->execute();
+		$feestmt->bindColumn(1, $fee);
 		$found = $feestmt->fetch();
-		$feestmt->close();
-		if (!$found)
+		$feestmt = null;
+		if (!$found || ($fee === null))
 			return null;
 	}
 
