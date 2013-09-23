@@ -99,17 +99,20 @@ $teams = $teamcollection->find(array());
 
 $newconferencestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_CONFERENCES . ' (conference, abbreviation) VALUES (:conference, :abbreviation)');
 if (!$newconferencestmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newdivisionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_DIVISIONS . ' (division, conference_id) VALUES (:division, :conference_id)');
 if (!$newdivisionstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newteamstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_TEAMS . ' (team, home, abbreviation, division_id) VALUES (:team, :home, :abbreviation, :division_id)');
 if (!$newteamstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 
@@ -168,12 +171,14 @@ $games = $gamecollection->find(array());
 
 $newseasonstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_SEASONS . ' (year) VALUES (:year)');
 if (!$newseasonstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newgamestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_GAMES . ' (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (:season_id, :week, :home_team_id, :away_team_id, :start, :home_score, :away_score, :favorite_id, :point_spread)');
 if (!$newgamestmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 
@@ -219,7 +224,8 @@ $users = $usercollection->find(array());
 
 $newuserstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, salt, password, recovery_key, email, first_name, last_name, role, created, last_login, last_password_change, reminder, reminder_time, last_reminder, result_notification, timezone, style) VALUES (:username, :salt, :password, :recovery_key, :email, :first_name, :last_name, :role, :created, :last_login, :last_password_change, :reminder, :reminder_time, :last_reminder, :result_notification, :timezone, :style)');
 if (!$newuserstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 
@@ -279,37 +285,44 @@ $pools = $poolcollection->find(array());
 
 $newpoolstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fee, name) VALUES (:season_id, :fee, :name)');
 if (!$newpoolstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newentrystmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (:pool_id, :user_id)');
 if (!$newentrystmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newpickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed, edited) VALUES (:pool_entry_id, :week, :team_id, :placed, :edited)');
 if (!$newpickstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newactionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type, comment) VALUES (:pool_id, :action, :time, :user_id, :username, :admin_id, :admin_username, :week, :team_id, :old_team_id, :admin_type, :old_admin_type, :comment)');
 if (!$newactionstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newpayoutstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (:pool_id, :minimum, :maximum)');
 if (!$newpayoutstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id, :place, :percent)');
 if (!$newpercentstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 $newadminstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (:pool_id, :user_id, :name, :admin_type)');
 if (!$newadminstmt) {
-	echo $db->errorInfo()[2] . "\n";
+	$error = $db->errorInfo();
+	echo $error[2] . "\n";
 	exit;
 }
 
