@@ -22,8 +22,20 @@ define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 // include config file
 require_once('config/tote.conf.php');
 
+// create Smarty
+require_once($tote_conf['smarty'] . 'Smarty.class.php');
+$tpl = new Smarty();
+$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
+
 // create MySQL connection
-$db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
+$db = null;
+try {
+	$db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
+} catch (PDOException $e) {
+	require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
+	display_message('Error connecting to database: ' . $e->getMessage());
+	exit;
+}
 
 // define MySQL tables
 define('TOTE_TABLE_CONFERENCES', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'conferences');
@@ -41,11 +53,6 @@ define('TOTE_TABLE_POOL_PAYOUT_PERCENTS', (!empty($tote_conf['prefix']) ? $tote_
 define('TOTE_TABLE_POOL_ADMINISTRATORS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_administrators');
 define('TOTE_TABLE_POOL_RECORDS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records');
 define('TOTE_TABLE_POOL_RECORDS_VIEW', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records_view');
-
-// create Smarty
-require_once($tote_conf['smarty'] . 'Smarty.class.php');
-$tpl = new Smarty();
-$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 
 // work with UTC timestamps internally
 date_default_timezone_set('UTC');
