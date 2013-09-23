@@ -117,7 +117,7 @@ EOQ;
 			$modstmt->bindParam(':user_id', $muser, PDO::PARAM_INT);
 			$modstmt->execute();
 			if ($modstmt->rowCount() > 0) {
-				$modifiedusers[] = $muser;
+				$modifiedusers[] = $db->quote($muser);
 			}
 
 			$actionstmt->bindParam(':user_id', $muser, PDO::PARAM_INT);
@@ -133,11 +133,11 @@ EOQ;
 			$updaterecordquery = null;
 			if ($modification == 'add') {
 				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
-				$db->exec('INSERT INTO ' . TOTE_TABLE_POOL_RECORDS . ' SELECT * FROM ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' WHERE pool_id=' . $poolid . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('INSERT INTO ' . TOTE_TABLE_POOL_RECORDS . ' SELECT * FROM ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' WHERE pool_id=' . $db->quote($poolid) . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
 				$db->exec('UNLOCK TABLES');
 			} else {
 				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE');
-				$db->exec('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=' . $poolid . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=' . $db->quote($poolid) . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
 				$db->exec('UNLOCK TABLES');
 			}
 		}
