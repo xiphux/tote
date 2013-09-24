@@ -100,6 +100,8 @@ function display_addpool($name, $season, $fee, $csrftoken)
 
 		$season = (int)$season;
 
+		$db->beginTransaction();
+
 		$newpoolstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fee, name) VALUES ((SELECT id FROM seasons WHERE year=:year), :fee, :name)');
 		$newpoolstmt->bindParam(':year', $season, PDO::PARAM_INT);
 		$newpoolstmt->bindParam(':fee', $fee);
@@ -213,6 +215,8 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpayoutstmt = null;
 
 		// end TODO
+
+		$db->commit();
 
 		// go to the new pool
 		redirect(array('p' => $poolid));
