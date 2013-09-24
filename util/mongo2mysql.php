@@ -45,9 +45,12 @@ define('TOTE_TABLE_POOL_ADMINISTRATORS', (!empty($tote_conf['prefix']) ? $tote_c
 define('TOTE_TABLE_POOL_RECORDS', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records');
 define('TOTE_TABLE_POOL_RECORDS_VIEW', (!empty($tote_conf['prefix']) ? $tote_conf['prefix'] : '') . 'pool_records_view');
 
+// disable data checks to speed up import
+$db->exec('SET foreign_key_checks=0');
+$db->exec('SET unique_checks=0');
+
 // clear data
 echo "\nClearing data...\n";
-$db->exec('SET FOREIGN_KEY_CHECKS=0');
 $db->exec('TRUNCATE TABLE ' . TOTE_TABLE_CONFERENCES);
 echo ".";
 $db->exec('TRUNCATE TABLE ' . TOTE_TABLE_DIVISIONS);
@@ -76,7 +79,6 @@ $db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_ADMINISTRATORS);
 echo ".";
 $db->exec('TRUNCATE TABLE ' . TOTE_TABLE_POOL_RECORDS);
 echo ".";
-$db->exec('SET FOREIGN_KEY_CHECKS=1');
 
 // id mapping arrays
 $conferenceidmap = array();
@@ -101,18 +103,24 @@ $newconferencestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_CONFERENCES . ' (c
 if (!$newconferencestmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newdivisionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_DIVISIONS . ' (division, conference_id) VALUES (:division, :conference_id)');
 if (!$newdivisionstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newteamstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_TEAMS . ' (team, home, abbreviation, division_id) VALUES (:team, :home, :abbreviation, :division_id)');
 if (!$newteamstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 
@@ -173,12 +181,16 @@ $newseasonstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_SEASONS . ' (year) VAL
 if (!$newseasonstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newgamestmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_GAMES . ' (season_id, week, home_team_id, away_team_id, start, home_score, away_score, favorite_id, point_spread) VALUES (:season_id, :week, :home_team_id, :away_team_id, :start, :home_score, :away_score, :favorite_id, :point_spread)');
 if (!$newgamestmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 
@@ -226,6 +238,8 @@ $newuserstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_USERS . ' (username, sal
 if (!$newuserstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 
@@ -287,42 +301,56 @@ $newpoolstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOLS . ' (season_id, fe
 if (!$newpoolstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newentrystmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRIES . ' (pool_id, user_id) VALUES (:pool_id, :user_id)');
 if (!$newentrystmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newpickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed, edited) VALUES (:pool_entry_id, :week, :team_id, :placed, :edited)');
 if (!$newpickstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newactionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, admin_id, admin_username, week, team_id, old_team_id, admin_type, old_admin_type, comment) VALUES (:pool_id, :action, :time, :user_id, :username, :admin_id, :admin_username, :week, :team_id, :old_team_id, :admin_type, :old_admin_type, :comment)');
 if (!$newactionstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newpayoutstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (:pool_id, :minimum, :maximum)');
 if (!$newpayoutstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id, :place, :percent)');
 if (!$newpercentstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 $newadminstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ADMINISTRATORS . ' (pool_id, user_id, name, admin_type) VALUES (:pool_id, :user_id, :name, :admin_type)');
 if (!$newadminstmt) {
 	$error = $db->errorInfo();
 	echo $error[2] . "\n";
+	$db->exec('SET unique_checks=1');
+	$db->exec('SET foreign_key_checks=1');
 	exit;
 }
 
@@ -502,5 +530,8 @@ foreach ($pools as $pool) {
 
 echo "\n";
 
+// re-enable data checks
+$db->exec('SET unique_checks=1');
+$db->exec('SET foreign_key_checks=1');
 
 $db = null;
