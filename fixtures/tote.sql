@@ -37,7 +37,7 @@ CREATE TABLE `games` (
   KEY `home_team_id` (`home_team_id`),
   KEY `away_team_id` (`away_team_id`),
   KEY `favorite_id` (`favorite_id`),
-  KEY `season_id` (`season_id`)
+  KEY `season_week_start` (`season_id`,`week`,`start`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `migrations` (
