@@ -133,11 +133,19 @@ EOQ;
 			$updaterecordquery = null;
 			if ($modification == 'add') {
 				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
+				$db->exec('SET foreign_key_checks=0');
+				$db->exec('SET unique_checks=0');
 				$db->exec('INSERT INTO ' . TOTE_TABLE_POOL_RECORDS . ' SELECT * FROM ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' WHERE pool_id=' . $db->quote($poolid) . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('SET foreign_key_checks=1');
+				$db->exec('SET unique_checks=1');
 				$db->exec('UNLOCK TABLES');
 			} else {
 				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE');
+				$db->exec('SET foreign_key_checks=0');
+				$db->exec('SET unique_checks=0');
 				$db->exec('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=' . $db->quote($poolid) . ' AND user_id IN (' . implode(', ', $modifiedusers) . ')');
+				$db->exec('SET foreign_key_checks=1');
+				$db->exec('SET unique_checks=1');
 				$db->exec('UNLOCK TABLES');
 			}
 		}
