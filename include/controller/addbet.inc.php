@@ -137,12 +137,22 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 		return;
 	}
 
+	$db->beginTransaction();
+
 	$pickstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' (pool_entry_id, week, team_id, placed) VALUES (:entry_id, :week, :team_id, UTC_TIMESTAMP())');
 	$pickstmt->bindParam(':entry_id', $entryid, PDO::PARAM_INT);
 	$pickstmt->bindParam(':week', $week, PDO::PARAM_INT);
 	$pickstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
 	$pickstmt->execute();
 	$pickstmt = null;
+
+	$db->exec('SET foreign_key_checks=0');
+	$db->exec('SET unique_checks=0');
+	$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=' . $db->quote($poolid) . ' AND pool_records.user_id=' . $db->quote($user['id']) . ' AND pool_records.week=' . $db->quote($week));
+	$db->exec('SET foreign_key_checks=1');
+	$db->exec('SET unique_checks=1');
+
+	$db->commit();
 
 	$actionstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_ACTIONS . ' (pool_id, action, time, user_id, username, week, team_id) VALUES (:pool_id, 4, UTC_TIMESTAMP(), :user_id, :username, :week, :team_id)');
 	$actionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
@@ -152,14 +162,6 @@ function display_addbet($poolid, $week, $team, $csrftoken)
 	$actionstmt->bindParam(':team_id', $team, PDO::PARAM_INT);
 	$actionstmt->execute();
 	$actionstmt = null;
-
-	$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
-	$db->exec('SET foreign_key_checks=0');
-	$db->exec('SET unique_checks=0');
-	$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=' . $db->quote($poolid) . ' AND pool_records.user_id=' . $db->quote($user['id']) . ' AND pool_records.week=' . $db->quote($week));
-	$db->exec('SET foreign_key_checks=1');
-	$db->exec('SET unique_checks=1');
-	$db->exec('UNLOCK TABLES');
 
 	// go back to the pool view
 	redirect(array('p' => $poolid));
