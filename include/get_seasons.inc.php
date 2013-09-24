@@ -9,7 +9,7 @@ function get_seasons()
 {
 	global $db;
 
-	$seasonsstmt = $db->query('SELECT DISTINCT year FROM ' . TOTE_TABLE_SEASONS);
+	$seasonsstmt = $db->query('SELECT year FROM ' . TOTE_TABLE_SEASONS);
 
 	$seasons = array();
 
