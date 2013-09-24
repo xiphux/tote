@@ -111,6 +111,8 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 
 	$modifiedweeks = array();
 
+	$db->beginTransaction();
+
 	for ($i = 1; $i <= $weeks; ++$i) {
 
 		if (empty($oldpicks[$i]) && empty($weekbets[$i])) {
@@ -175,14 +177,14 @@ function display_savebets($poolid, $entrant, $weekbets, $comment, $csrftoken)
 	$actionstmt = null;
 
 	if (count($modifiedweeks) > 0) {
-		$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
 		$db->exec('SET foreign_key_checks=0');
 		$db->exec('SET unique_checks=0');
 		$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.team_id=pool_records_view.team_id, pool_records.game_id=pool_records_view.game_id, pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.pool_id=' . $db->quote($poolid) . ' AND pool_records.user_id=' . $db->quote($entrant) . ' AND pool_records.week IN (' . implode(', ', $modifiedweeks) . ')');
 		$db->exec('SET foreign_key_checks=1');
 		$db->exec('SET unique_checks=1');
-		$db->exec('UNLOCK TABLES');
 	}
+
+	$db->commit();
 
 	// go home
 	redirect();
