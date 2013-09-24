@@ -153,7 +153,8 @@ function materialize_pool_record($poolid)
 	$expirestmt->fetch(PDO::FETCH_BOUND);
 	$expirestmt = null;
 
-	$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOLS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
+	$db->beginTransaction();
+
 	$db->exec('SET foreign_key_checks=0');
 	$db->exec('SET unique_checks=0');
 	$db->exec('DELETE FROM ' . TOTE_TABLE_POOL_RECORDS . ' WHERE pool_id=' . $db->quote($poolid));
@@ -161,6 +162,7 @@ function materialize_pool_record($poolid)
 	$db->exec('SET foreign_key_checks=1');
 	$db->exec('SET unique_checks=1');
 	$db->exec('UPDATE ' . TOTE_TABLE_POOLS . ' SET record_last_materialized=UTC_TIMESTAMP(), record_needs_materialize=0, record_next_materialize=' . ($expire === null ? 'NULL' : $db->quote($expire)) . ' WHERE id=' . $db->quote($poolid));
-	$db->exec('UNLOCK TABLES');
+
+	$db->commit();
 
 }
