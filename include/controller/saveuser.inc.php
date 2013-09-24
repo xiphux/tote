@@ -106,6 +106,9 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 		$tpl->display('edituser.tpl');
 	} else {
 		// set data
+
+		$db->beginTransaction();
+
 		if (($firstname != $edituser['first_name']) || ($lastname != $edituser['last_name']) || ($email != $edituser['email']) || ((int)$role != (int)$edituser['role'])) {
 
 			$firstname = !empty($firstname) ? $firstname : null;
@@ -132,6 +135,8 @@ function display_saveuser($userid, $firstname, $lastname, $email, $role, $newpas
 			$passstmt->execute();
 			$passstmt = null;
 		}
+
+		$db->commit();
 
 		// go back to edit users page
 		redirect(array('a' => 'editusers'));
