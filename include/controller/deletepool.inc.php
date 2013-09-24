@@ -42,6 +42,8 @@ function display_deletepool($poolid, $csrftoken)
 		return;
 	}
 
+	$db->beginTransaction();
+
 	$removeactionstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ACTIONS . ' WHERE pool_id=:pool_id');
 	$removeactionstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removeactionstmt->execute();
@@ -81,6 +83,8 @@ function display_deletepool($poolid, $csrftoken)
 	$removepoolstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 	$removepoolstmt->execute();
 	$removepoolstmt = null;
+
+	$db->commit();
 
 	redirect();
 }
