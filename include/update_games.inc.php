@@ -8,12 +8,11 @@ function update_games()
 	global $db;
 
 	$modified = false;
-	$finishedgames = array();
 
-	if (update_games_espn($finishedgames))
+	if (update_games_espn())
 		$modified = true;
 
-	if (update_games_nfl($finishedgames))
+	if (update_games_nfl())
 		$modified = true;
 
 	if ($modified) {
@@ -26,20 +25,6 @@ function update_games()
 		$dirtystmt->bindParam(':year', $season, PDO::PARAM_INT);
 		$dirtystmt->execute();
 		$dirtystmt = null;
-	} else if (count($finishedgames) > 0) {
-
-		for ($i = 0; $i < count($finishedgames); ++$i) {
-			$finishedgames[$i] = $db->quote($finishedgames[$i]);
-		}
-
-		$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ');
-		$db->exec('SET foreign_key_checks=0');
-		$db->exec('SET unique_checks=0');
-		$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.game_id=pool_records_view.game_id SET pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.game_id IN (' . implode(', ', $finishedgames) . ')');
-		$db->exec('SET foreign_key_checks=1');
-		$db->exec('SET unique_checks=1');
-		$db->exec('UNLOCK TABLES');
-
 	}
 
 }

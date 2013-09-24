@@ -71,12 +71,22 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
 		}
 
+		$db->beginTransaction();
+
 		$updatestmt = $db->prepare('UPDATE ' . TOTE_TABLE_GAMES . ' SET home_score=:home_score, away_score=:away_score WHERE id=:game_id');
 		$updatestmt->bindParam(':home_score', $homescore, PDO::PARAM_INT);
 		$updatestmt->bindParam(':away_score', $awayscore, PDO::PARAM_INT);
 		$updatestmt->bindParam(':game_id', $game['id'], PDO::PARAM_INT);
 		$updatestmt->execute();
 		$updatestmt = null;
+
+		$db->exec('SET foreign_key_checks=0');
+		$db->exec('SET unique_checks=0');
+		$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.game_id=pool_records_view.game_id SET pool_records.win=pool_records_view.win, pool_records.loss=pool_records_view.loss, pool_records.tie=pool_records_view.tie, pool_records.spread=pool_records_view.spread WHERE pool_records.game_id=' . $db->quote($game['id']));
+		$db->exec('SET foreign_key_checks=1');
+		$db->exec('SET unique_checks=1');
+
+		$db->commit();
 	
 		$modified = $game['id'];
 	} else {

@@ -82,7 +82,7 @@ function espn_team_to_abbr($team)
 }
 
 
-function update_games_espn(&$finishedgames)
+function update_games_espn()
 {
 	// times are reported on espn in Eastern
 	$oldtz = date_default_timezone_get();
@@ -166,10 +166,7 @@ function update_games_espn(&$finishedgames)
 				if (preg_match('/^([A-Za-z. ]+) ([0-9]+), ([A-Za-z. ]+) ([0-9]+)/', $text, $regs)) {
 
 					// game that's already finished eg "New Orleans 21, Carolina 14" - update it
-					$finishedgameid = update_finished_game($season, $week, espn_team_to_abbr($regs[1]), $regs[2], espn_team_to_abbr($regs[3]), $regs[4]);
-					if ($finishedgameid) {
-						$finishedgames[] = $finishedgameid;
-					}
+					update_finished_game($season, $week, espn_team_to_abbr($regs[1]), $regs[2], espn_team_to_abbr($regs[3]), $regs[4]);
 
 				} else if (preg_match('/^([A-Za-z. ]+) at ([A-Za-z. ]+)$/', $text, $regs) && !preg_match('/Bye:/', $text)) {
 
