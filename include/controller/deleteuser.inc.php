@@ -56,6 +56,8 @@ function display_deleteuser($userid, $csrftoken)
 		return;
 	}
 
+	$db->beginTransaction();
+
 	// delete any user picks
 	$pickdelstmt = $db->prepare('DELETE FROM ' . TOTE_TABLE_POOL_ENTRY_PICKS . ' WHERE pool_entry_id IN (SELECT id FROM ' . TOTE_TABLE_POOL_ENTRIES . ' WHERE user_id=:user_id)');
 	$pickdelstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
@@ -108,6 +110,8 @@ function display_deleteuser($userid, $csrftoken)
 	$deluserstmt->bindParam(':user_id', $userid, PDO::PARAM_INT);
 	$deluserstmt->execute();
 	$deluserstmt = null;
+
+	$db->commit();
 
 	redirect(array('a' => 'editusers'));
 }
