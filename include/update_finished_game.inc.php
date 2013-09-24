@@ -66,10 +66,6 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 		// scores don't match what we have in database - update it
 		echo 'updating from ' . $awayteam . (isset($game['away_score']) ? ' ' . $game['away_score'] : '') . ' @ ' . $hometeam . (isset($game['home_score']) ? ' ' . $game['home_score'] : '') . ' to ' . $awayteam . ' ' . $awayscore . ' @ ' . $hometeam . ' ' . $homescore . "<br />\n";
-		if (!(isset($game['home_score']) || isset($game['away_score']))) {
-			// send notification emails if recording scores for the first time
-			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
-		}
 
 		$db->beginTransaction();
 
@@ -88,7 +84,11 @@ function update_finished_game($season, $week, $team1, $team1score, $team2, $team
 
 		$db->commit();
 	
-		$modified = $game['id'];
+		if (!(isset($game['home_score']) || isset($game['away_score']))) {
+			// send notification emails if recording scores for the first time
+			notify_finished_game((int)$season, (int)$week, $homeid, $homescore, $awayid, $awayscore);
+		}
+
 	} else {
 		// we're up to date
 		echo "no update necessary, scores up to date<br />\n";
