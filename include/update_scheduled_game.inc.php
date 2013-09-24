@@ -78,6 +78,8 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 
 		echo 'updating start';
 
+		$db->beginTransaction();
+
 		$prevlaststartstmt = $db->prepare('SELECT MAX(start) FROM ' . TOTE_TABLE_GAMES . ' AS games WHERE season_id=:season_id AND week=:week');
 		$prevlaststartstmt->bindParam(':season_id', $game['season_id'], PDO::PARAM_INT);
 		$prevlaststartstmt->bindParam(':week', $week, PDO::PARAM_INT);
@@ -119,13 +121,11 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			if ((($newlaststartstamp < $now) && ($oldlaststartstamp > $now)) || (($oldlaststartstamp < $now) && ($newlaststartstamp > $now))) {
 				// refresh open statuses, since this schedule change causes a week's
 				// status to change from open to closed or vice versa
-				$db->exec('LOCK TABLES ' . TOTE_TABLE_POOL_RECORDS . ' WRITE, ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' READ, ' . TOTE_TABLE_POOLS . ' READ');
 				$db->exec('SET foreign_key_checks=0');
 				$db->exec('SET unique_checks=0');
 				$db->exec('UPDATE ' . TOTE_TABLE_POOL_RECORDS . ' AS pool_records JOIN ' . TOTE_TABLE_POOLS . ' AS pools ON pool_records.pool_id=pools.id JOIN ' . TOTE_TABLE_POOL_RECORDS_VIEW . ' AS pool_records_view ON pool_records.pool_id=pool_records_view.pool_id AND pool_records.user_id=pool_records_view.user_id AND pool_records.week=pool_records_view.week SET pool_records.open=pool_records_view.open WHERE pools.season_id=' . $db->quote($game['season_id']) . ' AND pool_records.week=' . $db->quote($week));
 				$db->exec('SET foreign_key_checks=1');
 				$db->exec('SET unique_checks=1');
-				$db->exec('UNLOCK TABLES');
 			}
 
 			// refresh next materialze date of pools that were basing theirs on this game
@@ -135,6 +135,8 @@ function update_scheduled_game($season, $week, $away, $home, $start)
 			$updatedatestmt->execute();
 			$updatedatestmt = null;
 		}
+
+		$db->commit();
 
 	} else {
 		// we're up to date
