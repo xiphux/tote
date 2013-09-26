@@ -37,7 +37,7 @@ CREATE TABLE `games` (
   KEY `home_team_id` (`home_team_id`),
   KEY `away_team_id` (`away_team_id`),
   KEY `favorite_id` (`favorite_id`),
-  KEY `season_week_start` (`season_id`,`week`,`start`)
+  KEY `season_week` (`season_id`,`week`,`start`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `migrations` (
@@ -75,11 +75,11 @@ CREATE TABLE `pool_actions` (
   `old_admin_type` smallint(5) unsigned DEFAULT NULL,
   `comment` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  KEY `pool_id` (`pool_id`),
   KEY `user_id` (`user_id`),
   KEY `admin_id` (`admin_id`),
   KEY `team_id` (`team_id`),
-  KEY `old_team_id` (`old_team_id`)
+  KEY `old_team_id` (`old_team_id`),
+  KEY `pool_id` (`pool_id`,`time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `pool_administrators` (
@@ -98,7 +98,7 @@ CREATE TABLE `pool_entries` (
   `pool_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `pool_id` (`pool_id`),
+  UNIQUE KEY `pool_id` (`pool_id`,`user_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -110,7 +110,7 @@ CREATE TABLE `pool_entry_picks` (
   `placed` datetime DEFAULT NULL,
   `edited` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `pool_entry_id` (`pool_entry_id`),
+  UNIQUE KEY `pool_entry_week` (`pool_entry_id`,`week`),
   KEY `team_id` (`team_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -129,7 +129,7 @@ CREATE TABLE `pool_payout_percents` (
   `place` smallint(5) unsigned NOT NULL,
   `percent` decimal(3,2) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `payout_id` (`payout_id`)
+  UNIQUE KEY `payout_id` (`payout_id`,`place`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `pool_records` (
@@ -186,7 +186,8 @@ CREATE TABLE `users` (
   `result_notification` tinyint(1) NOT NULL DEFAULT '0',
   `timezone` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `style` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE VIEW `season_weeks_view` AS select distinct `games`.`season_id` AS `season_id`,`games`.`week` AS `week` from `games`;
