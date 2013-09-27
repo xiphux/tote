@@ -37,7 +37,7 @@ CREATE TABLE `games` (
   KEY `home_team_id` (`home_team_id`),
   KEY `away_team_id` (`away_team_id`),
   KEY `favorite_id` (`favorite_id`),
-  KEY `season_week` (`season_id`,`week`,`start`)
+  KEY `season_week_start` (`season_id`,`week`,`start`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `migrations` (
@@ -120,7 +120,7 @@ CREATE TABLE `pool_payouts` (
   `minimum` smallint(5) unsigned DEFAULT NULL,
   `maximum` smallint(5) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `pool_id` (`pool_id`)
+  UNIQUE KEY `pool_min_max` (`pool_id`,`minimum`,`maximum`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `pool_payout_percents` (
