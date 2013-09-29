@@ -11,7 +11,8 @@ CREATE TABLE `conferences` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `conference` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `abbreviation` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `abbreviation` (`abbreviation`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `divisions` (
@@ -19,7 +20,7 @@ CREATE TABLE `divisions` (
   `division` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `conference_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `conference_id` (`conference_id`)
+  UNIQUE KEY `conference_division` (`conference_id`,`division`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `games` (
@@ -56,7 +57,7 @@ CREATE TABLE `pools` (
   `record_needs_materialize` tinyint(1) NOT NULL,
   `record_next_materialize` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `season_id` (`season_id`)
+  UNIQUE KEY `season_name` (`season_id`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `pool_actions` (
@@ -163,6 +164,7 @@ CREATE TABLE `teams` (
   `division_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `abbreviation` (`abbreviation`),
+  UNIQUE KEY `home_team` (`home`,`team`),
   KEY `division_id` (`division_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
