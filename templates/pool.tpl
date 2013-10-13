@@ -168,7 +168,7 @@ Make a Pick
 {elseif empty($pick.pick_team_id) && $pick.loss}
 -NP-
 {/if}
- {if !empty($pick.spread) || $pick.spread===0}({$pick.spread}){/if}
+ {if !empty($pick.spread) || $pick.spread=="0"}({$pick.spread}){/if}
 </span>
 {elseif $user && $entered && $poolopen && ($user.id == $entrant.user_id)}
 <span>
