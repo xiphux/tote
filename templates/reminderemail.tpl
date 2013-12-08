@@ -1,6 +1,6 @@
 Hello {$user.user_display_name},
 
-This is your friendly reminder from {$sitename} that week {$week} of the {$year} NFL season is about to start.  If you're in a pool, don't forget to make a pick!
+This is your friendly reminder from {$sitename} that week {$week} of the {$year} NFL season is about to start.  Don't forget to make a pick!
 
 Upcoming games for week {$week}:
 {foreach from=$games item=game}
