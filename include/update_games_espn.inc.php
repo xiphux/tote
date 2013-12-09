@@ -82,7 +82,7 @@ function espn_team_to_abbr($team)
 }
 
 define('ESPN_BASEURL', 'http://espn.go.com/nfl/schedule');
-define('ESPN_BASEURL_WEEK', ESPN_BASEURL . '/_/week/');
+define('ESPN_BASEURL_WEEK', ESPN_BASEURL . '/_/seasontype/2/week/');
 
 function update_games_espn_week(&$season, $week, &$weekcount, &$modified)
 {
