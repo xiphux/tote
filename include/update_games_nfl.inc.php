@@ -4,10 +4,6 @@ require_once(TOTE_INCLUDEDIR . 'update_finished_game.inc.php');
 
 function update_games_nfl()
 {
-	// times are reported on nfl in Eastern
-	$oldtz = date_default_timezone_get();
-	date_default_timezone_set('America/New_York');
-
 	$url = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml';
 
 	$raw = load_page($url);
@@ -23,6 +19,10 @@ function update_games_nfl()
 		echo "<p>Preseason, skipping...</p>\n";
 		return false;
 	}
+
+	// times are reported on nfl in Eastern
+	$oldtz = date_default_timezone_get();
+	date_default_timezone_set('America/New_York');
 
 	$modified = false;
 
