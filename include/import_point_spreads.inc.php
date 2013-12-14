@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
+
 function point_spread_team_to_abbr($team)
 {
 	switch ($team) {
@@ -75,9 +77,12 @@ function point_spread_team_to_abbr($team)
  *
  * @param int $season season
  */
-function import_point_spreads($season)
+function import_point_spreads($season = null)
 {
 	global $db;
+
+	if (empty($season))
+		$season = get_current_season();
 
 	if ($season < 2011) {
 		// feeds aren't available before this

@@ -9,7 +9,4 @@ http_headers();
 update_games();
 
 // import point spreads
-$season = (int)date('Y');
-if ((int)date('n') < 3)
-	$season--;
-import_point_spreads($season);
+import_point_spreads();

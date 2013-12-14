@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
+
 function send_reminders()
 {
 	global $tote_conf, $db, $tpl;
@@ -7,12 +9,7 @@ function send_reminders()
 	$oldtz = date_default_timezone_get();
 	date_default_timezone_set('UTC');
 
-	// find running season's year
-	$year = (int)date('Y');
-	if ((int)date('n') < 2) {
-		// January is part of the previous year's season
-		$year--;
-	}
+	$year = get_current_season();
 
 	// get the schedule for the next unstarted week
 	$schedulequery = <<<EOQ

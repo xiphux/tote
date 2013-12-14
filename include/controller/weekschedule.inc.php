@@ -5,6 +5,7 @@ require_once(TOTE_INCLUDEDIR . 'get_local_datetime.inc.php');
 require_once(TOTE_INCLUDEDIR . 'mobile_browser.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
 require_once(TOTE_INCLUDEDIR . 'user_logged_in.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 define('SCHEDULE_HEADER', 'View Game Schedule');
 
@@ -23,9 +24,7 @@ function display_weekschedule($season, $week, $output = 'html')
 
 	if (empty($season)) {
 		// default to this year
-		$season = date('Y');
-		if ((int)date('n') < 3)
-			$season -= 1;
+		$season = get_current_season();
 	}
 
 	if (!is_numeric($season)) {
