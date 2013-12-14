@@ -218,12 +218,14 @@ function update_games_espn()
 
 	$weekcount = null;
 
-	if (!update_games_espn_week($season, 1, $weekcount, $modified))
+	if (!update_games_espn_week($season, 1, $weekcount, $modified)) {
+		date_default_timezone_set($oldtz);
 		return false;
+	}
 
 	for ($week = 2; $week <= $weekcount; ++$week) {
 		if (!update_games_espn_week($season, $week, $weekcount, $modified))
-			return false;
+			break;
 	}
 
 	date_default_timezone_set($oldtz);
