@@ -3,6 +3,7 @@
 require_once(TOTE_INCLUDEDIR . 'load_page.inc.php');
 require_once(TOTE_INCLUDEDIR . 'update_scheduled_game.inc.php');
 require_once(TOTE_INCLUDEDIR . 'update_finished_game.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 /**
  * given a full team name from ESPN,
@@ -82,14 +83,15 @@ function espn_team_to_abbr($team)
 }
 
 define('ESPN_BASEURL', 'http://espn.go.com/nfl/schedule');
-define('ESPN_BASEURL_WEEK', ESPN_BASEURL . '/_/seasontype/2/week/');
+define('ESPN_WEEKURL', ESPN_BASEURL . '/_/year/%d/seasontype/%d/week/%d');
+define('ESPN_SEASONTYPE_REGULAR', 2);
 
-function update_games_espn_week(&$season, $week, &$weekcount, &$modified)
+function update_games_espn_week($season, $week, &$weekcount, &$modified)
 {
-	if (empty($week))
+	if (empty($week) || empty($season))
 		return false;
 
-	$url = ESPN_BASEURL_WEEK . $week;
+	$url = sprintf(ESPN_WEEKURL, $season, ESPN_SEASONTYPE_REGULAR, $week);
 
 	$raw = load_page($url);
 
@@ -98,25 +100,28 @@ function update_games_espn_week(&$season, $week, &$weekcount, &$modified)
 
 	$xpath = new DOMXPath($dom);
 
-	if (empty($season)) {
-		// find the season year in the header
-		$headers = $xpath->evaluate('/html/body//h1');
-		for ($i = 0; $i < $headers->length; $i++)
-		{
-			$head = $headers->item($i);
+	$localseason = null;
 
-			if (preg_match('/NFL\s+Schedule - ([0-9]{4})/', $head->textContent, $regs))
-			{
-				$season = (int)$regs[1];
-				echo "<p><strong>Updating " . $season . " season...</strong></p>\n";
-				break;
-			}
+	// find the season year in the header
+	$headers = $xpath->evaluate('/html/body//h1');
+	for ($i = 0; $i < $headers->length; $i++)
+	{
+		$head = $headers->item($i);
+
+		if (preg_match('/NFL\s+Schedule - ([0-9]{4})/', $head->textContent, $regs))
+		{
+			$localseason = (int)$regs[1];
+			break;
 		}
 	}
 
-	if (empty($season)) {
+	if (empty($localseason)) {
 		// don't update if we don't have a season
 		echo "<p>Error: couldn't determine season</p>\n";
+		return false;
+	} else if ($localseason != $season) {
+		// season mismatch
+		echo "<p>Error: season mismatch</p>\n";
 		return false;
 	}
 
@@ -204,15 +209,16 @@ function update_games_espn_week(&$season, $week, &$weekcount, &$modified)
 }
 
 
-function update_games_espn()
+function update_games_espn($season = null)
 {
+	if (empty($season))
+		$season = get_current_season();
+
 	// times are reported on espn in Eastern
 	$oldtz = date_default_timezone_get();
 	date_default_timezone_set('America/New_York');
 
-	echo '<p><strong>Scraping scores and schedule from ' . ESPN_BASEURL . "...</strong></p>\n";
-
-	$season = null;
+	echo '<p><strong>Scraping ' . $season . ' scores and schedule from ' . ESPN_BASEURL . "...</strong></p>\n";
 
 	$modified = false;
 

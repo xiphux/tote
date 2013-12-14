@@ -1,17 +1,21 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'update_finished_game.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
-function update_games_nfl()
+define('NFL_SCORETICKER_URL', 'http://www.nfl.com/liveupdate/scorestrip/ss.xml');
+
+function update_games_nfl($season = null)
 {
-	$url = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml';
+	if (empty($season))
+		$season = get_current_season();
 
-	$raw = load_page($url);
+	$raw = load_page(NFL_SCORETICKER_URL);
 
 	$dom = new DOMDocument();
 	@$dom->loadHTML($raw);
 
-	echo '<p><strong>Checking ' . $url . " for more up to date scores...</strong></p>\n";
+	echo '<p><strong>Checking ' . NFL_SCORETICKER_URL . " for more up to date scores...</strong></p>\n";
 
 	$gms = $dom->getElementsByTagName('gms');
 
@@ -30,10 +34,13 @@ function update_games_nfl()
 		// gms is a container for the week containing games inside it
 		$gmnode = $gms->item($i);
 
-		$season = $gmnode->attributes->getNamedItem('y')->value;
+		$localseason = $gmnode->attributes->getNamedItem('y')->value;
+		if ($localseason != $season)
+			continue;
+
 		$week = $gmnode->attributes->getNamedItem('w')->value;
 
-		echo "<p><strong>Updating " . $season . " week " . $week . " ...</strong></p>\n";
+		echo "<p><strong>Updating " . $localseason . " week " . $week . " ...</strong></p>\n";
 
 		echo "<p>";
 		for ($j = 0; $j < $gmnode->childNodes->length; $j++) {
@@ -54,7 +61,7 @@ function update_games_nfl()
 				else if ($quarter == 'FO')
 					echo "final overtime";
 				echo "... ";
-				update_finished_game($season, $week, $home, $homescore, $visitor, $visitorscore, true);
+				update_finished_game($localseason, $week, $home, $homescore, $visitor, $visitorscore, true);
 			} else if ($quarter == 'P') {
 				// pending (not started)
 				echo "Updating " . $visitor . " @ " . $home  . "... not started<br />\n";

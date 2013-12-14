@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'update_games_espn.inc.php');
 require_once(TOTE_INCLUDEDIR . 'update_games_nfl.inc.php');
+require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 function update_games()
 {
@@ -9,16 +10,15 @@ function update_games()
 
 	$modified = false;
 
-	if (update_games_espn())
+	$season = get_current_season();
+
+	if (update_games_espn($season))
 		$modified = true;
 
-	if (update_games_nfl())
+	if (update_games_nfl($season))
 		$modified = true;
 
 	if ($modified) {
-		$season = (int)date('Y');
-		if ((int)date('n') < 3)
-			$season--;
 
 		// mark pools for this season as dirty
 		$dirtystmt = $db->prepare('UPDATE ' . TOTE_TABLE_POOLS . ' AS pools LEFT JOIN ' . TOTE_TABLE_SEASONS . ' AS seasons ON pools.season_id=seasons.id SET pools.record_needs_materialize=1 WHERE seasons.year=:year');
