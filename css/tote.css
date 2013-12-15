@@ -292,3 +292,7 @@ ul.ruleList li {
 div.pickSection {
 	padding: 10px 0px;
 }
+
+div.userOpts td a {
+	display: block;
+}
