@@ -1,5 +1,7 @@
 <?php
 
+require_once(TOTE_INCLUDEDIR . 'send_email.inc.php');
+
 /**
  * For users that have bet on this game and have notifications
  * turned on, let them know
@@ -18,12 +20,6 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 	$tpl->assign('week', $week);
 	$tpl->assign('homescore', $homescore);
 	$tpl->assign('awayscore', $awayscore);
-
-	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
-		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
-		'X-Mailer: PHP/' . phpversion();
-	if (!empty($tote_conf['bccemail']))
-		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 
 	$notifyquery = <<<EOQ
 SELECT
@@ -81,7 +77,7 @@ EOQ;
 		$tpl->assign('loss', $loss);
 		$tpl->assign('data', $notify);
 		$message = $tpl->fetch('notificationemail.tpl');
-		mail($notify['email'], $subject, $message, $headers);
+		send_email($notify['email'], $subject, $message, true);
 	}
 
 	$notifystmt = null;

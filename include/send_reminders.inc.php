@@ -1,6 +1,7 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
+require_once(TOTE_INCLUDEDIR . 'send_email.inc.php');
 
 function send_reminders()
 {
@@ -66,11 +67,6 @@ EOQ;
 	$tpl->assign('week', $week);
 	$tpl->assign('year', $year);
 	$subject = 'Reminder from ' . $tote_conf['sitename'] . ': Week ' . $week . ' is starting';
-	$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
-		'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
-		'X-Mailer: PHP/' . phpversion();
-	if (!empty($tote_conf['bccemail']))
-		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 
 	// get all users due for a reminder
 	$userquery = <<<EOQ
@@ -129,7 +125,7 @@ EOQ;
 		
 		// send the mail
 		$message = $tpl->fetch('reminderemail.tpl');
-		mail($user['email'], $subject, $message, $headers);
+		send_email($user['email'], $subject, $message, true);
 
 		// mark the user as messaged
 		$updatestmt->bindParam(':user_id', $user['id'], PDO::PARAM_INT);

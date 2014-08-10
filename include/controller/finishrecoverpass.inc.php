@@ -2,6 +2,7 @@
 
 require_once(TOTE_INCLUDEDIR . 'generate_salt.inc.php');
 require_once(TOTE_INCLUDEDIR . 'http_headers.inc.php');
+require_once(TOTE_INCLUDEDIR . 'send_email.inc.php');
 
 /**
  * finishrecoverpass controller
@@ -63,10 +64,7 @@ function display_finishrecoverpass($email)
 		$tpl->assign('url', 'http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=resetpass&k=' . $key);
 		$message = $tpl->fetch('recoverpassemail.tpl');
 		$subject = 'Password recovery for ' . $tote_conf['sitename'];
-		$headers = 'From: ' . $tote_conf['fromemail'] . "\r\n" .
-			'Reply-To: ' . $tote_conf['fromemail'] . "\r\n" .
-			'X-Mailer: PHP/' . phpversion();
-		mail($email, $subject, $message, $headers);
+		send_email($email, $subject, $message);
 
 		// email sent, tell user
 		$tpl->assign('email', $email);
