@@ -19,5 +19,5 @@ function send_email($email, $subject, $content, $bcc = false)
 	if ($bcc && !empty($tote_conf['bccemail']))
 		$headers .= "\r\nBcc: " . $tote_conf['bccemail'];
 		
-	return mail($email, $subject, $message, $headers);
+	return mail($email, $subject, $content, $headers);
 }
