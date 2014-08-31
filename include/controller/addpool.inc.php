@@ -175,9 +175,9 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpercentstmt->execute();
 		$newpercentstmt = null;
 
-		// 40+: 73%, 13%, 8%, 6%, entry fee
+		// 40-45: 73%, 13%, 8%, 6%, entry fee
 		$min = 40;
-		$max = null;
+		$max = 45;
 		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
 		$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
 		$newpayoutstmt->execute();
@@ -209,6 +209,48 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpercentstmt->bindParam(':payout_id5', $payoutid, PDO::PARAM_INT);
 		$newpercentstmt->bindParam(':place5', $place5, PDO::PARAM_INT);
 		$newpercentstmt->bindParam(':percent5', $percent5);
+		$newpercentstmt->execute();
+		$newpercentstmt = null;
+		
+		// 46+: 70%, 12%, 8%, 6%, 4%, entry fee
+		$min = 46;
+		$max = null;
+		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
+		$newpayoutstmt->bindParam(':maximum', $max, PDO::PARAM_INT);
+		$newpayoutstmt->execute();
+		$payoutid = $db->lastInsertId();
+
+		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3), (:payout_id4, :place4, :percent4), (:payout_id5, :place5, :percent5), (:payout_id6, :place6, :percent6)');
+		$place1 = 1;
+		$percent1 = 0.70;
+		$place2 = 2;
+		$percent2 = 0.12;
+		$place3 = 3;
+		$percent3 = 0.08;
+		$place4 = 4;
+		$percent4 = 0.06;
+		$place5 = 5;
+		$percent5 = 0.04;
+		$place6 = 6;
+		$percent6 = 0;
+		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place1', $place1, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent1', $percent1);
+		$newpercentstmt->bindParam(':payout_id2', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place2', $place2, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent2', $percent2);
+		$newpercentstmt->bindParam(':payout_id3', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place3', $place3, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent3', $percent3);
+		$newpercentstmt->bindParam(':payout_id4', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place4', $place4, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent4', $percent4);
+		$newpercentstmt->bindParam(':payout_id5', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place5', $place5, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent5', $percent5);
+		$newpercentstmt->bindParam(':payout_id6', $payoutid, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':place6', $place6, PDO::PARAM_INT);
+		$newpercentstmt->bindParam(':percent6', $percent6);
 		$newpercentstmt->execute();
 		$newpercentstmt = null;
 
