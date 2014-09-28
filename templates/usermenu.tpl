@@ -9,6 +9,7 @@
 <tr><td><a href="index.php?a=editpool&amp;p={$pool.id}">Manage pool</a></td></tr>
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
 <tr><td><a href="index.php?a=newpool">New pool</a></td></tr>
+<tr><td><a href="index.php?a=recache&amp;p={$pool.id}">Recache</a></td></tr>
 {elseif $user.role == 2}
 <tr><td><a href="index.php?a=editusers">Manage users</a></td></tr>
 {/if}

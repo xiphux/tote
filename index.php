@@ -170,7 +170,14 @@ switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 			(empty($_GET['csrftoken']) ? null : $_GET['csrftoken'])
 		);
 		break;
-
+		
+	// recache - rebuilds pool cache
+	case 'recache':
+		require_once(TOTE_CONTROLLERDIR . 'recache.inc.php');
+		display_recache(
+			(empty($_GET['p']) ? null : $_GET['p'])
+		);
+		break;
 
 	// atom - get the pool event history in atom feed format
 	case 'atom':
