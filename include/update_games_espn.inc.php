@@ -15,71 +15,12 @@ require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 function espn_team_to_abbr($team)
 {
 	switch ($team) {
-		case 'New Orleans':
-			return 'NO';
-		case 'Minnesota':
-			return 'MIN';
-		case 'NY Giants':
-			return 'NYG';
-		case 'Carolina':
-			return 'CAR';
-		case 'Pittsburgh':
-			return 'PIT';
-		case 'Atlanta':
-			return 'ATL';
-		case 'Tampa Bay':
-			return 'TB';
-		case 'Cleveland':
-			return 'CLE';
-		case 'Jacksonville':
+		case 'JAX':
 			return 'JAC';
-		case 'Denver':
-			return 'DEN';
-		case 'Houston':
-			return 'HOU';
-		case 'Indianapolis':
-			return 'IND';
-		case 'Miami':
-			return 'MIA';
-		case 'Buffalo':
-			return 'BUF';
-		case 'Chicago':
-			return 'CHI';
-		case 'Detroit':
-			return 'DET';
-		case 'Tennessee':
-			return 'TEN';
-		case 'Oakland':
-			return 'OAK';
-		case 'New England':
-			return 'NE';
-		case 'Cincinnati':
-			return 'CIN';
-		case 'Arizona':
-			return 'ARI';
-		case 'St. Louis':
-			return 'STL';
-		case 'Seattle':
-			return 'SEA';
-		case 'San Francisco':
-			return 'SF';
-		case 'Green Bay':
-			return 'GB';
-		case 'Philadelphia':
-			return 'PHI';
-		case 'Washington':
+		case 'WSH':
 			return 'WAS';
-		case 'Dallas':
-			return 'DAL';
-		case 'Baltimore':
-			return 'BAL';
-		case 'NY Jets':
-			return 'NYJ';
-		case 'Kansas City':
-			return 'KC';
-		case 'San Diego':
-			return 'SD';
 	}
+	return $team;
 }
 
 define('ESPN_BASEURL', 'http://espn.go.com/nfl/schedule');
@@ -108,7 +49,7 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 	{
 		$head = $headers->item($i);
 
-		if (preg_match('/NFL\s+Schedule - ([0-9]{4})/', $head->textContent, $regs))
+		if (preg_match('/NFL Schedule - ([0-9]{4})/', $head->textContent, $regs))
 		{
 			$localseason = (int)$regs[1];
 			break;
@@ -126,12 +67,13 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 	}
 
 	if (empty($weekcount)) {
-		$weeklinks = $xpath->evaluate('/html/body//div[@class="week"]//a[@class="last"]');
+		// use the week selection dropdown to figure out how many weeks are in the season
+		$weeklinks = $xpath->evaluate('/html/body//div[contains(@class,"dropdown-type-week")]/select/option');
 		for ($i = 0; $i < $weeklinks->length; $i++) {
 			$weeklink = $weeklinks->item($i);
-			if (preg_match('/^[0-9]+$/', $weeklink->textContent, $regs)) {
-				$weekcount= $weeklink->textContent;
-				break;
+			if (preg_match('/^Week ([0-9]+)$/', $weeklink->textContent, $regs)) {
+				if ((int)$regs[1] > $weekcount)
+					$weekcount = (int)$regs[1];
 			}
 		}
 	}
@@ -143,64 +85,66 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 
 	echo '<strong>Updating week ' . $week . "...</strong><br />\n";
 
-	// find all schedule tables
-	$tables = $xpath->evaluate('/html/body//table[@class="tablehead"]');
+	// find all schedule tables - one table per game day
+	$tables = $xpath->evaluate('/html/body//table[contains(@class,"schedule")]');
 	for ($i = 0; $i < $tables->length; $i++) {
 		$table = $tables->item($i);
 
 		$date = '';
 
 		echo '<p>';
-		for ($j = 0; $j < $table->childNodes->length; $j++) {
-
-			$row = $table->childNodes->item($j);
-
-			if (preg_match('/[A-Z]{3}, ([A-Z]{3} [0-9]+)/', $row->firstChild->textContent, $regs)) {
-
-					// header with the date of the games below (eg THU, SEP 21)
-					$tmp = new DateTime(strtoupper($regs[1]) . ' ' . $season, new DateTimeZone('America/New_York'));
-					if ($tmp !== false) {
-						if ((int)($tmp->format('n')) < 8) {
-							// count anything before august as part of the next year (since season goes after new year)
-							$tmp->modify("+1 year");
-						}
-						$date = $tmp;
+		
+		$dateCaptions = $xpath->evaluate('caption', $table);
+		for ($j = 0; $j < $dateCaptions->length; $j++) {
+			$dateCaption = $dateCaptions->item($j);
+			if (preg_match('/^[A-Za-z]+, ([A-Za-z]+ [0-9]+)$/', $dateCaption->textContent, $regs)) {
+				// Table caption with date of games (eg Thursday, September 10)
+				$tmp = new DateTime(strtoupper($regs[1]) . ' ' . $season, new DateTimeZone('America/New_York'));
+				if ($tmp !== false) {
+					if ((int)($tmp->format('n')) < 8) {
+						// count anything before august as part of the next year (since season goes after new year)
+						$tmp->modify("+1 year");
 					}
-
-			} else {
-
-				// is a game listing?
-				$text = strip_tags($row->firstChild->textContent);
-				if (preg_match('/^([A-Za-z. ]+) ([0-9]+), ([A-Za-z. ]+) ([0-9]+)/', $text, $regs)) {
-
-					// game that's already finished eg "New Orleans 21, Carolina 14" - update it
-					update_finished_game($season, $week, espn_team_to_abbr($regs[1]), $regs[2], espn_team_to_abbr($regs[3]), $regs[4]);
-
-				} else if (preg_match('/^([A-Za-z. ]+) at ([A-Za-z. ]+)$/', $text, $regs) && !preg_match('/Bye:/', $text)) {
-
-					// game that's scheduled eg Baltimore at Pittsburgh
-
-					// the scheduled game time is in the table cell next to the teams
-					$time = strip_tags($row->childNodes->item(2)->textContent);
-					if (preg_match('/^([0-9]+):([0-9]+) ([AP]M)$/', $time, $timeregs)) {
-						// eg 1:00 PM
-						if (($timeregs[3] == 'PM') && ((int)$timeregs[1] < 12)) {
-							// convert to 24 hour time
-							$timeregs[1] = (int)$timeregs[1] + 12;
-						}
-
-						// combine date from date header and this time to form full game start datetime
-						$date->setTime((int)$timeregs[1], (int)$timeregs[2]);
-						// update it
-						if (update_scheduled_game($season, $week, espn_team_to_abbr($regs[1]), espn_team_to_abbr($regs[2]), (int)$date->format("U")))
-							$modified = true;
-					}
-
-
+					$date = $tmp;
 				}
-
-
 			}
+		}
+		
+		// find game rows - one per game
+		$gameRows = $xpath->evaluate('tbody/tr', $table);
+		for ($j = 0; $j < $gameRows->length; $j++) {
+
+			$row = $gameRows->item($j);
+
+			$awayCell = $row->childNodes->item(0);
+			$awayAbbr = $xpath->evaluate('a/abbr', $awayCell);
+			$awayTeam = espn_team_to_abbr($awayAbbr->item(0)->textContent);
+			
+			$homeCell = $row->childNodes->item(1);
+			$homeAbbr = $xpath->evaluate('a/abbr', $homeCell);
+			$homeTeam = espn_team_to_abbr($homeAbbr->item(0)->textContent);
+			
+			$resultTime = $row->childNodes->item(2);
+			$resultAttr = $resultTime->attributes->getNamedItem('data-date');
+			if ($resultAttr) {
+				// game that's scheduled
+				$tmp = new DateTime(str_replace('Z', '+00:00', $resultAttr->textContent));
+				if (update_scheduled_game($season, $week, $awayTeam, $homeTeam, (int)$tmp->format('U'))) {
+					$modified = true;
+				}
+			} else {
+				// game that's resolved
+				$resultStr = $resultTime->firstChild->textContent;
+				if (preg_match('/^([A-Za-z]+) ([0-9]+), ([A-Za-z]+) ([0-9]+)$/', $resultStr, $regs)) {
+					$team1 = espn_team_to_abbr($regs[1]);
+					$score1 = $regs[2];
+					$team2 = espn_team_to_abbr($regs[3]);
+					$score2 = $regs[4];
+					
+					update_finished_game($season, $week, $team1, $score1, $team2, $score2);
+				}
+			}
+			
 		}
 		echo '</p>';
 	}
