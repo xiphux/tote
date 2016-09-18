@@ -23,7 +23,7 @@ function espn_team_to_abbr($team)
 	return $team;
 }
 
-define('ESPN_BASEURL', 'http://espn.go.com/nfl/schedule');
+define('ESPN_BASEURL', 'http://www.espn.com/nfl/schedule');
 define('ESPN_WEEKURL', ESPN_BASEURL . '/_/year/%d/seasontype/%d/week/%d');
 define('ESPN_SEASONTYPE_REGULAR', 2);
 
