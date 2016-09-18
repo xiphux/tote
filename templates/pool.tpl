@@ -28,7 +28,7 @@
     <table class="poolAmounts">
     {if $pool.fee}
       <tr>
-      <td class="label">Entry fee:</td>
+      <td class="label">Entry:</td>
       <td class="amount">${$pool.fee|string_format:"%.2f"}</td>
       </tr>
     {/if}
@@ -51,7 +51,7 @@
     <table class="poolAmounts">
     {foreach from=$payoutamounts key=place item=amount}
     <tr>
-    <td class="label">{$place|place} place:</td>
+    <td class="label">{$place|place}:</td>
     <td class="amount">${$amount|string_format:"%.2f"}</td>
     </tr>
     {/foreach}
