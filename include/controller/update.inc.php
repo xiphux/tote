@@ -9,4 +9,6 @@ http_headers();
 update_games();
 
 // import point spreads
-import_point_spreads();
+
+// commenting, source has been inactive since 2014
+//import_point_spreads();
