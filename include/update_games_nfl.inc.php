@@ -5,6 +5,15 @@ require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 define('NFL_SCORETICKER_URL', 'http://www.nfl.com/liveupdate/scorestrip/ss.xml');
 
+function nfl_team_to_abbr($team)
+{
+       switch ($team) {
+               case 'JAX':
+                       return 'JAC';
+       }
+       return $team;
+}
+
 function update_games_nfl($season = null)
 {
 	if (empty($season))
@@ -47,8 +56,8 @@ function update_games_nfl($season = null)
 			// child g nodes, one for each game
 			$g = $gmnode->childNodes->item($j);
 
-			$home = $g->attributes->getNamedItem('h')->value;
-			$visitor = $g->attributes->getNamedItem('v')->value;
+			$home = nfl_team_to_abbr($g->attributes->getNamedItem('h')->value);
+			$visitor = nfl_team_to_abbr($g->attributes->getNamedItem('v')->value);
 			$quarter = $g->attributes->getNamedItem('q')->value;
 			$homescore = $g->attributes->getNamedItem('hs')->value;
 			$visitorscore = $g->attributes->getNamedItem('vs')->value;
