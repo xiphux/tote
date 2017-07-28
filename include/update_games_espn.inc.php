@@ -19,6 +19,8 @@ function espn_team_to_abbr($team)
 			return 'JAC';
 		case 'WSH':
 			return 'WAS';
+		case 'LAR':
+			return 'LA';
 	}
 	return $team;
 }
@@ -121,7 +123,7 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 			$awayTeam = espn_team_to_abbr($awayAbbr->item(0)->textContent);
 			
 			$homeCell = $row->childNodes->item(1);
-			$homeAbbr = $xpath->evaluate('a/abbr', $homeCell);
+			$homeAbbr = $xpath->evaluate('div/a/abbr', $homeCell);
 			$homeTeam = espn_team_to_abbr($homeAbbr->item(0)->textContent);
 			
 			$resultTime = $row->childNodes->item(2);
