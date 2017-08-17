@@ -116,7 +116,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpayoutstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUTS . ' (pool_id, minimum, maximum) VALUES (:pool_id, :minimum, :maximum)');
 		$newpayoutstmt->bindParam(':pool_id', $poolid, PDO::PARAM_INT);
 
-		// 0-29: 75%, 15%, 10%
+		// 0-29: 70%, 20%, 10%
 		$min = null;
 		$max = 29;
 		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
@@ -126,9 +126,9 @@ function display_addpool($name, $season, $fee, $csrftoken)
 
 		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3)');
 		$place1 = 1;
-		$percent1 = 0.75;
+		$percent1 = 0.70;
 		$place2 = 2;
-		$percent2 = 0.15;
+		$percent2 = 0.20;
 		$place3 = 3;
 		$percent3 = 0.10;
 		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
@@ -143,7 +143,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpercentstmt->execute();
 		$newpercentstmt = null;
 
-		// 30-39: 75%, 15%, 10%, entry fee
+		// 30-39: 70%, 20%, 10%, entry fee
 		$min = 30;
 		$max = 39;
 		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
@@ -153,9 +153,9 @@ function display_addpool($name, $season, $fee, $csrftoken)
 
 		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3), (:payout_id4, :place4, :percent4)');
 		$place1 = 1;
-		$percent1 = 0.75;
+		$percent1 = 0.70;
 		$place2 = 2;
-		$percent2 = 0.15;
+		$percent2 = 0.20;
 		$place3 = 3;
 		$percent3 = 0.10;
 		$place4 = 4;
@@ -175,7 +175,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpercentstmt->execute();
 		$newpercentstmt = null;
 
-		// 40-44: 73%, 13%, 8%, 6%, entry fee
+		// 40-44: 70%, 15%, 9%, 6%, entry fee
 		$min = 40;
 		$max = 44;
 		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
@@ -185,11 +185,11 @@ function display_addpool($name, $season, $fee, $csrftoken)
 
 		$newpercentstmt = $db->prepare('INSERT INTO ' . TOTE_TABLE_POOL_PAYOUT_PERCENTS . ' (payout_id, place, percent) VALUES (:payout_id1, :place1, :percent1), (:payout_id2, :place2, :percent2), (:payout_id3, :place3, :percent3), (:payout_id4, :place4, :percent4), (:payout_id5, :place5, :percent5)');
 		$place1 = 1;
-		$percent1 = 0.73;
+		$percent1 = 0.70;
 		$place2 = 2;
-		$percent2 = 0.13;
+		$percent2 = 0.15;
 		$place3 = 3;
-		$percent3 = 0.08;
+		$percent3 = 0.09;
 		$place4 = 4;
 		$percent4 = 0.06;
 		$place5 = 5;
