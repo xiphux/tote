@@ -175,7 +175,7 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$newpercentstmt->execute();
 		$newpercentstmt = null;
 
-		// 40-44: 70%, 15%, 9%, 6%, entry fee
+		// 40-44: 70%, 17%, 8%, 5%, entry fee
 		$min = 40;
 		$max = 44;
 		$newpayoutstmt->bindParam(':minimum', $min, PDO::PARAM_INT);
@@ -187,11 +187,11 @@ function display_addpool($name, $season, $fee, $csrftoken)
 		$place1 = 1;
 		$percent1 = 0.70;
 		$place2 = 2;
-		$percent2 = 0.15;
+		$percent2 = 0.17;
 		$place3 = 3;
-		$percent3 = 0.09;
+		$percent3 = 0.08;
 		$place4 = 4;
-		$percent4 = 0.06;
+		$percent4 = 0.05;
 		$place5 = 5;
 		$percent5 = 0;
 		$newpercentstmt->bindParam(':payout_id1', $payoutid, PDO::PARAM_INT);
