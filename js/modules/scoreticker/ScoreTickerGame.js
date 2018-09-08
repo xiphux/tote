@@ -6,12 +6,12 @@ define([], function() {
                     <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone }]">
                         <tr :class="{ tickerTeamWinner: visitorWin }">
                             <td class="tickerGameTeam">{{ game.gameSchedule.visitorTeamAbbr }}</td>
-                            <td class="tickerPossession">{{ game.score && !gameFinished && game.score.possessionTeamId === game.gameSchedule.visitorTeamId ? '<' : '' }}</td>
+                            <td class="tickerPossession">{{ visitorPossession ? '<' : '' }}</td>
                             <td class="tickerGameScore">{{ game.score ? game.score.visitorTeamScore.pointTotal : '' }}</td>
                         </tr>
                         <tr :class="{ tickerTeamWinner: homeWin }">
                             <td class="tickerGameTeam">{{ game.gameSchedule.homeTeamAbbr }}</td>
-                            <td class="tickerPossession">{{ game.score && !gameFinished && game.score.possessionTeamId === game.gameSchedule.homeTeamId ? '<' : '' }}</td>
+                            <td class="tickerPossession">{{ homePossession ? '<' : '' }}</td>
                             <td class="tickerGameScore">{{ game.score ? game.score.homeTeamScore.pointTotal : '' }}</td>
                         </tr>
                         <tr>
@@ -50,6 +50,26 @@ define([], function() {
                 if (!this.game.score) {
                     return this.startFormatted;
                 }
+                switch (this.game.score.phase) {
+                    case 'FINAL':
+                        return 'Final';
+                    case 'FINAL_OVERTIME':
+                        return 'Final OT';
+                    case 'HALFTIME':
+                        return 'Halftime';
+                    case 'SUSPENDED':
+                        return 'Suspended';
+                    case 'PREGAME':
+                        return this.startFormatted;
+                    case 'INGAME':
+                        return (
+                            (this.game.score.quarter > 4
+                                ? 'OT'
+                                : this.game.score.quarter) +
+                            ' ' +
+                            this.game.score.time
+                        );
+                }
                 return this.game.score.phaseDescription;
             },
             statusClass: function() {
@@ -69,6 +89,27 @@ define([], function() {
                     this.game &&
                     this.game.score &&
                     this.game.score.phase === 'FINAL'
+                );
+            },
+            showPossession: function() {
+                return this.game && this.game.score && !this.gameFinished;
+            },
+            visitorPossession: function() {
+                if (!this.showPossession) {
+                    return false;
+                }
+                return (
+                    this.game.score.possessionTeamId ===
+                    this.game.gameSchedule.visitorTeamId
+                );
+            },
+            homePossession: function() {
+                if (!this.showPossession) {
+                    return false;
+                }
+                return (
+                    this.game.score.possessionTeamId ===
+                    this.game.gameSchedule.homeTeamId
                 );
             },
             homeWin: function() {
