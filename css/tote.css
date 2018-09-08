@@ -1,298 +1,292 @@
 .center {
-	text-align: center;
+    text-align: center;
 }
 
 .header {
-	padding: 3px 10px;
+    padding: 3px 10px;
 }
 
 .header .headertext {
-	float: left;
-	margin: 0px 0px;
+    float: left;
+    margin: 0px 0px;
 }
 
 .header .links {
-	float: right;
-	margin: 0px 0px;
-	padding-left: 50px;
+    float: right;
+    margin: 0px 0px;
+    padding-left: 50px;
 }
 
 .smallContent {
-	margin-top: 175px;
+    margin-top: 175px;
 }
 
 div#main {
-	text-align: center;
+    text-align: center;
 }
 
 div#main2 {
-	overflow: hidden;
-	display: inline-block;
-	margin-left: auto;
-	margin-right: auto;
+    overflow: hidden;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div#main3 {
-	padding: 15px;
+    padding: 15px;
 }
 
 div#poolMain {
-	display: inline-block;
-	margin: 0px auto;
+    display: inline-block;
+    margin: 0px auto;
 }
 
 .clear {
-	clear: both;
+    clear: both;
 }
 
 .scoreTable td {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 div.poolInfoDiv {
-	width: 60%;
-	float: left;
-	text-align: left;
+    width: 60%;
+    float: left;
+    text-align: left;
 }
 
 div.poolInfoSingleDiv {
-	text-align: center;
+    text-align: center;
 }
 
 div.poolInfoSingleDiv table {
-	margin-left: auto;
-	margin-right: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div.userOpts {
-	width: 30%;
-	float: right;
-	text-align: right;
+    width: 30%;
+    float: right;
+    text-align: right;
 }
 
 div.userOpts table {
-	float: right;
+    float: right;
 }
 
 div.poolFooter {
-	padding: 3px 0px;
-	text-align: center;
+    padding: 3px 0px;
+    text-align: center;
 }
 
 .feedIcon {
-	border: 0px;
+    border: 0px;
 }
 
 div.poolRules {
-	float: left;
-	width: 40%;
-	text-align: left;
-	padding-left: 15px;
+    float: left;
+    width: 40%;
+    text-align: left;
+    padding-left: 15px;
 }
 
 div.poolHistory {
-	text-align: right;
-	width: 40%;
-	float: right;
-	padding-right: 5px;
+    text-align: right;
+    width: 40%;
+    float: right;
+    padding-right: 5px;
 }
 
 .historyTable td {
-	padding: 3px 3px;
+    padding: 3px 3px;
 }
 
 div.userEditDiv {
-	width: 40%;
-	float: left;
+    width: 40%;
+    float: left;
 }
 
 div.poolEditDiv {
-	width: 40%;
-	float: right;
+    width: 40%;
+    float: right;
 }
 
 div.poolEditToolbar div.left {
-	width: 40%;
-	float: left;
+    width: 40%;
+    float: left;
 }
 
 div.poolEditToolbar div.right {
-	width: 40%;
-	float: right;
-	text-align: right;
+    width: 40%;
+    float: right;
+    text-align: right;
 }
 
 div.movementDiv {
-	height: 500px;
-	width: 19%;
-	float: left;
-	text-align: center;
-	vertical-align: middle;
+    height: 500px;
+    width: 19%;
+    float: left;
+    text-align: center;
+    vertical-align: middle;
 }
 
 div.movementDiv div {
-	margin-top: 100%;
+    margin-top: 100%;
 }
 
 div.availableUsers {
-	height: 500px;
-	overflow: auto;
+    height: 500px;
+    overflow: auto;
 }
 
 div.poolUsers {
-	height: 500px;
-	overflow: auto;
+    height: 500px;
+    overflow: auto;
 }
 
 div.userListItem table {
-	width: 100%;
+    width: 100%;
 }
 
 div.userListItem table td.userinfo {
-	text-align: left;
+    text-align: left;
 }
 
 div.userListItem table td.checkbox {
-	width: 1%;
+    width: 1%;
 }
 
 div.userListItem table td.alert {
-	text-align: right;
+    text-align: right;
 }
 
 table.userTable td {
-	padding: 3px 3px;
+    padding: 3px 3px;
 }
 
 table.userTable td.action a {
-	margin: 0px 5px;
+    margin: 0px 5px;
 }
 
 table.formTable {
-	text-align: left;
+    text-align: left;
 }
 
 #poolPickDiv {
-	margin-top: 30px;
-	width: 250px;
+    margin-top: 30px;
+    width: 250px;
 }
 
 #poolPickHeader {
-	padding: 3px 0px 3px 5px;
+    padding: 3px 0px 3px 5px;
 }
 
 #poolPickContent {
-	padding: 3px 3px 3px 5px;
+    padding: 3px 3px 3px 5px;
 }
 
 div.poolActionsDiv {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 .totePopup {
-	max-width: 500px;
+    max-width: 500px;
 }
 
 .totePopup .ui-tooltip-content {
-	max-height: 400px;
-	overflow: auto;
+    max-height: 400px;
+    overflow: auto;
 }
 
 #linksSection {
-	margin-top: 10px;
-	text-align: left;
+    margin-top: 10px;
+    text-align: left;
 }
 
 #linksSection .sectionHeader {
-	padding: 3px 0px 3px 12px;
+    padding: 3px 0px 3px 12px;
 }
 
 #linksSection .sectionHeader a {
-	display: block;
-	margin: -3px 0px -3px -12px;
-	padding: 3px 0px 3px 12px;
+    display: block;
+    margin: -3px 0px -3px -12px;
+    padding: 3px 0px 3px 12px;
 }
 
 #linksSection .sectionHeader a.sectionOpen {
-	background-image: url('../images/arrow_expand_down.gif');
-	background-repeat: no-repeat;
-	background-position: left center;
+    background-image: url('../images/arrow_expand_down.gif');
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 
 #linksSection .sectionHeader a.sectionClosed {
-	background-image: url('../images/arrow_expand_right.gif');
-	background-repeat: no-repeat;
-	background-position: left center;
+    background-image: url('../images/arrow_expand_right.gif');
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 
 .divScheduleDay {
-	padding: 5px 0px;
-}
-
-#scoreTicker {
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
+    padding: 5px 0px;
 }
 
 ul.ruleList li {
-	text-align: left;
-	padding: 3px 0px 3px 0px;
+    text-align: left;
+    padding: 3px 0px 3px 0px;
 }
 
 .scheduleToc {
-	vertical-align: top;
+    vertical-align: top;
 }
 
 .scheduleToc ul {
-	list-style-type: none;
-	list-style-position: outside;
-	margin: 0px 0px;
-	padding: 0px 0px;
+    list-style-type: none;
+    list-style-position: outside;
+    margin: 0px 0px;
+    padding: 0px 0px;
 }
 
 .weekScheduleContent {
-	width: 350px;
+    width: 350px;
 }
 
 .teamScheduleContent {
-	width: 500px;
+    width: 500px;
 }
 
 .teamScheduleContent table {
-	width: 100%;
+    width: 100%;
 }
 
 .poolAmounts {
-	margin: 0px auto;
-	width: 85%
+    margin: 0px auto;
+    width: 85%;
 }
 
 .poolAmounts .label {
-	text-align: left;
+    text-align: left;
 }
 
 .poolAmounts .amount {
-	text-align: right;
+    text-align: right;
 }
 
 #attrFooter {
-	margin: 15px;
-	text-align: center;
+    margin: 15px;
+    text-align: center;
 }
 
 .gridSchedule td {
-	padding: 1px 2px;
+    padding: 1px 2px;
 }
 
 #graphControls {
-	padding-top: 20px;
+    padding-top: 20px;
 }
 
 div.pickSection {
-	padding: 10px 0px;
+    padding: 10px 0px;
 }
 
 div.userOpts td a {
-	display: block;
+    display: block;
 }

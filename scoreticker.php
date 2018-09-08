@@ -9,7 +9,7 @@ define('TOTE_INCLUDEDIR', dirname(__FILE__) . '/include/');
 define('TOTE_CACHEDIR', dirname(__FILE__) . '/cache/');
 define('TOTE_CONFIG', dirname(__FILE__) . '/config/tote.conf.php');
 
-define('TOTE_SCORETICKER_URL', 'http://www.nfl.com/liveupdate/scorestrip/ss.xml');
+define('TOTE_SCORETICKER_URL', 'https://feeds.nfl.com/feeds-rs/scores.json');
 
 if (is_readable(TOTE_CONFIG)) {
 	@include(TOTE_CONFIG);
@@ -50,7 +50,7 @@ if (empty($raw)) {
 curl_close($ch);
 
 if (!empty($raw)) {
-	header('Content-type: text/xml');
+	header('Content-type: application/json');
 	if ($mtime > 0) {
 		header('Last-Modified: ' . gmdate("D, d M Y H:i:s", $mtime) . ' GMT');
 		header('Expires: ' . gmdate("D, d M Y H:i:s", $mtime+13) . ' GMT');

@@ -84,7 +84,9 @@
 		d3: 'ext/d3.v2.min',
 		modernizr: 'ext/modernizr.custom',
 		'coffee-script': 'ext/coffee-script',
-		cs: 'ext/cs'
+		cs: 'ext/cs',
+    Vue: 'https://unpkg.com/vue@2.5.17/dist/vue.min',
+    axios: 'https://unpkg.com/axios/dist/axios.min'
 	{rdelim},
 	shim: {ldelim}
 		'cookies': {ldelim}
