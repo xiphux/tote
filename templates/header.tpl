@@ -86,7 +86,7 @@
 		'coffee-script': 'ext/coffee-script',
 		cs: 'ext/cs',
     Vue: 'https://unpkg.com/vue@2.5.17/dist/vue.min',
-    axios: 'https://unpkg.com/axios/dist/axios.min'
+    axios: 'https://unpkg.com/axios@0.18.0/dist/axios.min'
 	{rdelim},
 	shim: {ldelim}
 		'cookies': {ldelim}
