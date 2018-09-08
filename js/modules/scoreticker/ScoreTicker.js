@@ -27,7 +27,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             ScoreTickerGame,
         },
         data: {
-            hidden: false,
+            hidden: !!localStorage.getItem('toteScoretickerHidden'),
             tickerData: null,
             loading: false,
             timer: null,
@@ -38,9 +38,11 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     if (this.timer) {
                         clearTimeout(this.timer);
                     }
+                    localStorage.setItem('toteScoretickerHidden', '1');
                 }
                 if (!newHidden && oldHidden) {
                     this.update();
+                    localStorage.setItem('toteScoretickerHidden', '');
                 }
             },
         },
@@ -92,7 +94,9 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             },
         },
         created: function() {
-            this.update();
+            if (!this.hidden) {
+                this.update();
+            }
         },
         methods: {
             update: function() {
