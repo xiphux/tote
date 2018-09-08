@@ -39,7 +39,7 @@ fi
 for i in ${JSDIR}/*${JSEXT}; do
 	echo "Minifying ${i}..."
 	JSMODULE="`basename ${i%$JSEXT}`"
-	node lib/requirejs/r.js -o util/build.js name=${JSMODULE} out=${JSDIR}/${JSMODULE}${MINEXT}.tmp optimize=none
+	node lib/requirejs/r.js -o util/build.js name=${JSMODULE} out=${JSDIR}/${JSMODULE}${MINEXT}.tmp optimize="none"
 	uglifyjs ${JSDIR}/${JSMODULE}${MINEXT}.tmp -c -m -o ${JSDIR}/${JSMODULE}${MINEXT}.tmp2
 	cat util/jsheader.js ${JSDIR}/${JSMODULE}${MINEXT}.tmp2 > ${JSDIR}/${JSMODULE}${MINEXT}
 	rm -f ${JSDIR}/${JSMODULE}${MINEXT}.tmp ${JSDIR}/${JSMODULE}${MINEXT}.tmp2
