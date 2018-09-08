@@ -66,6 +66,30 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     this.tickerData.week
                 );
             },
+            fastUpdate: function() {
+                if (!(this.tickerData && this.tickerData.gameScores)) {
+                    return false;
+                }
+                var now = Date.now();
+                for (var i = 0; i < this.tickerData.gameScores.length; i++) {
+                    var game = this.tickerData.gameScores[i];
+                    if (game.score) {
+                        switch (game.score.phase) {
+                            case 'INGAME':
+                            case 'HALFTIME':
+                                return true;
+                        }
+                    }
+                    var left = game.gameSchedule.isoTime - now;
+                    if (left < 15 * 60 * 1000 && left >= 0) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            updateInterval: function() {
+                return this.fastUpdate ? 15 * 1000 : 15 * 60 * 1000;
+            },
         },
         created: function() {
             this.update();
@@ -79,7 +103,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     if (!this.hidden) {
                         this.timer = setTimeout(() => {
                             this.update();
-                        }, 15000);
+                        }, this.updateInterval);
                     }
                 });
             },
