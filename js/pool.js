@@ -17,7 +17,7 @@ define([
     schedulepopup,
     collapsiblesection,
     ScoreTicker,
-    Vue,
+    Vue
 ) {
     autoselectnav('#poolNameSelect', '#poolNameSubmit');
 
