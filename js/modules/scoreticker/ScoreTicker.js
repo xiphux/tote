@@ -1,26 +1,30 @@
 define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
     return {
         template: `
-        <div :class="['rounded-top', 'subShadow', 'tickerToggleDiv', 'subSection', { 'rounded-bottom': hidden }]">
+        <div :class="['rounded-top', 'subShadow', 'tickerToggleDiv', 'subSection', { 'rounded-bottom': hidden }]" :style="{ width: width + 'px' }">
             <a
                 :class="{ tickerToggleLink: true, tickerClosed: hidden, tickerOpen: !hidden }"
                 href="#"
                 @click="hidden = !hidden"
                 >Score ticker{{ hidden ? '...' : '' }}</a>
-            <div v-if="!hidden">
-                <div class="tickerTitle">
-                    <span v-if="weekString">{{ weekString }}</span>
-                    <span v-else>Loading...</span>
-                    <img src="images/scoreticker-loader.gif" style="margin-left: 10px; display: inline-block" v-if="loading" />
+            <transition name="fadeTickerHeight">
+                <div v-if="!hidden">
+                    <div class="tickerTitle">
+                        <span v-if="weekString">{{ weekString }}</span>
+                        <span v-else>Loading...</span>
+                        <transition name="fade">
+                            <img src="images/scoreticker-loader.gif" style="margin-left: 10px; display: inline-block" v-if="loading" />
+                        </transition>
+                    </div>
+                    <div class="tickerContainerDiv" v-if="tickerData && tickerData.gameScores">
+                        <table class="tickerGameTable">
+                            <tr>
+                                <ScoreTickerGame v-for="game in tickerData.gameScores" :key="game.gameSchedule.gameKey" :game="game" />
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div class="tickerContainerDiv" v-if="tickerData && tickerData.gameScores">
-                    <table class="tickerGameTable">
-                        <tr>
-                            <ScoreTickerGame v-for="game in tickerData.gameScores" :key="game.gameSchedule.gameKey" :game="game" />
-                        </tr>
-                    </table>
-                </div>
-            </div>
+            </transition>
         </div>
         `,
         components: {
@@ -91,6 +95,12 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             },
             updateInterval: function() {
                 return this.fastUpdate ? 15 * 1000 : 15 * 60 * 1000;
+            },
+            width: function() {
+                if (!(this.tickerData && this.tickerData.gameScores)) {
+                    return 650;
+                }
+                return 44 + 56 * this.tickerData.gameScores.length;
             },
         },
         created: function() {

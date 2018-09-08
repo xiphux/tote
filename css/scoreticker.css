@@ -165,3 +165,24 @@
 .tickerLoaderImageDiv {
     text-align: center;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.3s;
+    opacity: 1;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fadeTickerHeight-enter-active,
+.fadeTickerHeight-leave-active {
+    transition: all 0.3s;
+    max-height: 940px;
+}
+.fadeTickerHeight-enter,
+.fadeTickerHeight-leave-to {
+    max-height: 0px;
+}
