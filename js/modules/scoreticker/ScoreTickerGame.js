@@ -3,7 +3,7 @@ define([], function() {
         template: `
             <td class="tickerGameCell">
                 <a target="_blank" :href="link">
-                    <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone }]">
+                    <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone, tickerGameTileHighlighted: !!alertPlayTypeLocal }]">
                         <tr :class="{ tickerTeamWinner: visitorWin }">
                             <td class="tickerGameTeam">
                                 {{ game.gameSchedule.visitorTeamAbbr }}
