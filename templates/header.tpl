@@ -77,7 +77,7 @@
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min',
 		d3: 'https://cdn.jsdelivr.net/npm/d3@2.9.6/d3.v2.min',
-		modernizr: 'ext/modernizr.custom',
+		modernizr: 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min',
 		'coffee-script': 'ext/coffee-script',
 		cs: 'ext/cs',
     Vue: 'https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min',

@@ -7,7 +7,7 @@
         d3: 'empty:',
         Vue: 'empty:',
         axios: 'empty:',
-        modernizr: 'ext/modernizr.custom',
+        modernizr: 'empty:',
         'coffee-script': 'ext/coffee-script',
         cs: 'ext/cs',
     },
