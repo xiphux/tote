@@ -5,14 +5,34 @@ define([], function() {
                 <a target="_blank" :href="link">
                     <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone }]">
                         <tr :class="{ tickerTeamWinner: visitorWin }">
-                            <td class="tickerGameTeam">{{ game.gameSchedule.visitorTeamAbbr }}</td>
-                            <td class="tickerPossession">{{ visitorPossession ? '<' : '' }}</td>
-                            <td class="tickerGameScore">{{ !gamePending ? game.score.visitorTeamScore.pointTotal : '' }}</td>
+                            <td class="tickerGameTeam">
+                                {{ game.gameSchedule.visitorTeamAbbr }}
+                            </td>
+                            <td class="tickerPossession">
+                                <transition name="fade">
+                                    <span v-if="visitorPossession">&lt;</span>
+                                </transition>
+                            </td>
+                            <td class="tickerGameScore">
+                                <transition name="fade">
+                                    <span v-if="!gamePending">{{ game.score.visitorTeamScore.pointTotal }}</span>
+                                </transition>
+                            </td>
                         </tr>
                         <tr :class="{ tickerTeamWinner: homeWin }">
-                            <td class="tickerGameTeam">{{ game.gameSchedule.homeTeamAbbr }}</td>
-                            <td class="tickerPossession">{{ homePossession ? '<' : '' }}</td>
-                            <td class="tickerGameScore">{{ !gamePending ? game.score.homeTeamScore.pointTotal : '' }}</td>
+                            <td class="tickerGameTeam">
+                                {{ game.gameSchedule.homeTeamAbbr }}
+                            </td>
+                            <td class="tickerPossession">
+                                <transition name="fade">
+                                    <span v-if="homePossession">&gt;</span>
+                                </transition>
+                            </td>
+                            <td class="tickerGameScore">
+                                <transition name="fade">
+                                    <span v-if="!gamePending">{{ game.score.homeTeamScore.pointTotal }}</span>
+                                </transition>
+                            </td>
                         </tr>
                         <tr>
                             <td class="tickerGameStatus" colspan="3">{{ status }}</td>
