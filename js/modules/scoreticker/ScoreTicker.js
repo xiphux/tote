@@ -89,6 +89,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     return false;
                 }
                 var now = Date.now();
+                const bound = 15 * 60 * 1000;
                 for (var i = 0; i < this.tickerData.gameScores.length; i++) {
                     var game = this.tickerData.gameScores[i];
                     if (game.score) {
@@ -99,7 +100,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                         }
                     }
                     var left = game.gameSchedule.isoTime - now;
-                    if (left < 15 * 60 * 1000 && left >= 0) {
+                    if (left < bound && left > bound * -1) {
                         return true;
                     }
                 }
