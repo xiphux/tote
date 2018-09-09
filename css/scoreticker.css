@@ -123,47 +123,9 @@
     color: red;
 }
 
-.tickerBigPlay {
-    z-index: 5;
-    position: absolute;
-    overflow: hidden;
-}
-
-.tickerBigPlay .tickerBigPlayContent {
-    height: auto;
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    position: absolute;
-    width: 142px;
-    font-family: Verdana, Arial, sans-serif;
-    font-size: 10px;
-    font-weight: bold;
-    color: DarkBlue;
-    background-color: PowderBlue;
-    padding: 3px 3px 3px 3px;
-}
-
-.tickerBigPlay .tickerBigPlayRight {
-    border-right: 1px solid LightGray;
-}
-
-.tickerBigPlay .tickerBigPlayLeft {
-    border-left: 1px solid LightGray;
-}
-
-.tickerBigPlay .tickerBigPlayContent .tickerBigPlayTeam {
-    height: 33%;
-    font-size: larger;
-}
-
-.tickerBigPlay .tickerBigPlayContent .tickerBigPlayMessage {
-    height: 66%;
-}
-
-.tickerLoaderImageDiv {
-    text-align: center;
+.tickerLoaderImg {
+    margin-left: 10px;
+    display: inline-block;
 }
 
 .fade-enter-active,

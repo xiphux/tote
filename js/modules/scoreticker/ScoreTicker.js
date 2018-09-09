@@ -13,7 +13,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                         <span v-if="weekString">{{ weekString }}</span>
                         <span v-else>Loading...</span>
                         <transition name="fade">
-                            <img src="images/scoreticker-loader.gif" style="margin-left: 10px; display: inline-block" v-if="loading" />
+                            <img src="images/scoreticker-loader.gif" class="tickerLoaderImg" v-if="loading" />
                         </transition>
                     </div>
                     <div class="tickerContainerDiv" v-if="tickerData && sortedGames">
