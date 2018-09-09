@@ -97,6 +97,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     if (
                         game.score &&
                         game.score !== 'FINAL' &&
+                        game.score !== 'FINAL_OVERTIME' &&
                         game.score != 'PREGAME'
                     ) {
                         return true;

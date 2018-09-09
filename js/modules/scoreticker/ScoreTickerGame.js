@@ -113,7 +113,8 @@ define([], function() {
                 return !!(
                     this.game &&
                     this.game.score &&
-                    this.game.score.phase === 'FINAL'
+                    (this.game.score.phase === 'FINAL' ||
+                        this.game.score.phase === 'FINAL_OVERTIME')
                 );
             },
             gamePending: function() {
