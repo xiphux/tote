@@ -61,16 +61,8 @@ define([], function() {
                         return 'Suspended';
                     case 'PREGAME':
                         return this.startFormatted;
-                    case 'INGAME':
-                        return (
-                            (this.game.score.quarter > 4
-                                ? 'OT'
-                                : this.game.score.quarter) +
-                            ' ' +
-                            this.game.score.time
-                        );
                 }
-                return this.game.score.phaseDescription;
+                return this.game.score.phase + ' ' + this.game.score.time;
             },
             statusClass: function() {
                 if (!this.game) {

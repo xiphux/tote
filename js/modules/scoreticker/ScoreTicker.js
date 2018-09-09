@@ -92,12 +92,12 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                 const bound = 15 * 60 * 1000;
                 for (var i = 0; i < this.tickerData.gameScores.length; i++) {
                     var game = this.tickerData.gameScores[i];
-                    if (game.score) {
-                        switch (game.score.phase) {
-                            case 'INGAME':
-                            case 'HALFTIME':
-                                return true;
-                        }
+                    if (
+                        game.score &&
+                        game.score !== 'FINAL' &&
+                        game.score != 'PREGAME'
+                    ) {
+                        return true;
                     }
                     var left = game.gameSchedule.isoTime - now;
                     if (left < bound && left > bound * -1) {
