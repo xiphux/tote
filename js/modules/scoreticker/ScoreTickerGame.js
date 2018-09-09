@@ -7,12 +7,12 @@ define([], function() {
                         <tr :class="{ tickerTeamWinner: visitorWin }">
                             <td class="tickerGameTeam">{{ game.gameSchedule.visitorTeamAbbr }}</td>
                             <td class="tickerPossession">{{ visitorPossession ? '<' : '' }}</td>
-                            <td class="tickerGameScore">{{ game.score ? game.score.visitorTeamScore.pointTotal : '' }}</td>
+                            <td class="tickerGameScore">{{ !gamePending ? game.score.visitorTeamScore.pointTotal : '' }}</td>
                         </tr>
                         <tr :class="{ tickerTeamWinner: homeWin }">
                             <td class="tickerGameTeam">{{ game.gameSchedule.homeTeamAbbr }}</td>
                             <td class="tickerPossession">{{ homePossession ? '<' : '' }}</td>
-                            <td class="tickerGameScore">{{ game.score ? game.score.homeTeamScore.pointTotal : '' }}</td>
+                            <td class="tickerGameScore">{{ !gamePending ? game.score.homeTeamScore.pointTotal : '' }}</td>
                         </tr>
                         <tr>
                             <td class="tickerGameStatus" colspan="3">{{ status }}</td>
@@ -76,7 +76,7 @@ define([], function() {
                 if (!this.game) {
                     return '';
                 }
-                if (!this.game.score) {
+                if (this.gamePending) {
                     return 'tickerGamePending';
                 }
                 if (this.gameFinished) {
@@ -91,8 +91,22 @@ define([], function() {
                     this.game.score.phase === 'FINAL'
                 );
             },
+            gamePending: function() {
+                if (!(this.game && this.game.score)) {
+                    return true;
+                }
+                if (this.game.score.phase === 'PREGAME') {
+                    return true;
+                }
+                return false;
+            },
             showPossession: function() {
-                return this.game && this.game.score && !this.gameFinished;
+                return (
+                    this.game &&
+                    this.game.score &&
+                    !this.gameFinished &&
+                    !this.gamePending
+                );
             },
             visitorPossession: function() {
                 if (!this.showPossession) {
