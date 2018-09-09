@@ -125,22 +125,32 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             }
         },
         methods: {
-            update: function() {
+            update: function(fallback) {
                 this.loading = true;
-                data = axios.get('scoreticker.php').then((ticker) => {
-                    this.tickerData = ticker.data;
-                    this.loading = false;
-                    if (!this.hidden) {
-                        this.timer = setTimeout(() => {
-                            this.update();
-                        }, this.updateInterval);
-                    }
-                    this.$nextTick(() => {
-                        if (this.$refs.tickerTable) {
-                            this.contentWidth = this.$refs.tickerTable.clientWidth;
+                var url = fallback
+                    ? 'scoreticker.php'
+                    : 'https://feeds.nfl.com/feeds-rs/scores.json';
+                data = axios
+                    .get(url)
+                    .then((ticker) => {
+                        this.tickerData = ticker.data;
+                        this.loading = false;
+                        if (!this.hidden) {
+                            this.timer = setTimeout(() => {
+                                this.update();
+                            }, this.updateInterval);
+                        }
+                        this.$nextTick(() => {
+                            if (this.$refs.tickerTable) {
+                                this.contentWidth = this.$refs.tickerTable.clientWidth;
+                            }
+                        });
+                    })
+                    .catch((err) => {
+                        if (!fallback) {
+                            this.update(true);
                         }
                     });
-                });
             },
         },
     };
