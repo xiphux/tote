@@ -44,7 +44,7 @@
     {/if}
   {/if}
 
-  <script type="text/javascript" src="js/ext/require.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js"></script>
   <script type="text/javascript">
     {if !$jsmodule}
     {assign var=jsmodule value=common}
