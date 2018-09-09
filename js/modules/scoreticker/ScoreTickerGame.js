@@ -44,6 +44,10 @@ define([], function() {
         props: {
             game: Object,
         },
+        data: {
+            alertPlayTypeLocal: null,
+            alertPlayTypeTimer: null,
+        },
         computed: {
             link: function() {
                 if (!(this.game && this.game.gameSchedule)) {
@@ -81,6 +85,9 @@ define([], function() {
                         return 'Suspended';
                     case 'PREGAME':
                         return this.startFormatted;
+                }
+                if (this.alertPlayTypeLocal) {
+                    return this.alertPlayTypeLocal;
                 }
                 return this.game.score.phase + ' ' + this.game.score.time;
             },
@@ -176,6 +183,31 @@ define([], function() {
                     (mins < 10 ? '0' : '') +
                     mins
                 );
+            },
+            alertPlayType: function() {
+                return this.game && this.game.score
+                    ? this.game.score.alertPlayType
+                    : null;
+            },
+        },
+        watch: {
+            alertPlayType: {
+                immediate: true,
+                handler(newType, oldType) {
+                    if (newType || newType !== oldType) {
+                        if (this.alertPlayTypeTimer) {
+                            clearTimeout(this.alertPlayTypeTimer);
+                            this.alertPlayTypeTimer = null;
+                        }
+                        this.alertPlayTypeLocal = newType;
+                        if (newType) {
+                            this.alertPlayTypeTimer = setTimeout(() => {
+                                this.alertPlayTypeLocal = null;
+                                this.alertPlayTypeTimer = null;
+                            }, 30000);
+                        }
+                    }
+                },
             },
         },
     };
