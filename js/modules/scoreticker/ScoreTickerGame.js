@@ -14,8 +14,8 @@ define([], function() {
                                 </transition>
                             </td>
                             <td class="tickerGameScore">
-                                <transition name="fade">
-                                    <span v-if="!gamePending">{{ game.score.visitorTeamScore.pointTotal }}</span>
+                                <transition name="fade" mode="out-in">
+                                    <span v-if="!gamePending" :key="game.score.visitorTeamScore.pointTotal">{{ game.score.visitorTeamScore.pointTotal }}</span>
                                 </transition>
                             </td>
                         </tr>
@@ -29,13 +29,17 @@ define([], function() {
                                 </transition>
                             </td>
                             <td class="tickerGameScore">
-                                <transition name="fade">
-                                    <span v-if="!gamePending">{{ game.score.homeTeamScore.pointTotal }}</span>
+                                <transition name="fade" mode="out-in">
+                                    <span v-if="!gamePending" :key="game.score.homeTeamScore.pointTotal">{{ game.score.homeTeamScore.pointTotal }}</span>
                                 </transition>
                             </td>
                         </tr>
                         <tr>
-                            <td class="tickerGameStatus" colspan="3">{{ status }}</td>
+                            <td class="tickerGameStatus" colspan="3">
+                                <transition name="fade" mode="out-in">
+                                    <span :key="status">{{ status }}</span>
+                                </transition>
+                            </td>
                         </tr>
                     </table>
                 </a>
