@@ -87,6 +87,19 @@ define([], function() {
                         return this.startFormatted;
                 }
                 if (this.alertPlayTypeLocal) {
+                    switch (this.alertPlayTypeLocal) {
+                        case 'FUM_LOST':
+                            return 'FUMBLE';
+                        case 'FG':
+                            return 'FG';
+                        case 'INT':
+                            return 'INT';
+                        case 'TD':
+                            return 'TD';
+                    }
+                    console.log(
+                        'Unknown alert play type: ' + this.alertPlayTypeLocal
+                    );
                     return this.alertPlayTypeLocal;
                 }
                 return this.game.score.phase + ' ' + this.game.score.time;
