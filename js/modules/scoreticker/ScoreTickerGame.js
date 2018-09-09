@@ -127,7 +127,8 @@ define([], function() {
                     this.game.score &&
                     !this.gameFinished &&
                     !this.gamePending &&
-                    this.game.score.phase !== 'HALFTIME'
+                    this.game.score.phase !== 'HALFTIME' &&
+                    this.game.score.phase !== 'SUSPENDED'
                 );
             },
             visitorPossession: function() {
