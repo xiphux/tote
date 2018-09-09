@@ -44,9 +44,11 @@ define([], function() {
         props: {
             game: Object,
         },
-        data: {
-            alertPlayTypeLocal: null,
-            alertPlayTypeTimer: null,
+        data: function() {
+            return {
+                alertPlayTypeLocal: null,
+                alertPlayTypeTimer: null,
+            };
         },
         computed: {
             link: function() {

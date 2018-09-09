@@ -30,12 +30,14 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
         components: {
             ScoreTickerGame,
         },
-        data: {
-            hidden: !!localStorage.getItem('toteScoretickerHidden'),
-            tickerData: null,
-            loading: false,
-            timer: null,
-            contentWidth: null,
+        data: function() {
+            return {
+                hidden: !!localStorage.getItem('toteScoretickerHidden'),
+                tickerData: null,
+                loading: false,
+                timer: null,
+                contentWidth: null,
+            };
         },
         watch: {
             hidden: function(newHidden, oldHidden) {
