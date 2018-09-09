@@ -68,8 +68,6 @@ for i in ${JSDIR}/ext/*${MINEXT}; do
 	gzip -v -c ${i} > ${i}${GZEXT}
 	touch ${i} ${i}${GZEXT}
 done
-gzip -v -c ${JSDIR}/ext/require.js > ${JSDIR}/ext/require.js${GZEXT}
-touch ${JSDIR}/ext/require.js ${JSDIR}/ext/require.js${GZEXT}
 
 for i in ${CSSDIR}/*${MINCSSEXT}; do
 	gzip -v -c ${i} > ${i}${GZEXT}
