@@ -98,6 +98,8 @@ define([], function() {
                             return 'INT';
                         case 'TD':
                             return 'TD';
+                        case 'PAT':
+                            return 'PAT';
                     }
                     console.log(
                         'Unknown alert play type: ' + this.alertPlayTypeLocal
