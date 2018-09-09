@@ -72,14 +72,15 @@
 	paths: {ldelim}
 		{if "js/$jsmodule.min.js"|file_exists}
 		{$jsmodule}: '{$jsmodule}.min',
+    {else}
+		'coffee-script': 'ext/coffee-script',
+		cs: 'ext/cs',
 		{/if}
 		jquery: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min',
 		qtip: 'ext/jquery.qtip.min',
 		cookies: 'ext/jquery.cookies.2.2.0.min',
 		d3: 'https://cdn.jsdelivr.net/npm/d3@2.9.6/d3.v2.min',
 		modernizr: 'https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min',
-		'coffee-script': 'ext/coffee-script',
-		cs: 'ext/cs',
     Vue: 'https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min',
     axios: 'https://cdn.jsdelivr.net/npm/axios@0.18.0/dist/axios.min'
 	{rdelim},
