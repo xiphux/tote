@@ -3,7 +3,7 @@ define([], function() {
         template: `
             <td class="tickerGameCell">
                 <a target="_blank" :href="link">
-                    <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone, tickerGameTileHighlighted: !!alertPlayTypeLocal }]">
+                    <table :class="['tickerGameTile', statusClass, { tickerGameRedZone: game.score && game.score.redZone, tickerGameTileHighlighted: !!alertPlayLocalDisplay }]">
                         <tr :class="{ tickerTeamWinner: visitorWin }">
                             <td class="tickerGameTeam">
                                 {{ game.gameSchedule.visitorTeamAbbr }}
@@ -88,23 +88,8 @@ define([], function() {
                     case 'PREGAME':
                         return this.startFormatted;
                 }
-                if (this.alertPlayTypeLocal) {
-                    switch (this.alertPlayTypeLocal) {
-                        case 'FUM_LOST':
-                            return 'FUMBLE';
-                        case 'FG':
-                            return 'FG';
-                        case 'INT':
-                            return 'INT';
-                        case 'TD':
-                            return 'TD';
-                        case 'PAT':
-                            return 'PAT';
-                    }
-                    console.log(
-                        'Unknown alert play type: ' + this.alertPlayTypeLocal
-                    );
-                    return this.alertPlayTypeLocal;
+                if (this.alertPlayLocalDisplay) {
+                    return this.alertPlayLocalDisplay;
                 }
                 return this.game.score.phase + ' ' + this.game.score.time;
             },
@@ -141,7 +126,8 @@ define([], function() {
                     this.game &&
                     this.game.score &&
                     !this.gameFinished &&
-                    !this.gamePending
+                    !this.gamePending &&
+                    this.game.score.phase !== 'HALFTIME'
                 );
             },
             visitorPossession: function() {
@@ -205,6 +191,29 @@ define([], function() {
                 return this.game && this.game.score
                     ? this.game.score.alertPlayType
                     : null;
+            },
+            alertPlayLocalDisplay: function() {
+                if (!this.alertPlayTypeLocal) {
+                    return '';
+                }
+                switch (this.alertPlayTypeLocal) {
+                    case 'FUM_LOST':
+                        return 'FUMBLE';
+                    case 'FG':
+                        return 'FG';
+                    case 'INT':
+                        return 'INT';
+                    case 'TD':
+                        return 'TD';
+                    case 'PAT':
+                        return 'PAT';
+                    case 'SFTY':
+                        return 'SAFETY';
+                }
+                console.log(
+                    'Unknown alert play type: ' + this.alertPlayTypeLocal
+                );
+                return '';
             },
         },
         watch: {
