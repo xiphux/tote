@@ -10,7 +10,7 @@ define([], function() {
                             </td>
                             <td class="tickerPossession">
                                 <transition name="fade">
-                                    <span v-if="visitorPossession">&lt;</span>
+                                    <span v-if="visitorPossession">&bull;</span>
                                 </transition>
                             </td>
                             <td class="tickerGameScore">
@@ -25,7 +25,7 @@ define([], function() {
                             </td>
                             <td class="tickerPossession">
                                 <transition name="fade">
-                                    <span v-if="homePossession">&gt;</span>
+                                    <span v-if="homePossession">&bull;</span>
                                 </transition>
                             </td>
                             <td class="tickerGameScore">
