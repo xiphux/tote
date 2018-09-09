@@ -16,10 +16,10 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                             <img src="images/scoreticker-loader.gif" style="margin-left: 10px; display: inline-block" v-if="loading" />
                         </transition>
                     </div>
-                    <div class="tickerContainerDiv" v-if="tickerData && tickerData.gameScores">
+                    <div class="tickerContainerDiv" v-if="tickerData && sortedGames">
                         <table class="tickerGameTable" ref="tickerTable">
                             <tr>
-                                <ScoreTickerGame v-for="game in tickerData.gameScores" :key="game.gameSchedule.gameKey" :game="game" />
+                                <ScoreTickerGame v-for="game in sortedGames" :key="game.gameSchedule.gameKey" :game="game" />
                             </tr>
                         </table>
                     </div>
@@ -52,6 +52,17 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             },
         },
         computed: {
+            sortedGames: function() {
+                if (!(this.tickerData && this.tickerData.gameScores)) {
+                    return [];
+                }
+                return this.tickerData.gameScores.slice().sort((a, b) => {
+                    if (a.gameSchedule.isoTime !== b.gameSchedule.isoTime) {
+                        return a.gameSchedule.isoTime - b.gameSchedule.isoTime;
+                    }
+                    return a.gameSchedule.gameId - b.gameSchedule.gameId;
+                });
+            },
             weekString: function() {
                 if (!this.tickerData) {
                     return null;
