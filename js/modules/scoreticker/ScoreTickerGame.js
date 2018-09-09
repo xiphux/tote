@@ -203,6 +203,7 @@ define([], function() {
                 }
                 switch (this.alertPlayTypeLocal) {
                     case 'FUM_LOST':
+                    case 'FUMBLE':
                         return 'FUMBLE';
                     case 'FG':
                         return 'FG';
@@ -214,6 +215,10 @@ define([], function() {
                         return 'PAT';
                     case 'SFTY':
                         return 'SAFETY';
+                    case 'FOURTH_FAIL':
+                        return '4TH FAIL';
+                    case 'PAT2':
+                        return '2PT CONV';
                 }
                 console.log(
                     'Unknown alert play type: ' + this.alertPlayTypeLocal
