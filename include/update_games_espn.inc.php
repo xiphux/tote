@@ -113,7 +113,7 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 		}
 		
 		// find game rows - one per game
-		$gameRows = $xpath->evaluate('tbody/tr', $table);
+		$gameRows = $xpath->evaluate('tbody/tr | tr', $table);
 		for ($j = 0; $j < $gameRows->length; $j++) {
 
 			$row = $gameRows->item($j);
