@@ -17,7 +17,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                         </transition>
                     </div>
                     <div class="tickerContainerDiv" v-if="tickerData && tickerData.gameScores">
-                        <table class="tickerGameTable">
+                        <table class="tickerGameTable" ref="tickerTable">
                             <tr>
                                 <ScoreTickerGame v-for="game in tickerData.gameScores" :key="game.gameSchedule.gameKey" :game="game" />
                             </tr>
@@ -35,6 +35,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
             tickerData: null,
             loading: false,
             timer: null,
+            contentWidth: null,
         },
         watch: {
             hidden: function(newHidden, oldHidden) {
@@ -97,10 +98,10 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                 return this.fastUpdate ? 15 * 1000 : 15 * 60 * 1000;
             },
             width: function() {
-                if (!(this.tickerData && this.tickerData.gameScores)) {
+                if (!this.contentWidth) {
                     return 650;
                 }
-                return 44 + 56 * this.tickerData.gameScores.length;
+                return this.contentWidth;
             },
         },
         created: function() {
@@ -119,6 +120,11 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                             this.update();
                         }, this.updateInterval);
                     }
+                    this.$nextTick(() => {
+                        if (this.$refs.tickerTable) {
+                            this.contentWidth = this.$refs.tickerTable.clientWidth;
+                        }
+                    });
                 });
             },
         },
