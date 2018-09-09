@@ -219,7 +219,7 @@ define([], function() {
                             this.alertPlayTypeTimer = setTimeout(() => {
                                 this.alertPlayTypeLocal = null;
                                 this.alertPlayTypeTimer = null;
-                            }, 30000);
+                            }, 15000);
                         }
                     }
                 },
