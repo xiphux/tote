@@ -137,7 +137,7 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 			} else {
 				// game that's resolved
 				$resultStr = $resultTime->firstChild->textContent;
-				if (preg_match('/^([A-Za-z]+) ([0-9]+), ([A-Za-z]+) ([0-9]+)$/', $resultStr, $regs)) {
+				if (preg_match('/^([A-Za-z]+) ([0-9]+), ([A-Za-z]+) ([0-9]+)(?: \(OT\))?$/', $resultStr, $regs)) {
 					$team1 = espn_team_to_abbr($regs[1]);
 					$score1 = $regs[2];
 					$team2 = espn_team_to_abbr($regs[3]);
