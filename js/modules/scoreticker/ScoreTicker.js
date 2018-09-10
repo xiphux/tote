@@ -12,9 +12,11 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     <div class="tickerTitle">
                         <span v-if="weekString">{{ weekString }}</span>
                         <span v-else>Loading...</span>
-                        <transition name="fade">
-                            <img src="images/scoreticker-loader.gif" class="tickerLoaderImg" v-if="loading" />
-                        </transition>
+                        <div class="tickerLoaderContainer">
+                            <transition name="fade">
+                                <img src="images/scoreticker-loader.gif" v-show="loading" />
+                            </transition>
+                        </div>
                     </div>
                     <div class="tickerContainerDiv" v-if="tickerData && sortedGames">
                         <table class="tickerGameTable" ref="tickerTable">
@@ -90,24 +92,12 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                 if (!(this.tickerData && this.tickerData.gameScores)) {
                     return false;
                 }
-                var now = Date.now();
-                const bound = 15 * 60 * 1000;
-                for (var i = 0; i < this.tickerData.gameScores.length; i++) {
-                    var game = this.tickerData.gameScores[i];
-                    if (
-                        game.score &&
-                        game.score !== 'FINAL' &&
-                        game.score !== 'FINAL_OVERTIME' &&
-                        game.score != 'PREGAME'
-                    ) {
-                        return true;
-                    }
-                    var left = game.gameSchedule.isoTime - now;
-                    if (left < bound && left > bound * -1) {
-                        return true;
-                    }
-                }
-                return false;
+                return !!this.tickerData.gameScores.find(
+                    (g) =>
+                        g.score &&
+                        g.score.phase !== 'FINAL' &&
+                        g.score.phase !== 'FINAL_OVERTIME'
+                );
             },
             updateInterval: function() {
                 return this.fastUpdate ? 15 * 1000 : 15 * 60 * 1000;

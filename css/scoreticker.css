@@ -123,9 +123,11 @@
     color: red;
 }
 
-.tickerLoaderImg {
-    margin-left: 10px;
+.tickerLoaderContainer {
     display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
 }
 
 .fade-enter-active,
