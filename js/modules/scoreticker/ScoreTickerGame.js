@@ -199,7 +199,7 @@ define([], function() {
                     : null;
             },
             alertPlayLocalDisplay: function() {
-                if (!this.alertPlayTypeLocal) {
+                if (!this.alertPlayTypeLocal || this.gameFinished) {
                     return '';
                 }
                 switch (this.alertPlayTypeLocal) {
