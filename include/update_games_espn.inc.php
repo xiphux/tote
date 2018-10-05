@@ -113,7 +113,7 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 		}
 		
 		// find game rows - one per game
-		$gameRows = $xpath->evaluate('tbody/tr | tr', $table);
+		$gameRows = $xpath->evaluate('(tbody/tr | tr)[not(contains (@class, "bye"))]', $table);
 		for ($j = 0; $j < $gameRows->length; $j++) {
 
 			$row = $gameRows->item($j);
@@ -124,6 +124,9 @@ function update_games_espn_week($season, $week, &$weekcount, &$modified)
 			
 			$homeCell = $row->childNodes->item(1);
 			$homeAbbr = $xpath->evaluate('div/a/abbr', $homeCell);
+			if (!$homeAbbr->item(0)) {
+				print_r($row);
+			}
 			$homeTeam = espn_team_to_abbr($homeAbbr->item(0)->textContent);
 			
 			$resultTime = $row->childNodes->item(2);
