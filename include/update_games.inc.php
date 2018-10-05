@@ -1,7 +1,6 @@
 <?php
 
 require_once(TOTE_INCLUDEDIR . 'update_games_espn.inc.php');
-require_once(TOTE_INCLUDEDIR . 'update_games_nfl.inc.php');
 require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 function update_games()
@@ -13,9 +12,6 @@ function update_games()
 	$season = get_current_season();
 
 	if (update_games_espn($season))
-		$modified = true;
-
-	if (update_games_nfl($season))
 		$modified = true;
 
 	if ($modified) {
