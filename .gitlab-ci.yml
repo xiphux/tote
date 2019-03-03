@@ -9,7 +9,7 @@ build:
         - master
     before_script:
         - npm install -g uglify-js
-        - apt-get install python-software-properties
+        - apt-get install software-properties-common
         - add-apt-repository ppa:ondrej/php
         - apt-get update
         - apt-get install -y php5.6
