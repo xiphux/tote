@@ -11,8 +11,6 @@
 #
 
 JSDIR="js"
-COMPRESSORDIR="lib/yuicompressor/build"
-COMPRESSORJAR="yuicompressor-2.4.2.jar"
 
 JSEXT=".js"
 MINEXT=".min.js"
@@ -59,29 +57,3 @@ for i in ${SKINDIR}/*; do
 	done
 done
 
-for i in ${JSDIR}/*${MINEXT}; do
-	gzip -v -c ${i} > ${i}${GZEXT}
-	touch ${i} ${i}${GZEXT}
-done
-
-for i in ${JSDIR}/ext/*${MINEXT}; do
-	gzip -v -c ${i} > ${i}${GZEXT}
-	touch ${i} ${i}${GZEXT}
-done
-
-for i in ${CSSDIR}/*${MINCSSEXT}; do
-	gzip -v -c ${i} > ${i}${GZEXT}
-	touch ${i} ${i}${GZEXT}
-done
-
-for i in ${CSSDIR}/ext/*${MINCSSEXT}; do
-	gzip -v -c ${i} > ${i}${GZEXT}
-	touch ${i} ${i}${GZEXT}
-done
-
-for i in ${SKINDIR}/*; do
-	for j in ${i}/*${MINCSSEXT}; do
-		gzip -v -c ${j} > ${j}${GZEXT}
-		touch ${j} ${j}${GZEXT}
-	done
-done
