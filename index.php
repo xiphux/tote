@@ -20,7 +20,9 @@ define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
 define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 
 // include config file
-require_once(TOTE_CONFIGDIR . 'tote.conf.php');
+if (file_exists(TOTE_CONFIGDIR . 'tote.conf.php')) {
+    include_once(TOTE_CONFIGDIR . 'tote.conf.php');
+}
 
 // create Smarty
 require_once('lib/smarty/libs/Smarty.class.php');

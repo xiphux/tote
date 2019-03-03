@@ -15,7 +15,9 @@ define('TOTE_CONFIGDIR', TOTE_BASEDIR . 'config/');
 define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
 
-require_once(TOTE_CONFIGDIR . 'tote.conf.php');
+if (file_exists(TOTE_CONFIGDIR . 'tote.conf.php')) {
+    include_once(TOTE_CONFIGDIR . 'tote.conf.php');
+}
 
 // only allow from command line without login
 if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {

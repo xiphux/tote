@@ -14,7 +14,9 @@ define('TOTE_BASEDIR', dirname(__FILE__) . '/');
 define('TOTE_CONFIGDIR', TOTE_BASEDIR . 'config/');
 define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 
-require_once(TOTE_CONFIGDIR . 'tote.conf.php');
+if (file_exists(TOTE_CONFIGDIR . 'tote.conf.php')) {
+    include_once(TOTE_CONFIGDIR . 'tote.conf.php');
+}
 require_once(TOTE_INCLUDEDIR . 'send_reminders.inc.php');
 
 // only if reminders are turned on in the config

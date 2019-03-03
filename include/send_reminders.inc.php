@@ -63,10 +63,14 @@ EOQ;
 	}
 
 	// set up data needed to generate reminder email
-	$tpl->assign('sitename', $tote_conf['sitename']);
+	$sitename = getenv('TOTE_SITE_NAME');
+	if (empty($sitename)) {
+		$sitename = $tote_conf['sitename'];
+	}
+	$tpl->assign('sitename', $sitename);
 	$tpl->assign('week', $week);
 	$tpl->assign('year', $year);
-	$subject = 'Reminder from ' . $tote_conf['sitename'] . ': Week ' . $week . ' is starting';
+	$subject = 'Reminder from ' . $sitename . ': Week ' . $week . ' is starting';
 
 	// get all users due for a reminder
 	$userquery = <<<EOQ

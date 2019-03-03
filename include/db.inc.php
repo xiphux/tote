@@ -1,8 +1,22 @@
 <?php
 
 $db = null;
+
+$dsn = getenv('TOTE_DATABASE_DSN');
+if (empty($dsn)) {
+	$dsn = sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']);
+}
+$username = getenv('TOTE_DATABASE_USER');
+if (empty($username)) {
+	$username = $tote_conf['username'];
+}
+$password = getenv('TOTE_DATABASE_PASSWORD');
+if (empty($password)) {
+	$password = $tote_conf['password'];
+}
+
 try {
-	$db = new PDO(sprintf('mysql:host=%s;dbname=%s', $tote_conf['hostname'], $tote_conf['sql_database']), $tote_conf['username'], $tote_conf['password']);
+	$db = new PDO($dsn, $username, $password);
 } catch (PDOException $e) {
 	require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
 	display_message('Error connecting to database: ' . $e->getMessage());

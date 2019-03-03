@@ -59,11 +59,15 @@ function display_finishrecoverpass($email)
 		$tpl->display('recoverpass.tpl');
 	} else {
 		// generate and send email
+		$sitename = getenv('TOTE_SITE_NAME');
+		if (empty($sitename)) {
+			$sitename = $tote_conf['sitename'];
+		}
 		$tpl->assign('username', $username);
-		$tpl->assign('sitename', $tote_conf['sitename']);
+		$tpl->assign('sitename', $sitename);
 		$tpl->assign('url', 'http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/index.php?a=resetpass&k=' . $key);
 		$message = $tpl->fetch('recoverpassemail.tpl');
-		$subject = 'Password recovery for ' . $tote_conf['sitename'];
+		$subject = 'Password recovery for ' . $sitename;
 		send_email($email, $subject, $message);
 
 		// email sent, tell user

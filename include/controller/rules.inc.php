@@ -42,8 +42,13 @@ function display_rules($poolid, $output = 'html')
 	if ($output == 'js')
 		$tpl->assign('js', true);
 
-	if (!empty($tote_conf['fromemail'])) {
-		$tpl->assign('email', $tote_conf['fromemail']);
+	$fromemail = getenv('TOTE_EMAIL_FROM');
+	if (empty($fromemail) && !empty($tote_conf['fromemail'])) {
+		$fromemail = $tote_conf['fromemail'];
+	}
+
+	if (!empty($fromemail)) {
+		$tpl->assign('email', $fromemail);
 	}
 
 	$tpl->display('rules.tpl');

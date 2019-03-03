@@ -17,6 +17,11 @@ function notify_finished_game($season, $week, $hometeam, $homescore, $awayteam, 
 {
 	global $tpl, $tote_conf, $db;
 
+	$sitename = getenv('TOTE_SITE_NAME');
+	if (empty($sitename)) {
+		$sitename = $tote_conf['sitename'];
+	}
+
 	$tpl->assign('week', $week);
 	$tpl->assign('homescore', $homescore);
 	$tpl->assign('awayscore', $awayscore);
@@ -66,11 +71,11 @@ EOQ;
 
 		$subject = '';
 		if ($win) {
-			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick won';
+			$subject = 'Notification from ' . $sitename . ': Week ' . $week . ' pick won';
 		} else if ($loss) {
-			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick lost';
+			$subject = 'Notification from ' . $sitename . ': Week ' . $week . ' pick lost';
 		} else {
-			$subject = 'Notification from ' . $tote_conf['sitename'] . ': Week ' . $week . ' pick pushed';
+			$subject = 'Notification from ' . $sitename . ': Week ' . $week . ' pick pushed';
 		}
 
 		$tpl->assign('win', $win);
