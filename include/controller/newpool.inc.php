@@ -33,8 +33,6 @@ function display_newpool()
 
 	$tpl->assign('seasons', $seasons);
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
-	if (!empty($tote_conf['defaultfee']))
-		$tpl->assign('fee', $tote_conf['defaultfee']);
 	$tpl->display('newpool.tpl');
 
 }

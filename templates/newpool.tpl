@@ -26,7 +26,7 @@
   </tr>
   <tr>
     <td><label for="fee">Fee:</label></td>
-    <td>$<input type="text" name="fee" id="fee" value="{if $fee}{$fee}{else}0.00{/if}" /></td>
+    <td>$<input type="text" name="fee" id="fee" value="0.00" /></td>
   </tr>
   <tr>
     <td></td>
