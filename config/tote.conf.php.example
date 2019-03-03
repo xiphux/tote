@@ -43,13 +43,6 @@ $tote_conf['port'] = 3306;
 $tote_conf['prefix'] = '';
 
 /**
- * smarty
- *
- * path to smarty library
- */
-$tote_conf['smarty'] = 'lib/smarty/libs/';
-
-/**
  * sitename
  *
  * name of site to use in various displays/emails

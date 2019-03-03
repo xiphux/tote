@@ -9,7 +9,7 @@ define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
 require_once(TOTE_CONFIGDIR . 'tote.conf.php');
 
 // create Smarty
-require_once($tote_conf['smarty'] . 'Smarty.class.php');
+require_once('lib/smarty/libs/Smarty.class.php');
 $tpl = new Smarty();
 $tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 

@@ -23,7 +23,7 @@ if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 	date_default_timezone_set('UTC');
 
 	// create Smarty
-	require_once($tote_conf['smarty'] . 'Smarty.class.php');
+	require_once('lib/smarty/libs/Smarty.class.php');
 	$tpl = new Smarty();
 	$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 
