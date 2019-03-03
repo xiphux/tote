@@ -24,6 +24,7 @@ build:
         - rm js/ext/coffee-script.js js/ext/cs.js
         - rm -r js/modules
         - rm js/bet.js js/common.js js/editpool.js js/editusers.js js/fullschedule.js js/gridschedule.js js/newuser.js js/pickdist.js js/pickrisk.js js/pool.js js/poolmobile.js js/teamrel.js
+        - rm -r lib/requirejs
         - mkdir build
         - cp -Rv css images include js lib templates templates_c index.php scoreticker.php app.yaml build/
         - find build -iname '.gitignore' -exec rm {} ';'
