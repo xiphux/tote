@@ -83,22 +83,6 @@ $tote_conf['reminders'] = true;
 $tote_conf['cache'] = false;
 
 /**
- * links
- * 
- * an array of useful links to provide on the pool page
- */
-$tote_conf['links'] = array(
-	'NFL' => 'http://nfl.com',
-	'ESPN NFL' => 'http://espn.go.com/nfl/',
-	'FOX Sports NFL' => 'http://msn.foxsports.com/nfl',
-	'CBS Sports NFL' => 'http://www.cbssports.com/nfl',
-	'NBC Sports NFL' => 'http://nbcsports.msnbc.com/nfl',
-	'CNN Sports Illustrated NFL' => 'http://sportsillustrated.cnn.com/football/nfl/',
-	'ProFootballTalk' => 'http://profootballtalk.nbcsports.com',
-	'FootballLOCKS NFL Point Spreads' => 'http://www.footballlocks.com/nfl_point_spreads.shtml'
-);
-
-/**
  * defaultstyle
  *
  * default style for the site if the user doesn't pick a preference

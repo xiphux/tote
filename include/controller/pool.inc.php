@@ -147,9 +147,15 @@ function display_pool($poolid = null)
 	$tpl->assign('entered', $entered);
 	$tpl->assign('poolopen', $poolopen);
 
-	if (isset($tote_conf['links']) && is_array($tote_conf['links']) && (count($tote_conf['links']) > 0)) {
-		$tpl->assign('links', $tote_conf['links']);
-	}
+	$tpl->assign('links', array(
+		'NFL' => 'http://nfl.com',
+        'ESPN NFL' => 'http://espn.go.com/nfl/',
+        'FOX Sports NFL' => 'http://msn.foxsports.com/nfl',
+        'CBS Sports NFL' => 'http://www.cbssports.com/nfl',
+        'NBC Sports NFL' => 'http://nbcsports.msnbc.com/nfl',
+        'ProFootballTalk' => 'http://profootballtalk.nbcsports.com',
+        'FootballLOCKS NFL Point Spreads' => 'http://www.footballlocks.com/nfl_point_spreads.shtml'
+	));
 
 	$tpl->display('pool.tpl');
 }
