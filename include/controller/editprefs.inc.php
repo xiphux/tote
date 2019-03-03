@@ -33,8 +33,8 @@ function display_editprefs()
 	$tpl->assign('defaultremindertime', 1);
 
 	// display reminder settings if they're enabled in the config
-	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true))
-		$tpl->assign('enablereminders', true);
+	// if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true))
+	// 	$tpl->assign('enablereminders', true);
 
 	$timezones = array(
 		'Pacific/Midway' => '(GMT-11:00) Midway Island, Samoa',

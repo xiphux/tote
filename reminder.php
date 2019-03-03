@@ -18,17 +18,17 @@ require_once(TOTE_CONFIGDIR . 'tote.conf.php');
 require_once(TOTE_INCLUDEDIR . 'send_reminders.inc.php');
 
 // only if reminders are turned on in the config
-if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
+// if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
 
-	date_default_timezone_set('UTC');
+// 	date_default_timezone_set('UTC');
 
-	// create Smarty
-	require_once('lib/smarty/libs/Smarty.class.php');
-	$tpl = new Smarty();
-	$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
+// 	// create Smarty
+// 	require_once('lib/smarty/libs/Smarty.class.php');
+// 	$tpl = new Smarty();
+// 	$tpl->plugins_dir[] = TOTE_INCLUDEDIR . 'smartyplugins';
 
-	require_once(TOTE_INCLUDEDIR . 'db.inc.php');
+// 	require_once(TOTE_INCLUDEDIR . 'db.inc.php');
 
-	send_reminders();
+// 	send_reminders();
 
-}
+// }

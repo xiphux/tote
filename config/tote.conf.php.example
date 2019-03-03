@@ -65,14 +65,5 @@ $tote_conf['fromemail'] = 'xiphux@gmail.com';
  */
 $tote_conf['bccemail'] = 'xiphux@gmail.com';
 
-/**
- * reminders
- *
- * set to true to enable the reminder settings
- * note this also depends on a background cron job
- * running the reminders.php script once an hour
- * or more often
- */
-$tote_conf['reminders'] = true;
 
 

@@ -35,22 +35,22 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 
 	$errors = array();
 
-	if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
-		// only validate reminder settings if reminders are turned on
-		if ($reminder == '1') {
-			if (empty($remindertime)) {
-				// need the reminder time
-				$errors[] = 'A reminder time is required';
-			} else if (!is_numeric($remindertime)) {
-				// must be numeric
-				$errors[] = 'Reminder time must be a number';
-			} else if ((int)$remindertime < 1) {
-				// set a limit of 1 hour minimum, so we don't have
-				// to run the reminder background job absurdly frequently
-				$errors[] = 'Reminder time must be 1 hour or greater';
-			}
-		}
-	}
+	// if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
+	// 	// only validate reminder settings if reminders are turned on
+	// 	if ($reminder == '1') {
+	// 		if (empty($remindertime)) {
+	// 			// need the reminder time
+	// 			$errors[] = 'A reminder time is required';
+	// 		} else if (!is_numeric($remindertime)) {
+	// 			// must be numeric
+	// 			$errors[] = 'Reminder time must be a number';
+	// 		} else if ((int)$remindertime < 1) {
+	// 			// set a limit of 1 hour minimum, so we don't have
+	// 			// to run the reminder background job absurdly frequently
+	// 			$errors[] = 'Reminder time must be 1 hour or greater';
+	// 		}
+	// 	}
+	// }
 
 	if (count($errors) > 0) {
 		// if we have errors, go back to the preferences edit and
@@ -66,10 +66,10 @@ function display_saveprefs($timezone, $reminder, $remindertime, $resultnotificat
 		$remindertimeval = null;
 		$resultnotificationval = ($resultnotification && $resultnotification == '1') ? 1 : 0;
 
-		if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
-			$reminderval = $reminder ? 1 : 0;
-			$remindertimeval = !empty($remindertime) ? ((int)$remindertime * 3600) : null;
-		}
+		// if (!empty($tote_conf['reminders']) && ($tote_conf['reminders'] == true)) {
+		// 	$reminderval = $reminder ? 1 : 0;
+		// 	$remindertimeval = !empty($remindertime) ? ((int)$remindertime * 3600) : null;
+		// }
 
 		$prefsstmt = $db->prepare('UPDATE ' . TOTE_TABLE_USERS . ' SET timezone=:timezone, style=:style, reminder=:reminder, reminder_time=:reminder_time, result_notification=:result_notification WHERE id=:user_id');
 		$prefsstmt->bindParam(':timezone', $timezoneval);
