@@ -16,7 +16,7 @@ build:
         - apt-get update
         - apt-get install -y php5.6 php5.6-cli
     script:
-        - ./util/minify.sh
+        - bash util/minify.sh
         - php compilesmarty.php
         - rm css/skin/Blue/toteskin.css css/skin/Carbon/toteskin.css css/skin/Central_Park/toteskin.css css/skin/Gridiron/toteskin.css css/skin/Horsepower/toteskin.css
         - rm css/scoreticker.css
