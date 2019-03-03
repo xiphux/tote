@@ -45,5 +45,5 @@ deploy:
         - echo "$GOOGLE_ENV_VARS" >> app.yaml
         - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
         - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-        - gcloud  --log-http --verbosity=debug --project $PROJECT_ID app deploy app.yaml
+        - gcloud --quiet --verbosity=debug --project $PROJECT_ID app deploy app.yaml
         - rm /tmp/$CI_PIPELINE_ID.json
