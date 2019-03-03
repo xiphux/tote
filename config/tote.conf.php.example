@@ -76,13 +76,6 @@ $tote_conf['bccemail'] = 'xiphux@gmail.com';
 $tote_conf['reminders'] = true;
 
 /**
- * cache
- *
- * set to true to turn on caching of dynamic data
- */
-$tote_conf['cache'] = false;
-
-/**
  * defaultstyle
  *
  * default style for the site if the user doesn't pick a preference
