@@ -1,0 +1,46 @@
+stages:
+    - build
+    - deploy
+
+build:
+    stage: build
+    image: node:latest
+    only:
+        - master
+    before_script:
+        - npm install -g uglify-js
+        - apt-get install python-software-properties
+        - add-apt-repository ppa:ondrej/php
+        - apt-get update
+        - apt-get install -y php5.6
+    script:
+        - ./util/minify.sh
+        - php compilesmarty.php
+        - rm css/skin/Blue/toteskin.css css/skin/Carbon/toteskin.css css/skin/Central_Park/toteskin.css css/skin/Gridiron/toteskin.css css/skin/Horsepower/toteskin.css
+        - rm css/scoreticker.css
+        - rm css/tote.css
+        - rm js/ext/coffee-script.js js/ext/cs.js
+        - rm -r js/modules
+        - rm js/bet.js js/common.js js/editpool.js js/editusers.js js/fullschedule.js js/gridschedule.js js/newuser.js js/pickdist.js js/pickrisk.js js/pool.js js/poolmobile.js js/teamrel.js
+        - mkdir build
+        - cp -Rv css images include js lib templates templates_c index.php scoreticker.php app.yaml build/
+        - find build -iname '.gitignore' -exec rm {} ';'
+    artifacts:
+        paths:
+            - build/
+
+deploy:
+    stage: deploy
+    image: google/cloud-sdk:alpine
+    environment:
+        name: production
+        url: https://football.chris-han.net
+    only:
+        - master
+    script:
+        - cd build
+        - echo "$GOOGLE_ENV_VARS" >> app.yaml
+        - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+        - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+        - gcloud --quiet --project $PROJECT_ID app deploy app.yaml
+        - rm /tmp/$CI_PIPELINE_ID.json
