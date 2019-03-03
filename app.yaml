@@ -1,0 +1,18 @@
+runtime: php55
+api_version: 1
+
+handlers:
+    - url: /css
+      static_dir: css
+
+    - url: /js
+      static_dir: js
+
+    - url: /ext
+      static_dir: ext
+
+    - url: /images
+      static_dir: images
+
+    - url: /.*
+      script: index.php
