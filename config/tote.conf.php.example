@@ -75,11 +75,4 @@ $tote_conf['bccemail'] = 'xiphux@gmail.com';
  */
 $tote_conf['reminders'] = true;
 
-/**
- * defaultstyle
- *
- * default style for the site if the user doesn't pick a preference
- * (or isn't logged in)
- */
-$tote_conf['defaultstyle'] = 'Blue';
 

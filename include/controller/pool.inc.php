@@ -17,7 +17,7 @@ require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
  */
 function display_pool($poolid = null)
 {
-	global $tpl, $tote_conf, $db;
+	global $tpl, $db;
 
 	$user = user_logged_in();
 
