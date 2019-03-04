@@ -5,7 +5,6 @@
 {if $showattr}
 <div id="attrFooter">
 Football Pool by <span id="contact">Chris Han</span>
-<br /><a href="http://gitphp.chris-han.com/projects/tote.git">Source Code</a>
 </div>
 <script language="javascript" type="text/javascript">
 var b1 = ['christopher', 'f', 'han'].join('.');
