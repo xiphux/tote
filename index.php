@@ -54,6 +54,10 @@ if ($user) {
 }
 $tpl->assign('defaultstyle', 'Blue');
 
+if (!empty(getenv('TOTE_PRODUCTION'))) {
+	$tpl->assign('production', true);
+}
+
 // a= parameter specifies the action to perform
 switch((empty($_GET['a']) ? '' : $_GET['a'])) {
 

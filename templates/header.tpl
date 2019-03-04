@@ -10,26 +10,26 @@
 
   <link rel="stylesheet" href="css/ext/jquery.qtip.min.css" type="text/css" />
 
-  {if file_exists('css/tote.min.css')}
+  {if $production}
   <link rel="stylesheet" href="css/tote.min.css" />
   {else}
   <link rel="stylesheet" href="css/tote.css" />
   {/if}
 
   {if $userstyle}
-    {if file_exists("css/skin/$userstyle/toteskin.min.css")}
+    {if $production}
     <link rel="stylesheet" href="css/skin/{$userstyle}/toteskin.min.css" />
     {else}
     <link rel="stylesheet" href="css/skin/{$userstyle}/toteskin.css" />
     {/if}
   {elseif $defaultstyle}
-    {if file_exists("css/skin/$defaultstyle/toteskin.min.css")}
+    {if $production}
     <link rel="stylesheet" href="css/skin/{$defaultstyle}/toteskin.min.css" />
     {else}
     <link rel="stylesheet" href="css/skin/{$defaultstyle}/toteskin.css" />
     {/if}
   {else}
-    {if file_exists('css/skin/Blue/toteskin.min.css')}
+    {if $production}
     <link rel="stylesheet" href="css/skin/Blue/toteskin.min.css" />
     {else}
     <link rel="stylesheet" href="css/skin/Blue/toteskin.css" />
@@ -37,7 +37,7 @@
   {/if}
   
   {if $source == 'pool'}
-    {if file_exists('css/scoreticker.min.css')}
+    {if $production}
     <link rel="stylesheet" href="css/scoreticker.min.css" />
     {else}
     <link rel="stylesheet" href="css/scoreticker.css" />
@@ -70,7 +70,7 @@
 		{rdelim}
 	{rdelim},
 	paths: {ldelim}
-		{if "js/$jsmodule.min.js"|file_exists}
+		{if $production}
 		{$jsmodule}: '{$jsmodule}.min',
     {else}
 		'coffee-script': 'ext/coffee-script',
