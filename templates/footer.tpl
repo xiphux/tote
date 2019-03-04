@@ -5,6 +5,10 @@
 {if $showattr}
 <div id="attrFooter">
 Football Pool by <span id="contact">Chris Han</span>
+{if $bitcoin}
+<br />
+Donate: <a href="bitcoin:{$bitcoin}">{$bitcoin}</a>
+{/if}
 </div>
 <script language="javascript" type="text/javascript">
 var b1 = ['christopher', 'f', 'han'].join('.');

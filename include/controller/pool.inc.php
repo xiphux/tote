@@ -17,7 +17,7 @@ require_once(TOTE_CONTROLLERDIR . 'message.inc.php');
  */
 function display_pool($poolid = null)
 {
-	global $tpl, $db;
+	global $tpl, $db, $tote_conf;
 
 	$user = user_logged_in();
 
@@ -156,6 +156,14 @@ function display_pool($poolid = null)
         'ProFootballTalk' => 'http://profootballtalk.nbcsports.com',
         'FootballLOCKS NFL Point Spreads' => 'http://www.footballlocks.com/nfl_point_spreads.shtml'
 	));
+
+	$bitcoin = getenv('TOTE_BITCOIN');
+	if (empty($bitcoin) && !empty($tote_conf['bitcoin'])) {
+		$bitcoin = $tote_conf['bitcoin'];
+	}
+	if (!empty($bitcoin)) {
+		$tpl->assign('bitcoin', $bitcoin);
+	}
 
 	$tpl->display('pool.tpl');
 }
