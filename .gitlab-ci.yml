@@ -40,6 +40,8 @@ deploy:
         url: https://football.chris-han.net
     only:
         - master
+    variables:
+        GIT_STRATEGY: none
     script:
         - cd build
         - echo "$GOOGLE_ENV_VARS" >> app.yaml
