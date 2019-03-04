@@ -67,7 +67,7 @@ LEFT JOIN %s AS pool_administrators
 ON pool_administrators.user_id=users.id AND pool_administrators.pool_id=:admin_pool_id
 LEFT JOIN %s AS pool_entry_picks
 ON pool_entry_picks.pool_entry_id=pool_entries.id
-GROUP BY users.id
+GROUP BY users.id, pool_administrators.admin_type
 ORDER BY LOWER(display_name)
 EOQ;
 	$userquery = sprintf($userquery, TOTE_TABLE_USERS, TOTE_TABLE_POOL_ENTRIES, TOTE_TABLE_POOL_ADMINISTRATORS, TOTE_TABLE_POOL_ENTRY_PICKS);
