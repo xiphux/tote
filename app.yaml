@@ -8,11 +8,11 @@ handlers:
     - url: /js
       static_dir: js
 
-    - url: /ext
-      static_dir: ext
-
     - url: /images
       static_dir: images
+
+    - url: /robots.txt
+      static_files: robots.txt
 
     - url: /.*
       script: index.php
