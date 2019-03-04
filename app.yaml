@@ -4,15 +4,19 @@ api_version: 1
 handlers:
     - url: /css
       static_dir: css
+      expiration: 30d
 
     - url: /js
       static_dir: js
+      expiration: 30d
 
     - url: /images
       static_dir: images
+      expiration: 30d
 
     - url: /robots.txt
       static_files: robots.txt
+      expiration: 30d
 
     - url: /.*
       script: index.php
