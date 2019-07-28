@@ -24,8 +24,7 @@ function send_email($email, $subject, $content, $bcc = false)
 	}
 		
 	$headers = 'From: ' . $fromemail . "\r\n" .
-		'Reply-To: ' . $fromemail . "\r\n" .
-		'X-Mailer: PHP/' . phpversion();
+		'Reply-To: ' . $fromemail;
 	if ($bcc && !empty($bccemail))
 		$headers .= "\r\nBcc: " . $bccemail;
 		
