@@ -27,6 +27,11 @@ handlers:
       secure: always
       redirect_http_response_code: 301
 
+    - url: /update.php
+      script: update.php
+      secure: always
+      redirect_http_response_code: 301
+
     - url: /.*
       script: index.php
       secure: always
