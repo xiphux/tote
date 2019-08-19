@@ -84,6 +84,7 @@ define(['axios', './ScoreTickerGame'], function(axios, ScoreTickerGame) {
                     this.tickerData.season +
                     '-' +
                     (this.tickerData.season + 1) +
+                    (this.tickerData.seasonType === 'PRE' ? ' preseason' : '') +
                     ' week ' +
                     this.tickerData.week
                 );
