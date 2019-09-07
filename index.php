@@ -17,7 +17,6 @@ define('TOTE_BASEDIR', dirname(__FILE__) . '/');
 define('TOTE_CONFIGDIR', TOTE_BASEDIR . 'config/');
 define('TOTE_INCLUDEDIR', TOTE_BASEDIR . 'include/');
 define('TOTE_CONTROLLERDIR', TOTE_INCLUDEDIR . 'controller/');
-define('TOTE_SKINDIR', TOTE_BASEDIR . 'css/skin/');
 
 // include config file
 if (file_exists(TOTE_CONFIGDIR . 'tote.conf.php')) {

@@ -138,18 +138,14 @@ function display_editprefs()
 
 	$tpl->assign('availabletimezones', $timezones);
 
-	$styles = array();
-	if ($dh = opendir(TOTE_SKINDIR)) {
-		while (($file = readdir($dh)) !== false) {
-			$fullPath = TOTE_SKINDIR . '/' . $file;
-			if ((strpos($file, '.') !== 0) && is_dir($fullPath) && is_file($fullPath . '/toteskin.css')) {
-				$styles[] = $file;
-			}
-		}
-	}
-	if (count($styles) > 0) {
-		$tpl->assign('availablestyles', $styles);
-	}
+	$styles = array(
+		'Blue',
+		'Carbon',
+		'Central_Park',
+		'Gridiron',
+		'Horsepower'
+	);
+	$tpl->assign('availablestyles', $styles);
 
 	$tpl->assign('csrftoken', $_SESSION['csrftoken']);
 
