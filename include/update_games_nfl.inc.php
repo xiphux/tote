@@ -7,6 +7,7 @@ require_once(TOTE_INCLUDEDIR . 'get_current_season.inc.php');
 
 define('NFL_BASEURL', 'http://www.nfl.com/ajax/scorestrip');
 define('NFL_WEEKURL', NFL_BASEURL . '?season=%d&seasonType=%s&week=%d');
+define('NFL_LIVEURL', 'http://www.nfl.com/liveupdate/scorestrip/ss.xml');
 define('NFL_SEASONTYPE_REGULAR', 'REG');
 
 function nfl_team_to_abbr($team)
@@ -18,14 +19,10 @@ function nfl_team_to_abbr($team)
     return $team;
 }
 
-function update_games_nfl_week($season, $week, $modified)
+function load_nfl_scorestrip($url)
 {
-    if (empty($season) || empty($week))
-        return false;
-
-    $url = sprintf(NFL_WEEKURL, $season, NFL_SEASONTYPE_REGULAR, $week);
-
     $raw = load_page($url);
+    $raw = preg_replace("/>\s+</", "><", $raw);
 
     $dom = new DOMDocument();
     @$dom->loadXML($raw);
@@ -42,6 +39,11 @@ function update_games_nfl_week($season, $week, $modified)
         return false;
     }
 
+    return $gms;
+}
+
+function update_games_nfl_gms($gms, $season, $week, $modified)
+{
     $y = $gms->attributes->getNamedItem('y');
     if ($y == null || $y->nodeValue != $season) {
         echo '<p>Error: season mismatch</p>';
@@ -49,12 +51,10 @@ function update_games_nfl_week($season, $week, $modified)
     }
 
     $w = $gms->attributes->getNamedItem('w');
-    if ($w == null || $w->nodeValue != $week) {
+    if (($w == null) || ($w->nodeValue != $week)) {
         echo '<p>Error: week mismatch</p>';
         return false;
     }
-
-    echo '<strong>Updating season ' . $season . ' week ' . $week . "...</strong><br />\n";
 
     echo '<p>';
 
@@ -98,7 +98,7 @@ function update_games_nfl_week($season, $week, $modified)
             }
             $awayScore = $vs->nodeValue;
 
-            //echo 'Updating ' . $away . ' ' . $awayScore . ' @ ' . $home . ' ' . $homeScore . "\n";
+            // echo 'Updating ' . $away . ' ' . $awayScore . ' @ ' . $home . ' ' . $homeScore . "\n";
             if (update_finished_game($season, $week, $away, $awayScore, $home, $homeScore)) {
                 $modified = true;
             }
@@ -145,7 +145,7 @@ function update_games_nfl_week($season, $week, $modified)
 
             $tmp = new DateTime($start . 'T' . $timePieces[0] . ':' . $timePieces[1]);
 
-            //echo 'Updating ' . $away . ' @ ' . $home . ' at ' . $tmp->format('D M j, Y g:i a T') . "\n";
+            // echo 'Updating ' . $away . ' @ ' . $home . ' at ' . $tmp->format('D M j, Y g:i a T') . "\n";
             if (update_scheduled_game($season, $week, $away, $home, (int)$tmp->format('U'))) {
                 $modified = true;
             }
@@ -155,6 +155,47 @@ function update_games_nfl_week($season, $week, $modified)
     echo '</p>';
 
     return true;
+}
+
+function update_games_nfl_week($season, $week, $modified)
+{
+    if (empty($season) || empty($week))
+        return false;
+
+    $gms = load_nfl_scorestrip(sprintf(NFL_WEEKURL, $season, NFL_SEASONTYPE_REGULAR, $week));
+    if (!$gms) {
+        return false;
+    }
+
+    echo '<strong>Updating season ' . $season . ' week ' . $week . "...</strong><br />\n";
+
+    return update_games_nfl_gms($gms, $season, $week, $modified);
+}
+
+function update_games_nfl_live($season, $modified)
+{
+    if (empty($season))
+        return false;
+
+    $gms = load_nfl_scorestrip(NFL_LIVEURL);
+    if (!$gms) {
+        return false;
+    }
+
+    $w = $gms->attributes->getNamedItem('w');
+    if (!$w) {
+        echo '<p>Error: unknown week</p>';
+        return false;
+    }
+    $week = $w->nodeValue;
+    if (!$week) {
+        echo '<p>Error: unknown week</p>';
+        return false;
+    }
+
+    echo '<strong>Updating season ' . $season . ' week ' . $week . " live...</strong><br />\n";
+
+    return update_games_nfl_gms($gms, $season, $week, $modified);
 }
 
 function update_games_nfl($season = null)
@@ -176,6 +217,8 @@ function update_games_nfl($season = null)
         if (!update_games_nfl_week($season, $week, $modified))
             break;
     }
+
+    update_games_nfl_live($season, $modified);
 
     date_default_timezone_set($oldtz);
 
