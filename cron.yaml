@@ -1,4 +1,0 @@
-cron:
-    - description: 'Schedule/score update'
-      url: /update.php
-      schedule: every 6 hours
